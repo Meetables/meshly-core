@@ -1,0 +1,29 @@
+{
+  "name": "meshly-core",
+  "version": "0.0.1",
+  "description": "A backend for creating social networks easily",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Meetables/meshly-core.git"
+  },
+  "author": "Meetables Org",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Meetables/meshly-core/issues"
+  },
+  "homepage": "https://github.com/Meetables/meshly-core#readme",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.0",
+    "nodemon": "^3.1.9"
+  }
+}
