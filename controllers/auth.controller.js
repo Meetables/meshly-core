@@ -1,61 +1,76 @@
 const validator = require("validator");
+const bcryptjs = require("bcryptjs");
 
-const User = require("../models/user.models")
+const User = require("../models/user.models");
+const generateTokenAndSetCookie = require("../utils/generateToken");
 
 async function signup(req, res) {
-    
-    
+
+
     try {
-        const {email, password, username} = req.body;
+        const { email, password, username } = req.body;
 
         if (!email || !password || !username) {
-            return res.status(400).json({success: false, message: "All fields are required"})
-        } 
-        
+            return res.status(400).json({ success: false, message: "All fields are required" })
+        }
+
         if (!validator.isEmail(email)) {
-            return res.status(400).json({success: false, message: "Please provide all the data in the required format"})         
+            return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
         }
 
         //TODO: Check for secure password also on backend-side
 
-        const existingUserByEmail = await User.findOne({email: email})
+        const existingUserByEmail = await User.findOne({ email: email })
 
         if (existingUserByEmail) {
-            return res.status(400).json({success: false, message: "User with email already exists"})         
+            return res.status(400).json({ success: false, message: "User with email already exists" })
         }
 
-        const existingUserByUsername = await User.findOne({Username: username})
+        const existingUserByUsername = await User.findOne({ Username: username })
 
         if (existingUserByUsername) {
-            return res.status(400).json({success: false, message: "User with username already exists"})         
+            return res.status(400).json({ success: false, message: "User with username already exists" })
         }
+ 
+        const salt = await bcryptjs.genSalt(10);
+        const hashedPassword = await bcryptjs.hash(password, salt);
 
         const newUser = new User({
             email,
-            password,
+            password: hashedPassword,
             username
         })
 
+        
+        generateTokenAndSetCookie(newUser._id, res)
         await newUser.save();
 
-        res.status(201).json({success: true, user: {
-            ...newUser._doc, password: ""
-        }})
+        res.status(201).json({
+            success: true, user: {
+                ...newUser._doc, password: ""
+            }
+        })
 
     } catch (error) {
-        console.log("Error in signup controller: " +  error.message)
+        console.log("Error in signup controller: " + error.message)
 
-        res.status(500).json({success: false, message: "Internal Server Error"})
+        res.status(500).json({ success: false, message: "Internal Server Error" })
     }
-    
+
 }
 
 async function login(req, res) {
-  
+
 }
 
 async function logout(req, res) {
-  
+    try {
+		res.clearCookie("jwt-meshlycore");
+		res.status(200).json({ success: true, message: "Logged out successfully" });
+	} catch (error) {
+		console.log("Error in logout controller", error.message);
+		res.status(500).json({ success: false, message: "Internal server error" });
+	}
 }
 
-module.exports = {signup, login, logout};
+module.exports = { signup, login, logout };
