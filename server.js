@@ -1,29 +1,16 @@
 const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
 
-const authRoutes = require('./routes/auth.route.js')
+const authRoutes = require('./routes/auth.route.js');
+const { ENV_VARS } = require('./config/env-vars.js');
+const { connectToMongo } = require('./database/databaseConnect.js');
+
+connectToMongo()
 
 const app = express();
 
-const databaseUrl = process.env.DATABASE_URL;
-console.log(databaseUrl)
+const _port = ENV_VARS.PORT;
 
-mongoose.connect(databaseUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-
-db.on('error', (err) => {
-  console.error(err);
-});
-
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
-
+app.use(express.json());
 
 app.get("/", (req, res) => {
     res.send("Server is running")
@@ -32,6 +19,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 
 
-app.listen(3000, ()  => {
-    console.log("Server started at port 3000")
+app.listen(_port, ()  => {
+    console.log("Server started at port " + _port)
 })
+

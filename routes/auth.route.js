@@ -1,18 +1,18 @@
 const express = require('express');
-const { signup } = require('../controllers/auth.controller');
+const { signup, login, logout } = require('../controllers/auth.controller');
+const verifyAuth = require('../middleware/verifyAuth.middleware');
 
 const router = express.Router();
 
 
-router.get("/signup", signup)
+router.post("/signup", signup)
 
-router.get("/login", (req, res) => {
-    res.send("Login")
+router.post("/login", login)
+
+router.post("/logout", logout)
+
+router.post("/test", verifyAuth, (req, res) => {
+    res.status(200).json({"authorized": "true"})
 })
 
-router.get("/logout", (req, res) => {
-    res.send("Logout")
-})
-
-
-module.exports = router;
+module.exports = router; 
