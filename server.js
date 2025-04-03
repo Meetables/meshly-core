@@ -13,7 +13,7 @@ const _port = ENV_VARS.PORT;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Server is running")
+    res.status(200).send("Server is running")
 })
 
 app.use("/api/v1/auth", authRoutes);
