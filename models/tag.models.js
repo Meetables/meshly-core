@@ -10,7 +10,7 @@ const tagSchema = mongoose.Schema({
         required: true
     },
 
-    superTag: {
+    category: {
         type: String
     }
 })
