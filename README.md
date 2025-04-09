@@ -17,3 +17,10 @@ When using docker, make sure to also change the port bind
 JWT_SECRET= A secret (any string) that's being used for encoding the JWT Token
 
 NODE_ENV=development The node environment. Used for configuration.
+
+DEV_TESTUSER_EMAIL= Email address for your test user
+DEV_TESTUSER_USERNAME= Username for your test user
+DEV_TESTUSER_PASSWORD= Password for your test user
+
+TAG_CATEGORIES= All of the categories a tag can have
+DEFAULT_TAGS= The tags which are being added to the mongo instance on init
