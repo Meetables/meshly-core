@@ -3,6 +3,7 @@ const bcryptjs = require('bcryptjs')
 
 const { ENV_VARS } = require('../config/env-vars');
 const User = require('../models/user.models');
+const Tag = require('../models/tag.models');
 
 
 async function initDb() {
@@ -32,11 +33,16 @@ async function initDb() {
         console.log("Database already initialized")
     }
 
-    
-
-
     //create tags: location, interest
 
+    const tagCount = await Tag.countDocuments();
+
+    if (tagCount == 0) {
+        await Tag.insertMany(ENV_VARS.DEFAULT_TAGS);
+        console.log("tags inserted")
+    } else {
+        console.log("Tag count in DB: " + tagCount)
+    }
 }
 
 module.exports = initDb;
