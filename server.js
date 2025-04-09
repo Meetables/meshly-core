@@ -3,8 +3,12 @@ const express = require('express');
 const authRoutes = require('./routes/auth.route.js');
 const { ENV_VARS } = require('./config/env-vars.js');
 const { connectToMongo } = require('./database/databaseConnect.js');
+const initDb = require('./database/databaseInit.js');
 
-connectToMongo()
+connectToMongo().then(() => {
+    initDb();
+});
+
 
 const app = express();
 

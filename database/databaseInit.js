@@ -1,17 +1,48 @@
 const mongoose = require('mongoose');
+const bcryptjs = require('bcryptjs')
 
-async functiominitDb =  () => {
+const { ENV_VARS } = require('../config/env-vars');
+const User = require('../models/user.models');
+const Tag = require('../models/tag.models');
+
+
+async function initDb() {
     //create sample user
-    const salt = await bcryptjs.genSalt(10);
-    const hashedPassword = await bcryptjs.hash(password, salt);
 
-    const newUser = new User({
-        email,
-        password: hashedPassword,
-        username
-    })
+    const userCount = await User.countDocuments();
+    console.log(`User count (startup): ${userCount}`);
 
+
+    if (userCount === 0) {
+        if (ENV_VARS.DEV_TESTUSER_EMAIL && ENV_VARS.DEV_TESTUSER_USERNAME && ENV_VARS.DEV_TESTUSER_PASSWORD) {
+            const salt = await bcryptjs.genSalt(10);
+            const hashedPassword = await bcryptjs.hash(ENV_VARS.DEV_TESTUSER_PASSWORD, salt);
     
+            const newUser = new User({
+                email: ENV_VARS.DEV_TESTUSER_EMAIL,
+                password: hashedPassword,
+                username: ENV_VARS.DEV_TESTUSER_USERNAME
+            })
+    
+            await newUser.save();
+            console.log("Created test user")
+        } else {
+            console.log("Error in dbInit: test user can't be created")
+        } 
+    } else {
+        console.log("Database already initialized")
+    }
+
     //create tags: location, interest
 
+    const tagCount = await Tag.countDocuments();
+
+    if (tagCount == 0) {
+        await Tag.insertMany(ENV_VARS.DEFAULT_TAGS);
+        console.log("tags inserted")
+    } else {
+        console.log("Tag count in DB: " + tagCount)
+    }
 }
+
+module.exports = initDb;
