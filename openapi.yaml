@@ -111,6 +111,12 @@ paths:
       description: |
         Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
         The JWT is verified using middleware before accessing this endpoint.
+      parameters:
+      - in: cookie
+        name: jwt-meshlycore
+        required: true
+        schema:
+          type: string
       responses:
         200:
           description: Authorized successfully.
@@ -141,6 +147,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/discover/tags:
+    get:
+      summary: 'Get all tags from the database'
+      description: |
+        Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
+        The JWT is verified using middleware before accessing this endpoint.
+      parameters:
+      - in: cookie
+        name: jwt-meshlycore
+        required: true
+        schema:
+          type: string
 components:
   schemas:
     LoginRequest:
