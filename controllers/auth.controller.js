@@ -18,6 +18,12 @@ async function signup(req, res) {
             return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
         }
 
+        //TODO: Prevent XSS
+
+        if(!validator.isAlphanumeric(username)){
+            return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
+        }
+
         //TODO: Check for secure password also on backend-side
 
         const existingUserByEmail = await User.findOne({ email: email })
