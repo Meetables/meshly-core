@@ -149,6 +149,60 @@ paths:
         required: true
         schema:
           type: string
+  /api/v1/profile/onboarding:
+    post:
+      summary: Onboard user
+      description: |
+        This endpoint allows onboarding a user by setting their display name, tags, and profile description.  
+        Requires a valid JWT cookie (`jwt-meshlycore`).  
+        A user can only be onboarded once — if profile data already exists, this will return a 409.
+      tags:
+        - user
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardUserRequest'
+      responses:
+        '200':
+          description: User onboarded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User has been onboarded successfully
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - User already onboarded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:
@@ -200,6 +254,25 @@ components:
           type: string
         username:
           type: string
+    OnboardUserRequest:
+      type: object
+      required:
+        - displayName
+        - profileTagIds
+        - profileDescription
+      properties:
+        displayName:
+          type: string
+          example: "JaneDoe"
+        profileTagIds:
+          type: array
+          items:
+            type: string
+          example: ["tagId1", "tagId2"]
+        profileDescription:
+          type: string
+          example: "Hi, I'm Jane and I love hiking and building communities."
+
 
   responses:
     LoginSuccess:
