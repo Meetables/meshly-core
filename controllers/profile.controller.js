@@ -1,3 +1,5 @@
+const validator = require('validator')
+
 async function onboardUser(req, res) {
     try {
         //when onboarding a user, set display name, tags, profileDescription
@@ -8,11 +10,12 @@ async function onboardUser(req, res) {
             return res.status(400).json({ success: false, message: "All fields are required" })
         }
 
-        if (req.user.displayName || req.user.profileDescription || req.user.profileTags) {
+        if (req.user.displayName || req.user.profileDescription) {
+            console.log("User data: " + req.user.displayName + " " + req.user.profileDescription + " " + req.user.profileTags)
             return res.status(409).json({ success: false, message: "User has already been onboarded" })
         }
 
-        if (!validator.isAlphanumeric(displayName, 'de-DE', ' ')) {
+        if (!validator.isAlphanumeric(displayName, 'de-DE', {ignore: ' '})) {
             return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
         }
 
