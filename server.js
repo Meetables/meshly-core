@@ -13,6 +13,14 @@ connectToMongo().then(() => {
     initDb();
 });
 
+if(ENV_VARS.ENABLE_PROFILE_SUGGESTIONS && ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL){
+    const profileMatchingAlgorithm = require('./services/suggest-profiles.service.js');
+
+    console.log("Starting interval for profileMatchingAlgoritm")
+    profileMatchingAlgorithm();
+    setInterval(profileMatchingAlgorithm, ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL * 60 * 60 * 1000);
+}
+
 
 const app = express();
 
