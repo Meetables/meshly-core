@@ -24,3 +24,7 @@ DEV_TESTUSER_PASSWORD= Password for your test user
 
 TAG_CATEGORIES= All of the categories a tag can have
 DEFAULT_TAGS= The tags which are being added to the mongo instance on init
+
+ENABLE_PROFILE_SUGGESTIONS= true || false Either enable or disable profile suggestions for users. 
+
+REQUIRED_MATCHING_TAG_CATEGORY= Specifies a tag category of which a tag must match on both user profiles in order for them to get recommended to each other

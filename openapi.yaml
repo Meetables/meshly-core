@@ -159,6 +159,148 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+ 
+  /api/v1/discover/user-suggestions:
+    get: 
+      summary: 'Get suggestions for other user profiles to socialize with.'
+      description: |
+        Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
+        The JWT is verified using middleware before accessing this endpoint.
+      requestBody:
+        required: true
+        content:
+          application/json:    
+            schema:
+              $ref: '#/components/schemas/GetUserSuggestionsRequest'   
+      parameters:
+      - in: cookie
+        name: jwt-meshlycore
+        required: true
+        schema:
+          type: string
+        responses:
+        '200':
+          description: List of recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user:
+                          type: string
+                          description: Username of the recommended user
+                          example: "alice123"
+                        score:
+                          type: number
+                          description: Weight or score of the recommendation
+                          example: 0.85
+                        type:
+                          type: object
+                          description: Flags to indicate "new" or "hot" status
+                          properties:
+                            new:
+                              type: boolean
+                              example: true
+                            hot:
+                              type: boolean
+                              example: true
+        '500':
+          description: Internal Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: "Internal server error"
+  /api/v1/profile/onboarding:
+    post:
+      summary: Onboard user
+      description: |
+        This endpoint allows onboarding a user by setting their display name, tags, and profile description.  
+        Requires a valid JWT cookie (`jwt-meshlycore`).  
+        A user can only be onboarded once — if profile data already exists, this will return a 409.
+      tags:
+        - user
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardUserRequest'
+      responses:
+        '200':
+          description: User onboarded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: User has been onboarded successfully
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - User already onboarded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:
@@ -219,17 +361,68 @@ components:
           example: "mail@meetables.com"
         username:
           type: string
-          example: "user"
+           example: "user"
         profileTags:
           type: array
           items:
             type: string
-            example: "Handball"
+            example: "someProfileTagId"
         friends:
           type: array
           items:
             type: string
             example: "67f2ddf33d708e12caf2e143"
+    OnboardUserRequest:
+      type: object
+      required:
+        - displayName
+        - profileTagIds
+        - profileDescription
+      properties:
+        displayName:
+          type: string
+          example: "JaneDoe"
+        profileTagIds:
+          type: array
+          items:
+            type: string
+          example: ["tagId1", "tagId2"]
+        profileDescription:
+          type: string
+          example: "Hi, I'm Jane and I love hiking and building communities."
+    GetUserSuggestionsRequest:
+      type: object
+      required: 
+        - max_suggestions
+      properties: 
+        max_suggestions:
+          type: Number
+    TagResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                example: "60f7c8573e843b001c8e4b9a"
+              name:
+                type: string
+                example: "Hiking"
+              icon:
+                type: string
+                example: "🏔️"
+              category:
+                type: string
+                example: "Activity"
+              superiorTagId:
+                type: string
+                example: "60f7c8573e843b001c8e4b91"
 
   responses:
     LoginSuccess:

@@ -12,6 +12,10 @@ const tagSchema = mongoose.Schema({
 
     category: {
         type: String
+    },
+
+    superiorTagId: {
+        type: String
     }
 })
 
