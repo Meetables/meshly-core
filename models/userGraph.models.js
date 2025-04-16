@@ -11,6 +11,15 @@ const userGraphSchema = mongoose.Schema({
             weight: {
                 type: Number,
                 required: true
+            },
+
+            scores: {
+                type: Map,
+                of: Number
+            },
+
+            timestamp: {
+                type: Date
             }
         }
     ]

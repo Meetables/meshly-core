@@ -2,8 +2,6 @@ const dotenv = require('dotenv')
 
 dotenv.config();
 
-console.log("Default tags: " + process.env.DEFAULT_TAGS)
-
 const ENV_VARS = {
     DATABASE_URL: process.env.DATABASE_URL,
     PORT: process.env.PORT || 3000,
@@ -13,7 +11,9 @@ const ENV_VARS = {
     DEFAULT_TAGS: JSON.parse(process.env.DEFAULT_TAGS),
     ENABLE_PROFILE_SUGGESTIONS: process.env.ENABLE_PROFILE_SUGGESTIONS,
     REQUIRED_MATCHING_TAG_CATEGORY: process.env.REQUIRED_MATCHING_TAG_CATEGORY || false,
-    PROFILE_SUGGESTION_ALGORITHM_INTERVAL: process.env.PROFILE_SUGGESTION_ALGORITHM_INTERVAL || false
+    PROFILE_SUGGESTION_ALGORITHM_INTERVAL: process.env.PROFILE_SUGGESTION_ALGORITHM_INTERVAL || false,
+    PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS: parseFloat(process.env.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS) || 24,
+    PROFILE_SUGGESTION_HOT_THRESHOLD: parseFloat(process.env.PROFILE_SUGGESTION_HOT_THRESHOLD) || 0.45
 }
 
 if (process.env.NODE_ENV = 'development') {

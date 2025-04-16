@@ -13,10 +13,9 @@ connectToMongo().then(() => {
     initDb();
 });
 
-if(ENV_VARS.ENABLE_PROFILE_SUGGESTIONS && ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL){
+if (ENV_VARS.ENABLE_PROFILE_SUGGESTIONS && ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL) {
     const profileMatchingAlgorithm = require('./services/suggest-profiles.service.js');
 
-    console.log("Starting interval for profileMatchingAlgoritm")
     profileMatchingAlgorithm();
     setInterval(profileMatchingAlgorithm, ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL * 60 * 60 * 1000);
 }
@@ -40,7 +39,7 @@ app.use("/api/v1/discover", discoverRoutes);
 
 app.use("/api/v1/profile", profileRoutes);
 
-app.listen(_port, ()  => {
+app.listen(_port, () => {
     console.log("Server started at port " + _port)
 })
 

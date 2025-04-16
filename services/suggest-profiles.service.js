@@ -20,7 +20,7 @@ async function profileMatchingAlgorithm() {
                 }
     
                 const userQueue = await User.distinct('_id', { profileTags: locationId });
-    
+                
                 for (let i = 0; i < userQueue.length; i++) {
                     const userId = userQueue[i];
     
@@ -31,17 +31,21 @@ async function profileMatchingAlgorithm() {
                         const user_compareTarget = await User.findById(userId_compareTarget)
     
                         //Test how many of the specified interests from the source testant match with the destination
-                        const numerator = compareUser.profileTags.filter(element => !locations.includes(element) && user_compareTarget.profileTags.includes(element)).length;
-                        const denominator = compareUser.profileTags.filter(element => !locations.includes(element)).length;
-    
-                        console.log("Score: " + numerator + "/" + denominator)
-                        await addEdgeToUserGraph(locationId, {nodes: [userId, userId_compareTarget], weight: numerator / denominator})
+                        const commonTags = compareUser.profileTags.filter(element => !locations.includes(element) && user_compareTarget.profileTags.includes(element)).length;
+                        
+                        const scores = {
+                            [userId]: commonTags / compareUser.profileTags.filter(element => !locations.includes(element)).length,
+                            [userId_compareTarget]: commonTags / user_compareTarget.profileTags.filter(element => !locations.includes(element)).length
+                        }
+
+                        await addEdgeToUserGraph(locationId, {nodes: [userId, userId_compareTarget], weight: commonTags, scores: scores})
                         //write the score to db
                     }
                 }
     
             }
         } else {
+            // [TODO] in case no matching tag is required, test everyone
             //Create one userGraph
     
         }
@@ -71,14 +75,17 @@ async function addEdgeToUserGraph(userGraphId, newEdge) {
             // Replace existing edge
             graph.edges[existingEdgeIndex] = {
                 nodes: newEdge.nodes,
-                weight: newEdge.weight
+                weight: newEdge.weight,
+                scores: newEdge.scores
             };
             console.log('Edge updated successfully:', graph.edges[existingEdgeIndex]);
         } else {
             // Add new edge
             const edge = {
                 nodes: newEdge.nodes,
-                weight: newEdge.weight
+                weight: newEdge.weight,
+                timestamp: Date.now,
+                scores: newEdge.scores
             };
             graph.edges.push(edge);
             console.log('Edge added successfully:', edge);
