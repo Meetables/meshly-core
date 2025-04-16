@@ -27,13 +27,12 @@ async function getTags(req, res) {
 async function getFriendRecommendations(req, res) {
     try {
 
-        //const { max_suggestions } = req.body;
+        const { max_suggestions } = req.body;
 
         const edges = await getEdgesByUserId(req.user._id);
         console.log(edges)
         let recommendations = [];
 
-        //console.log(recommendations)
         //transform recommendations to an array, sorted by the weight
 
         for (const edge of edges) {
@@ -49,8 +48,6 @@ async function getFriendRecommendations(req, res) {
 
             recommendation.type = {};
 
-            console.log(edge.timestamp + " " + new Date(Date.now() - ENV_VARS.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS * 60 * 60 * 1000))
-
             if (edge.timestamp > new Date(Date.now() - ENV_VARS.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS * 60 * 60 * 1000)) {
                 recommendation.type.new = true
             }
@@ -63,8 +60,10 @@ async function getFriendRecommendations(req, res) {
 
         }
 
+        recommendations.sort((a, b) => b.score - a.score);
+
         return res.status(200).json({
-            recommendations: recommendations
+            recommendations: recommendations.slice(0, max_suggestions)
         });
 
     } catch (error) {

@@ -33,6 +33,22 @@ const userSchema = mongoose.Schema({
         }
     ],
 
+    ignoredRecommendations: [
+        {
+            type: String
+        }
+    ],
+
+    friendRequests: [{
+        uid: {
+            type: String
+        },
+
+        timestamp: {
+            type: Date
+        }
+    }],
+
     friends: [{
         uid: {
             type: String
