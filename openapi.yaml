@@ -1,47 +1,49 @@
-openapi: 3.0.4
+openapi: 3.0.3
 info:
   title: meshly-core API
   version: '1.0.0'
   description: |
     The powerful and extensive backend making it easy to create Social Networks
 
-    Will include some useful links here
 externalDocs:
-  description: Our GitHub Repo
-  url: https://swagger.io
+  description: Meetables GitHub
+  url: https://github.com/Meetables
 servers:
-  - url: https://your-custom-domain.com/
+  - url: https://localhost:3000/
 tags:
-  - name: user
-    description: Operations about user
-  - name: discover
-    description: Endpoints related to discovering tags and users
+  - name: Authentication
+    description: Auth stuff
+  - name: Test
+    description: For testing JWT
 paths:
   /api/v1/auth/login:
     post:
+      tags:
+        - Authentication
       summary: Login
       requestBody:
+        description: Login data
         required: true
         content:
           application/json:    
             schema:
               $ref: '#/components/schemas/LoginRequest'
       responses:
-        '200':
+        200:
           $ref: '#/components/responses/LoginSuccess'
-        '400':
+        400:
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
+        404:
           description: Incorrect credentials
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '500':
+        500:
           description: Internal server error
           content:
             application/json:
@@ -50,6 +52,8 @@ paths:
               
   /api/v1/auth/signup:
     post:
+      tags:
+        - Authentication
       summary: Sign up
       requestBody:
         required: true
@@ -58,15 +62,15 @@ paths:
             schema:
               $ref: '#/components/schemas/SignupRequest'
       responses:
-        '201':
+        201:
           $ref: '#/components/responses/SignupSuccess'
-        '400':
+        400:
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '500':
+        500:
           description: Internal server error
           content:
             application/json:
@@ -75,6 +79,8 @@ paths:
                 
   /api/v1/auth/logout:
     post:
+      tags:
+        - Authentication
       summary: Logout
       responses:
         '200':
@@ -90,7 +96,7 @@ paths:
                   message:
                     type: string
                     example: "Logged out successfully"
-        '500':
+        500:
           description: Internal server error
           content:
             application/json:
@@ -99,6 +105,8 @@ paths:
 
   /api/v1/auth/test:
     post:
+      tags:
+        - Test
       summary: Test route that requires JWT authentication
       description: |
         Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
@@ -110,7 +118,7 @@ paths:
         schema:
           type: string
       responses:
-        '200':
+        200:
           description: Authorized successfully.
           content:
             application/json:
@@ -120,19 +128,19 @@ paths:
                   authorized:
                     type: string
                     example: "true"
-        '401':
+        401:
           description: Unauthorized - Missing or invalid JWT cookie.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '404':
+        404:
           description: User not found.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '500':
+        500:
           description: Internal server error.
           content:
             application/json:
@@ -297,53 +305,73 @@ components:
   schemas:
     LoginRequest:
       type: object
-      required:
-        - email
-        - password
       properties:
         email:
           type: string
+          example: "mail@meetables.com"
         password:
           type: string
+          example: "12345678"
+      required:
+        - email
+        - password
     LoginResponse:
       type: object
       properties:
         success:
           type: boolean
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/UserDto'
     SignupRequest:
       type: object
+      properties:
+        email:
+          type: string
+          example: "mail@meetables.com"
+        password:
+          type: string
+          example: "12345678"
+        username:
+          type: string
+          example: "user"
       required:
         - email
         - password
         - username
-      properties:
-        email:
-          type: string
-        password:
-          type: string
-        username:
-          type: string
     SignupResponse:
       type: object
       properties:
         success:
           type: boolean
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/UserDto'
     ErrorResponse:
       type: object
       properties:
         message:
           type: string
-    User:
+    UserDto:
       type: object
       properties:
         id:
           type: string
+          example: "67f2ab4692b586f66cefb140"
+        email:
+          type: string
+          example: "mail@meetables.com"
         username:
           type: string
+           example: "user"
+        profileTags:
+          type: array
+          items:
+            type: string
+            example: "someProfileTagId"
+        friends:
+          type: array
+          items:
+            type: string
+            example: "67f2ddf33d708e12caf2e143"
     OnboardUserRequest:
       type: object
       required:
@@ -395,8 +423,6 @@ components:
               superiorTagId:
                 type: string
                 example: "60f7c8573e843b001c8e4b91"
-
-         
 
   responses:
     LoginSuccess:
