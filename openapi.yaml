@@ -222,7 +222,7 @@ paths:
                 type: object
                 properties:
                   success:
-                    type: boolean
+                    type: boolean 
                     example: true
                   user:
                     type: object
@@ -372,6 +372,69 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: Conflict - User already onboarded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/ignore-profile:
+    post:
+      tags:
+        - user
+      summary: Ignore a suggested profile
+      description: |
+        Protected endpoint to ignore a suggested user profile.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The specified user will be added to the list of ignored recommendations.
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: "annoying_guy_92"
+      responses:
+        '200':
+          description: Profile successfully ignored
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Bad request - Username missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
           content:
             application/json:
               schema:
