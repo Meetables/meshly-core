@@ -46,6 +46,10 @@ const userSchema = mongoose.Schema({
 
         timestamp: {
             type: Date
+        },
+
+        pending: {
+            type: Boolean
         }
     }],
 
@@ -54,6 +58,10 @@ const userSchema = mongoose.Schema({
             type: String
         }
     }],
+
+    profilePictureUrl: {
+        type: String
+    },
 
     uid: {
         type: String,

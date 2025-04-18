@@ -22,6 +22,41 @@ async function getTags(req, res) {
 }
 
 /**
+ * get profile data
+ */
+
+async function getPublicProfileData(req, res){
+    try {
+        const {username} = req.body;
+
+        if(!username){
+            res.status(400).json({
+                success: false,
+                error: "Username is required"
+            })
+        }
+        
+        const user = await User.findOne({username: username});
+        
+        return res.status(200).json({
+            success: true,
+            user: {
+                username: username,
+                displayName: user.displayName,
+                profileDescription: user.profileDescription,
+                profileTags: user.profileTags
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
+/**
  * get friend recommendations stored in db
  */
 async function getFriendRecommendations(req, res) {
@@ -29,8 +64,12 @@ async function getFriendRecommendations(req, res) {
 
         const { max_suggestions } = req.body;
 
+        if(!max_suggestions){
+            return res.status(400).json({ success: false, message: "All fields are required" })
+        }
+
         const edges = await getEdgesByUserId(req.user._id);
-        console.log(edges)
+
         let recommendations = [];
 
         //transform recommendations to an array, sorted by the weight
@@ -97,4 +136,4 @@ async function getEdgesByUserId(userId) {
 }
 
 
-module.exports = { getTags, getFriendRecommendations };
+module.exports = { getTags, getPublicProfileData, getFriendRecommendations };
