@@ -1,0 +1,34 @@
+name: Deploy Main API
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: SSH then clone repo
+        run: |
+          ssh -o StrictHostKeyChecking=no meetables.meshlycore.test@codeclub.check24.fun << 'EOF'
+            
+            TEMP_DIR=$(mktemp -d)
+            
+            git clone https://github.com/Meetables/meshly-core.git $TEMP_DIR
+            
+            cd $TEMP_DIR
+            
+            docker-compose -f ./docker-compose.development.yaml up -d
+           
+            rm -rf $TEMP_DIR
+          EOF
