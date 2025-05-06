@@ -1,5 +1,7 @@
 const dotenv = require('dotenv')
 
+const tags = require('./tags.json')
+
 dotenv.config();
 
 const ENV_VARS = {
@@ -8,7 +10,7 @@ const ENV_VARS = {
     JWT_SECRET: process.env.JWT_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     TAG_CATEGORIES: process.env.TAG_CATEGORIES,
-    DEFAULT_TAGS: JSON.parse(process.env.DEFAULT_TAGS),
+    DEFAULT_TAGS: tags,
     ENABLE_PROFILE_SUGGESTIONS: process.env.ENABLE_PROFILE_SUGGESTIONS,
     REQUIRED_MATCHING_TAG_CATEGORY: process.env.REQUIRED_MATCHING_TAG_CATEGORY || false,
     PROFILE_SUGGESTION_ALGORITHM_INTERVAL: process.env.PROFILE_SUGGESTION_ALGORITHM_INTERVAL || false,
