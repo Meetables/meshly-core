@@ -506,7 +506,7 @@ components:
           example: "mail@meetables.com"
         username:
           type: string
-           example: "user"
+          example: "user"
         profileTags:
           type: array
           items:
