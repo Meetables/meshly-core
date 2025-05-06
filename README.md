@@ -23,7 +23,6 @@ DEV_TESTUSER_USERNAME= Username for your test user
 DEV_TESTUSER_PASSWORD= Password for your test user
 
 TAG_CATEGORIES= All of the categories a tag can have
-DEFAULT_TAGS= The tags which are being added to the mongo instance on init
 
 ENABLE_PROFILE_SUGGESTIONS= true || false Either enable or disable profile suggestions for users. 
 
