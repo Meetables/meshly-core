@@ -27,17 +27,33 @@ async function profileMatchingAlgorithm() {
                     for (let j = i + 1; j < userQueue.length; j++) {
                         const userId_compareTarget = userQueue[j];
 
-                        const commonTags = await returnCommonTags(userId, userId_compareTarget);
+                        //Test whether they've already been engaged with each other
+                        const compareUser = await User.findById(userId)
+                        const user_compareTarget = await User.findById(userId_compareTarget)
 
-                        if (commonTags != -1) {
-                            //write the score to db
+                        if (
+                            (compareUser.friends && compareUser.friends.contains(userId_compareTarget)) || //They're already befriended
+                            (compareUser.sentFriendRequests && compareUser.sentFriendRequests.find(request => request.receiver == userId_compareTarget)) || // user has sent compare_target user a friend request
+                            (user_compareTarget.sentFriendRequests && user_compareTarget.sentFriendRequests.find(request => request.receiver == userId)) || // compare_target user has sent user a friend request
+                            (compareUser.ignoredRecommendations && compareUser.ignoredRecommendations.contains(userId_compareTarget)) || // user has ignored compare_target user
+                            (user_compareTarget.ignoredRecommendations && user_compareTarget.ignoredRecommendations.contains(userId)) // compare_target user has ignored user
+                        ) {
+                            //don't compare them
+                            console.log("Skipping comparison beetween users: " + userId + " and user " + userId_compareTarget);
+                        } else {
 
-                            const scores = {
-                                [userId]: commonTags / compareUser.profileTags.filter(element => !locations.includes(element)).length,
-                                [userId_compareTarget]: commonTags / user_compareTarget.profileTags.filter(element => !locations.includes(element)).length
+                            const commonTags = await returnCommonTags(userId, userId_compareTarget);
+
+                            if (commonTags != -1) {
+                                //write the score to db
+
+                                const scores = {
+                                    [userId]: commonTags / compareUser.profileTags.filter(element => !locations.includes(element)).length,
+                                    [userId_compareTarget]: commonTags / user_compareTarget.profileTags.filter(element => !locations.includes(element)).length
+                                }
+
+                                await addEdgeToUserGraph(locationId, { nodes: [userId, userId_compareTarget], weight: commonTags, scores: scores })
                             }
-
-                            await addEdgeToUserGraph(locationId, { nodes: [userId, userId_compareTarget], weight: commonTags, scores: scores })
                         }
 
                     }

@@ -2,6 +2,10 @@ const { mongoose } = require("mongoose");
 const {v4: uuidv4} = require('uuid');
 
 const userSchema = mongoose.Schema({
+    accountType: {
+        type: String
+    },
+
     username: {
         type: String,
         required: true,
@@ -33,23 +37,76 @@ const userSchema = mongoose.Schema({
         }
     ],
 
+    stories: [{
+        visibility: {
+            type: String,
+            enum: ['public', 'private', 'archived'],
+            default: 'private'
+        },
+
+        contentType: {
+            type: String,
+            enum: ['text', 'image', 'video'],
+            default: 'text'
+        },
+
+        content: {
+            type: String
+        },
+
+        timestampPosted: {
+            type: Date,
+            default: Date.now
+        },
+
+        timestampExpired: {
+            type: Date
+        },
+    }],
+
     ignoredRecommendations: [
         {
             type: String
         }
     ],
 
-    friendRequests: [{
-        uid: {
+    receivedFriendRequests: [{
+        sender: {
             type: String
         },
 
         timestamp: {
-            type: Date
+            type: Date,
+            default: Date.now
         },
 
         pending: {
             type: Boolean
+        },
+
+        result: {
+            type: String,
+            enum: ['accepted', 'rejected']
+        }
+    }],
+
+    sentFriendRequests: [{
+        receiver: {
+            type: String
+        },
+
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+
+        pending: {
+            type: Boolean
+        },
+
+        result: {
+            type: String,
+            enum: ['accepted', 'rejected']
         }
     }],
 
@@ -62,6 +119,32 @@ const userSchema = mongoose.Schema({
     profilePictureUrl: {
         type: String
     },
+
+    adminLoginToken: {
+        type: String
+    },
+
+    notifications: [{
+        type: {
+            type: String,
+            enum: ['friendRequest'],
+            required: true
+        },
+
+        pending: {
+            type: Boolean,
+            default: true
+        },
+
+        content: {
+            type: String
+        },
+
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+    }],
 
     uid: {
         type: String,

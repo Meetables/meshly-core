@@ -446,6 +446,262 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/profile/create-story:
+    post:
+      tags:
+        - user
+      summary: Create a new story
+      description: |
+        Protected endpoint to create a new story.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The story will be created and associated with the authenticated user.
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: "My First Story"
+                content:
+                  type: string
+                  example: "This is the content of my first story."
+      responses:
+        '200':
+          description: Story created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Story has been created successfully.
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/send-friend-request:
+    post:
+      tags:
+        - user
+      summary: Send a friend request
+      description: |
+        Protected endpoint to send a friend request to another user.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The friend request will be sent to the specified username.
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: "friend_user"
+      responses:
+        '200':
+          description: Friend request sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Friend request has been sent successfully.
+        '400':
+          description: Bad request - Username missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found or already friends
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/respond-to-friend-request:
+    post:
+      tags:
+        - user
+      summary: Respond to a friend request
+      description: |
+        Protected endpoint to respond to a friend request.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The response will be sent to the specified username.
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - response
+              properties:
+                username:
+                  type: string
+                  example: "friend_user"
+                status:
+                  type: string
+                  enum: [accept, reject]
+      responses:
+        '200':
+          description: Friend request response sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Friend request has been responded to successfully.
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found or no pending friend requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/notifications:
+    get:
+      tags:
+        - user
+      summary: Get notifications
+      description: |
+        Protected endpoint to retrieve notifications for the authenticated user.  
+        Requires a valid 'jwt-meshlycore' cookie.
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  notifications:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        pending:
+                          type: boolean
+                          example: true
+                        type:
+                          type: string
+                          example: "friend_request"
+                        content:
+                          type: string
+                          example: "Friend request from friend_user"
+                        timestamp:
+                          type: string
+                          format: date-time
+                          example: "2023-10-01T12:00:00Z"
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:
