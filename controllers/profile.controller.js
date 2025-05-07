@@ -230,6 +230,8 @@ async function newNotification(notification, userId){
         }
 }
 
+//TODO: Provide documentation for different types of notifications
+
 async function getNotifications(req, res) {
     try {
         const notifications = req.user.notifications;
