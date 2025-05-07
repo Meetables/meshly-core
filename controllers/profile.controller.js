@@ -1,4 +1,5 @@
-const validator = require('validator')
+const validator = require('validator');
+const User = require('../models/user.models');
 
 async function onboardUser(req, res) {
     try {
@@ -172,6 +173,8 @@ async function respondToFriendRequest(req, res) {
         
         await foundUser.save();
         
+        newNotification({type: "friend_request", content: JSON.parse({user: req.user._id, result: status})}, userId)
+        
         //save changes to current user's received friend requests
         const currentUserRequest = req.user.receivedFriendRequests.find(request => request.receiver.toString() === userId.toString());
         
@@ -193,6 +196,38 @@ async function respondToFriendRequest(req, res) {
             error: error
         })
     }
+}
+
+async function newNotification(notification, userId){
+        const { type, content } = notification;
+
+        if (!type || !content) {
+            return res.status(400).json({
+                success: false,
+                error: "Type and content are required"
+            })
+        }
+
+        const newNotification = {
+            type,
+            timestamp: Date.now(),
+            content,
+            pending: true
+        }
+        //push notification to user
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return;
+        }
+
+        user.notifications.push(newNotification);
+
+        await user.save();
+
+        return {
+            success: true
+        }
 }
 
 async function getNotifications(req, res) {
