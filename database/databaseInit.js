@@ -12,23 +12,45 @@ async function initDb() {
     const userCount = await User.countDocuments();
     console.log(`User count (startup): ${userCount}`);
 
-
     if (userCount === 0) {
+        //create testuser
         if (ENV_VARS.DEV_TESTUSER_EMAIL && ENV_VARS.DEV_TESTUSER_USERNAME && ENV_VARS.DEV_TESTUSER_PASSWORD) {
             const salt = await bcryptjs.genSalt(10);
             const hashedPassword = await bcryptjs.hash(ENV_VARS.DEV_TESTUSER_PASSWORD, salt);
-    
+
             const newUser = new User({
                 email: ENV_VARS.DEV_TESTUSER_EMAIL,
                 password: hashedPassword,
                 username: ENV_VARS.DEV_TESTUSER_USERNAME
             })
-    
+
             await newUser.save();
             console.log("Created test user")
         } else {
             console.log("Error in dbInit: test user can't be created")
-        } 
+        }
+
+        //Test for present admin user, if not present print a token to console
+        if (!(await User.findOne({accountType: "admin"}))) {
+            //create admin user "blueprint", log token
+            const adminLoginToken = crypto.randomUUID();
+
+            const salt = await bcryptjs.genSalt(10);
+            const hashedPassword = await bcryptjs.hash(crypto.randomUUID(), salt);
+
+            const newUser = new User({
+                email: ENV_VARS.DEV_ADMINUSER_EMAIL,
+                password: hashedPassword,
+                username: "admin",
+                adminLoginToken: adminLoginToken
+            })
+
+            await newUser.save();
+
+            console.log("Adminuser token: " + adminLoginToken)
+        } else {
+            
+        }
     } else {
         console.log("Database already initialized")
     }

@@ -2,6 +2,10 @@ const { mongoose } = require("mongoose");
 const {v4: uuidv4} = require('uuid');
 
 const userSchema = mongoose.Schema({
+    accountType: {
+        type: String
+    },
+
     username: {
         type: String,
         required: true,
@@ -60,6 +64,10 @@ const userSchema = mongoose.Schema({
     }],
 
     profilePictureUrl: {
+        type: String
+    },
+
+    adminLoginToken: {
         type: String
     },
 
