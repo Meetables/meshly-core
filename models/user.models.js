@@ -70,17 +70,43 @@ const userSchema = mongoose.Schema({
         }
     ],
 
-    friendRequests: [{
-        uid: {
+    receivedFriendRequests: [{
+        sender: {
             type: String
         },
 
         timestamp: {
-            type: Date
+            type: Date,
+            default: Date.now
         },
 
         pending: {
             type: Boolean
+        },
+
+        result: {
+            type: String,
+            enum: ['accepted', 'rejected']
+        }
+    }],
+
+    sentFriendRequests: [{
+        receiver: {
+            type: String
+        },
+
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+
+        pending: {
+            type: Boolean
+        },
+
+        result: {
+            type: String,
+            enum: ['accepted', 'rejected']
         }
     }],
 
@@ -97,6 +123,28 @@ const userSchema = mongoose.Schema({
     adminLoginToken: {
         type: String
     },
+
+    notifications: [{
+        type: {
+            type: String,
+            enum: ['friendRequest'],
+            required: true
+        },
+
+        pending: {
+            type: Boolean,
+            default: true
+        },
+
+        content: {
+            type: String
+        },
+
+        timestamp: {
+            type: Date,
+            default: Date.now
+        },
+    }],
 
     uid: {
         type: String,

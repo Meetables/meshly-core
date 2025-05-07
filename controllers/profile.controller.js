@@ -105,4 +105,126 @@ async function createNewStory(req, res) {
     }
 }
 
-module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory}
+async function sendFriendRequest(req, res) {
+    try {
+        const { username } = req.body;
+
+        if (!username) {
+            return res.status(400).json({
+                success: false,
+                error: "Username is required"
+            })
+        }
+
+        const foundUser = await User.findOne({ username });
+        if (!foundUser) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+        const userId = foundUser._id;
+
+        //push to target user's received friend requests
+        foundUser.receivedFriendRequests.push({ sender: req.user._id, pending: true });
+        await foundUser.save();
+
+        //push to current user's sent friend requests
+        req.user.sentFriendRequests.push({ receiver: userId, pending: true });
+        await req.user.save();
+
+        return res.status(200).json({
+            success: true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error
+        })
+    }
+}
+
+async function respondToFriendRequest(req, res) {
+    try {
+        const { username, status } = req.body;
+
+        if (!username) {
+            return res.status(400).json({
+                success: false,
+                error: "Username is required"
+            })
+        }
+
+        const foundUser = await User.findOne({ username });
+
+        if (!foundUser) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+
+        const userId = foundUser._id;
+
+        //modify the sender's friend request
+        const friendRequest = foundUser.sentFriendRequests.find(request => request.sender.toString() === req.user._id.toString());
+        
+        if (!friendRequest) {
+            return res.status(404).json({ success: false, error: "Friend request not found" });
+        }
+        
+        friendRequest.pending = false;
+        friendRequest.result = status + 'ed';
+        
+        await foundUser.save();
+        
+        //save changes to current user's received friend requests
+        const currentUserRequest = req.user.receivedFriendRequests.find(request => request.receiver.toString() === userId.toString());
+        
+        if (!currentUserRequest) {
+            return res.status(404).json({ success: false, error: "Friend request not found" });
+        }
+        
+        currentUserRequest.pending = false;
+        currentUserRequest.result = status + 'ed';
+        
+        await req.user.save();
+
+        return res.status(200).json({
+            success: true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error
+        })
+    }
+}
+
+async function getNotifications(req, res) {
+    try {
+        const notifications = req.user.notifications;
+
+        if (!notifications || notifications.length === 0) {
+            return res.status(200).json({
+                success: true,
+                notifications: []
+            })
+        }
+
+        const formattedNotifications = notifications.map(notification => {
+            return {
+                type: notification.type,
+                timestamp: notification.timestamp,
+                content: notification.content,
+                pending: notification.pending
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            notifications: formattedNotifications
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error
+        })
+    }
+}
+
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getNotifications }
