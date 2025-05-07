@@ -159,6 +159,7 @@ async function respondToFriendRequest(req, res) {
             return res.status(404).json({ success: false, error: "User not found" });
         }
 
+       
         const userId = foundUser._id;
 
         //modify the sender's friend request
@@ -171,6 +172,10 @@ async function respondToFriendRequest(req, res) {
         friendRequest.pending = false;
         friendRequest.result = status + 'ed';
         
+        if (status == "accept") {
+            foundUser.friends.push({ uid: req.user._id });
+        }
+
         await foundUser.save();
         
         newNotification({type: "friend_request", content: JSON.parse({user: req.user._id, result: status})}, userId)
@@ -184,7 +189,11 @@ async function respondToFriendRequest(req, res) {
         
         currentUserRequest.pending = false;
         currentUserRequest.result = status + 'ed';
-        
+
+        if (status == "accept") {
+            req.user.friends.push({ uid: foundUser._id });
+        }
+
         await req.user.save();
 
         return res.status(200).json({
