@@ -3,7 +3,7 @@ services:
   meshly-core:
     build: .
     ports:
-      - "3000:3000"
+      - "3003:3000"
     restart: always
     depends_on:
       - mongo
