@@ -2,6 +2,7 @@ version: '3'
 services:
   meshly-core:
     build: .
+    container_name: meshly-core
     ports:
       - "3003:3000"
     restart: always
@@ -12,6 +13,7 @@ services:
 
   mongo:
     image: mongo:latest
+    container_name: mongo
     ports:
       - "27017:27017"
     restart: always
