@@ -446,6 +446,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/profile/create-story:
+    post:
+      tags:
+        - user
+      summary: Create a new story
+      description: |
+        Protected endpoint to create a new story.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The story will be created and associated with the authenticated user.
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: "My First Story"
+                content:
+                  type: string
+                  example: "This is the content of my first story."
+      responses:
+        '200':
+          description: Story created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Story has been created successfully.
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     LoginRequest:

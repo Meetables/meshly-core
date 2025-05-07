@@ -37,6 +37,33 @@ const userSchema = mongoose.Schema({
         }
     ],
 
+    stories: [{
+        visibility: {
+            type: String,
+            enum: ['public', 'private', 'archived'],
+            default: 'private'
+        },
+
+        contentType: {
+            type: String,
+            enum: ['text', 'image', 'video'],
+            default: 'text'
+        },
+
+        content: {
+            type: String
+        },
+
+        timestampPosted: {
+            type: Date,
+            default: Date.now
+        },
+
+        timestampExpired: {
+            type: Date
+        },
+    }],
+
     ignoredRecommendations: [
         {
             type: String

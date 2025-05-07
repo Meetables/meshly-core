@@ -68,4 +68,41 @@ async function ignoreSuggestedProfile(req, res) {
     }
 }
 
-module.exports = { onboardUser, ignoreSuggestedProfile }
+async function createNewStory(req, res) {
+    try {
+        const { content, contentType, visibility, updatePrev } = req.body;
+
+        if (!content || !contentType || !visibility) {
+            return res.status(400).json({ success: false, message: "All fields are required" })
+        }
+
+        if (req.user.stories.length > 0 && updatePrev) {
+            //archive past stories
+            req.user.stories.forEach(story => {
+
+                if (story.visibility === "archived") {
+                    return;
+                }
+
+                story.visibility = "archived";
+                story.timestampExpired = Date.now();
+            })
+        }
+
+        req.user.stories.push({
+            content,
+            contentType,
+            visibility,
+            timestampPosted: Date.now()
+        });
+
+        await req.user.save();
+
+        return res.status(200).json({ success: true, message: "Story created successfully" })
+    } catch (error) {
+        console.log("Error in create new story function", error.message);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory}
