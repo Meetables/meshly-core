@@ -46,7 +46,7 @@ const userSchema = mongoose.Schema({
 
         contentType: {
             type: String,
-            enum: ['text', 'image', 'video'],
+            enum: ['text', 'image', 'video', 'encodedJSON'],
             default: 'text'
         },
 
@@ -107,6 +107,10 @@ const userSchema = mongoose.Schema({
         result: {
             type: String,
             enum: ['accepted', 'rejected']
+        },
+
+        comment: {
+            type: String
         }
     }],
 

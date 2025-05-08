@@ -121,14 +121,14 @@ async function sendFriendRequest(req, res) {
         if (!foundUser) {
             return res.status(404).json({ success: false, error: "User not found" });
         }
-        const userId = foundUser._id;
+        const foundUserId = foundUser._id;
 
         //push to target user's received friend requests
         foundUser.receivedFriendRequests.push({ sender: req.user._id, pending: true });
         await foundUser.save();
 
         //push to current user's sent friend requests
-        req.user.sentFriendRequests.push({ receiver: userId, pending: true });
+        req.user.sentFriendRequests.push({ receiver: foundUserId, pending: true });
         await req.user.save();
 
         return res.status(200).json({
