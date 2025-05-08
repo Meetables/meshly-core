@@ -4,14 +4,12 @@ services:
     build: .
     container_name: meshly-core
     ports:
-      - "3000:3000"
+      - "3003:3000"
     restart: always
     depends_on:
       - mongo
     environment:
       - DATABASE_URL=mongodb://mongo:27017/meshly-core
-      - NODE_ENV=development
-      - PORT=3000
 
   mongo:
     image: mongo:latest
