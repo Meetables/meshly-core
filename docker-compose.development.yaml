@@ -10,6 +10,8 @@ services:
       - mongo
     environment:
       - DATABASE_URL=mongodb://mongo:27017/meshly-core
+      - NODE_ENV=development
+      - PORT=3000
 
   mongo:
     image: mongo:latest
