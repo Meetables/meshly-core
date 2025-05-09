@@ -8,7 +8,7 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
 
         //push to target user's received friend requests
         if (isInstantMeet) {
-            targetUserId.receivedFriendRequests.push({ sender: userId, pending: true, comment: "Instant Meet request" });
+            targetUser.receivedFriendRequests.push({ sender: userId, pending: true, comment: "Instant Meet request" });
             await targetUser.save();
 
             user.sentFriendRequests.push({ receiver: targetUserId, pending: true, comment: "Instant Meet request" });
@@ -23,15 +23,17 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
     
         }
        
-        return res.status(200).json({
-            success: true
-        })
+        return {
+            success: true,
+            isInstantMeet: isInstantMeet
+        }
 
     } catch (error) {
-        return res.status(500).json({
+        return {
             success: false,
-            error: error
-        })
+            error: error,
+            isInstantMeet: isInstantMeet
+        }
     }
 }
 

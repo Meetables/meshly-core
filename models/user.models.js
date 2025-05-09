@@ -120,6 +120,10 @@ const userSchema = mongoose.Schema({
         }
     }],
 
+    lastLocation: {
+        type: String
+    },
+
     profilePictureUrl: {
         type: String
     },

@@ -46,3 +46,5 @@ async function setAvailability(req, res) {
         })
     }
 }
+
+module.exports = {setAvailability};
