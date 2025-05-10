@@ -1,7 +1,7 @@
 const express = require('express');
 
 const verifyAuth = require('../middleware/verifyAuth.middleware');
-const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest } = require('../controllers/profile.controller');
+const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest } = require('../controllers/profile/profile.controller');
 
 const router = express.Router();
 
