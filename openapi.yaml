@@ -194,12 +194,8 @@ paths:
         Protected endpoint for retrieving public profile data by username.  
         Requires the 'jwt-meshlycore' cookie with a valid token.  
         Returns the public profile information (username, displayName, profileDescription, profileTags) for the given username.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         description: Request containing the username whose public profile data is needed.
         required: true
@@ -278,13 +274,9 @@ paths:
           application/json:    
             schema:
               $ref: '#/components/schemas/GetUserSuggestionsRequest'   
-      parameters:
-      - in: cookie
-        name: jwt-meshlycore
-        required: true
-        schema:
-          type: string
-        responses:
+      security:
+        - bearerAuth: []
+      responses:
         '200':
           description: List of recommendations
           content:
@@ -338,12 +330,8 @@ paths:
         A user can only be onboarded once — if profile data already exists, this will return a 409.
       tags:
         - user
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -392,12 +380,8 @@ paths:
         Protected endpoint to ignore a suggested user profile.  
         Requires a valid 'jwt-meshlycore' cookie.  
         The specified user will be added to the list of ignored recommendations.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -455,12 +439,8 @@ paths:
         Protected endpoint to create a new story.  
         Requires a valid 'jwt-meshlycore' cookie.  
         The story will be created and associated with the authenticated user.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -519,12 +499,8 @@ paths:
         Protected endpoint to send a friend request to another user.  
         Requires a valid 'jwt-meshlycore' cookie.  
         The friend request will be sent to the specified username.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -585,12 +561,8 @@ paths:
         Protected endpoint to respond to a friend request.  
         Requires a valid 'jwt-meshlycore' cookie.  
         The response will be sent to the specified username.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -654,12 +626,8 @@ paths:
       description: |
         Protected endpoint to retrieve notifications for the authenticated user.  
         Requires a valid 'jwt-meshlycore' cookie.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Notifications retrieved successfully
@@ -702,7 +670,114 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/extensions/set-availability:
+    post:
+      tags:
+        - Extensions
+      summary: Set weekly availability
+      description: Set user's availability for each day of the week using time ranges like "12:00-21:00".
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mon:
+                  type: string
+                  example: "12:00-21:00"
+                tue:
+                  type: string
+                  example: "12:00-21:00"
+                wed:
+                  type: string
+                  example: "12:00-21:00"
+                thu:
+                  type: string
+                  example: "12:00-21:00"
+                fri:
+                  type: string
+                  example: "12:00-21:00"
+                sat:
+                  type: string
+                  example: "12:00-21:00"
+                sun:
+                  type: string
+                  example: "12:00-21:00"
+      responses:
+        200:
+          description: Availability set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Availability set successfully"
+        400:
+          description: Missing availability data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/extensions/meeting-lookup:
+    post:
+      tags:
+        - Extensions
+      summary: Trigger meeting lookup and send meeting requests
+      description: |
+        Uses profile tag matching and user availability to send meeting requests.
+        Requires JWT in Authorization header.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Result of the meeting lookup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Meeting requests sent successfully"
+                  availableUserCounter:
+                    type: integer
+                    example: 3
+                  error:
+                    type: string
+                    nullable: true
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+   
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     LoginRequest:
       type: object
@@ -797,7 +872,7 @@ components:
         - max_suggestions
       properties: 
         max_suggestions:
-          type: Number
+          type: number
     TagResponse:
       type: object
       properties:

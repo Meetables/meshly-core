@@ -13,6 +13,13 @@
       "icon": "🏙️"
     },
     {
+      "_id": "661bb62a97c7a8efc3a3b02d",
+      "name": "München Au-Haidhausen",
+      "category": "location",
+      "icon": "🏙️",
+      "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+    },
+    {
       "_id": "661bb62a97c7a8efc3a3b040",
       "name": "Köln",
       "category": "location",
