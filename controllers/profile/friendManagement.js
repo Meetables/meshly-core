@@ -6,26 +6,57 @@ const { newNotification } = require("./notifications");
 //friend request related functions
 
 async function getFriendRequests(req, res) {
-    try {
-        const friendRequests = await FriendRequest.find({ receiver: req.user._id, pending: true })
+  try {
+    const userId = req.user._id.toString();
 
-        if (!friendRequests || friendRequests.length === 0) {
-            return res.status(200).json({
-                success: false,
-                error: "No friend requests found"
-            });
-        }
+    // Fetch all pending friend requests where user is either sender or receiver
+    const friendRequests = await FriendRequest.find({
+      $or: [{ sender: userId }, { receiver: userId }],
+      pending: true
+    });
 
-        return res.status(200).json({
-            success: true,
-            friendRequests
-        });
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error.message
-        });
+    if (!friendRequests.length) {
+      return res.status(200).json({
+        success: false,
+        error: "No friend requests found"
+      });
     }
+
+    // Get unique userIds involved in requests to resolve usernames
+    const involvedUserIds = friendRequests.map(fr =>
+      fr.sender === userId ? fr.receiver : fr.sender
+    );
+
+    const users = await User.find({ _id: { $in: involvedUserIds } });
+
+    const idToUsername = users.reduce((acc, user) => {
+      acc[user._id.toString()] = user.username;
+      return acc;
+    }, {});
+
+    const formattedRequests = friendRequests.map(fr => {
+      const isSender = fr.sender === userId;
+      const involvedUserId = isSender ? fr.receiver : fr.sender;
+      return {
+        isSender,
+        involvedUserUsername: idToUsername[involvedUserId],
+        comment: fr.comment,
+        timestamp: fr.timestamp,
+        requestId: fr._id
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      friendRequests: formattedRequests
+    });
+  } catch (error) {
+    console.error("getFriendRequests error:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 }
 
 async function sendFriendRequest(req, res) {
@@ -50,7 +81,8 @@ async function sendFriendRequest(req, res) {
         const newRequest = new FriendRequest({
             sender: req.user._id,
             receiver: foundUserId,
-            pending: true
+            pending: true,
+            timestamp: Date.now()
         });
 
         await newRequest.save();
