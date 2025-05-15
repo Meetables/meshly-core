@@ -90,7 +90,7 @@ async function sendFriendRequest(req, res) {
             })
         }
 
-        const existingRequest = await FriendRequest.findOne({
+       const existingRequest = await FriendRequest.findOne({
             sender: req.user._id,
             receiver: foundUserId
         });
@@ -100,7 +100,7 @@ async function sendFriendRequest(req, res) {
                 success: false,
                 error: "Friend request already sent"
             });
-        }
+        } 
     
         const newRequest = new FriendRequest({
             sender: req.user._id,
@@ -186,11 +186,11 @@ async function respondToFriendRequest(req, res) {
         await newNotification(
             {
                 type: 'friendRequestResponse',
-                content: {
+                content: JSON.stringify({
                     from: req.user._id,
                     result: status,
                     requestId: primaryRequest._id
-                },
+                }),
                 timestamp: Date.now()
             },
             sender._id
