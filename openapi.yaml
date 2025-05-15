@@ -578,7 +578,7 @@ paths:
                   example: "friend_user"
                 status:
                   type: string
-                  enum: [accept, reject]
+                  enum: [accepted, rejected]
       responses:
         '200':
           description: Friend request response sent successfully

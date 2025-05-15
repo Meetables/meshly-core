@@ -1,7 +1,7 @@
 const express = require('express');
 
 const verifyAuth = require('../middleware/verifyAuth.middleware');
-const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest } = require('../controllers/profile/profile.controller');
+const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests } = require('../controllers/profile/profile.controller');
 
 const router = express.Router();
 
@@ -14,6 +14,8 @@ router.post('/create-story', verifyAuth, createNewStory);
 router.post('/send-friend-request', verifyAuth, sendFriendRequest);
 
 router.post('/respond-to-friend-request', verifyAuth, respondToFriendRequest);
+
+router.get('/friend-requests', verifyAuth, getFriendRequests);
 
 router.get('/notifications', verifyAuth, getNotifications);
 

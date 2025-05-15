@@ -3,7 +3,7 @@ const User = require("../models/user.models");
 const { checkAvailability } = require("./checkAvailability.extensions");
 const { sendMeetingRequest } =  require("./send-meeting-request.extension");
 
-//TODO: Check if done
+
 async function meetingLookup(req, res) {
     try {
         meetingLookupAlgorithm(req.user.profileTags, req.user._id).then((response) => {

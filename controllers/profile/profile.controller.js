@@ -1,6 +1,7 @@
 const validator = require('validator');
 const User = require('../../models/user.models');
 const { getNotifications, newNotification } = require('./notifications');
+const { sendFriendRequest, getFriendRequests, respondToFriendRequest } = require('./friendManagement');
 
 //user onboarding function
 
@@ -113,108 +114,5 @@ async function createNewStory(req, res) {
     }
 }
 
-//friend request related functions
 
-async function sendFriendRequest(req, res) {
-    try {
-        const { username } = req.body;
-
-        if (!username) {
-            return res.status(400).json({
-                success: false,
-                error: "Username is required"
-            })
-        }
-
-        const foundUser = await User.findOne({ username });
-        if (!foundUser) {
-            return res.status(404).json({ success: false, error: "User not found" });
-        }
-        const foundUserId = foundUser._id;
-
-        //push to target user's received friend requests
-        foundUser.receivedFriendRequests.push({ sender: req.user._id, pending: true });
-        await foundUser.save();
-
-        //push to current user's sent friend requests
-        req.user.sentFriendRequests.push({ receiver: foundUserId, pending: true });
-        await req.user.save();
-
-        return res.status(200).json({
-            success: true
-        })
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error
-        })
-    }
-}
-
-async function respondToFriendRequest(req, res) {
-    try {
-        const { username, status } = req.body;
-
-        if (!username) {
-            return res.status(400).json({
-                success: false,
-                error: "Username is required"
-            })
-        }
-
-        const foundUser = await User.findOne({ username });
-
-        if (!foundUser) {
-            return res.status(404).json({ success: false, error: "User not found" });
-        }
-
-       
-        const userId = foundUser._id;
-
-        //modify the sender's friend request
-        const friendRequest = foundUser.sentFriendRequests.find(request => request.sender.toString() === req.user._id.toString());
-        
-        if (!friendRequest) {
-            return res.status(404).json({ success: false, error: "Friend request not found" });
-        }
-        
-        friendRequest.pending = false;
-        friendRequest.result = status + 'ed';
-        
-        if (status == "accept") {
-            foundUser.friends.push({ uid: req.user._id });
-        }
-
-        await foundUser.save();
-        
-        newNotification({type: "friend_request", content: JSON.parse({user: req.user._id, result: status})}, userId)
-        
-        //save changes to current user's received friend requests
-        const currentUserRequest = req.user.receivedFriendRequests.find(request => request.receiver.toString() === userId.toString());
-        
-        if (!currentUserRequest) {
-            return res.status(404).json({ success: false, error: "Friend request not found" });
-        }
-        
-        currentUserRequest.pending = false;
-        currentUserRequest.result = status + 'ed';
-
-        if (status == "accept") {
-            req.user.friends.push({ uid: foundUser._id });
-        }
-
-        await req.user.save();
-
-        return res.status(200).json({
-            success: true
-        })
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            error: error
-        })
-    }
-}
-
-
-module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getNotifications }
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications }
