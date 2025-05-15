@@ -1,42 +1,50 @@
 const User = require("../models/user.models");
-// DONE
+const FriendRequest = require("../models/friendRequest.models"); // ensure filename matches
+const { v4: uuidv4 } = require("uuid");
+
 async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
-    try {
-        //get target user
-        const targetUser = await User.findById(targetUserId);
-        const user = await User.findById(userId);
+  try {
+    // Verify both users exist
+    const [user, targetUser] = await Promise.all([
+      User.findById(userId),
+      User.findById(targetUserId)
+    ]);
 
-        //push to target user's received friend requests
-        if (isInstantMeet) {
-            targetUser.receivedFriendRequests.push({ sender: userId, pending: true, comment: "Instant Meet request" });
-            await targetUser.save();
-
-            user.sentFriendRequests.push({ receiver: targetUserId, pending: true, comment: "Instant Meet request" });
-            await user.save();
-    
-        } else {
-            targetUserId.receivedFriendRequests.push({ sender: userId, pending: true, comment: "Meet request" });
-            await targetUser.save();
-
-            user.sentFriendRequests.push({ receiver: targetUserId, pending: true, comment: "Meet request" });
-            await user.save();
-    
-        }
-       
-        return {
-            success: true,
-            isInstantMeet: isInstantMeet
-        }
-
-    } catch (error) {
-        return {
-            success: false,
-            error: error,
-            isInstantMeet: isInstantMeet
-        }
+    if (!user || !targetUser) {
+      return {
+        success: false,
+        error: "User(s) not found",
+        isInstantMeet
+      };
     }
+
+    // Create a friend request (meeting request)
+    const newRequest = new FriendRequest({
+      sender: userId,
+      receiver: targetUserId,
+      pending: true,
+      comment: isInstantMeet ? "Instant Meet request" : "Meet request"
+    });
+
+    await newRequest.save();
+
+    // Optionally notify the target user here (not shown)
+
+    return {
+      success: true,
+      requestId: newRequest._id,
+      isInstantMeet
+    };
+  } catch (error) {
+    console.error("sendMeetingRequest error:", error);
+    return {
+      success: false,
+      error: error.message || error,
+      isInstantMeet
+    };
+  }
 }
 
 module.exports = {
-    sendMeetingRequest
-}
+  sendMeetingRequest
+};

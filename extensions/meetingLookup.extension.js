@@ -3,7 +3,7 @@ const User = require("../models/user.models");
 const { checkAvailability } = require("./checkAvailability.extensions");
 const { sendMeetingRequest } =  require("./send-meeting-request.extension");
 
-//TODO: Check if done
+
 async function meetingLookup(req, res) {
     try {
         meetingLookupAlgorithm(req.user.profileTags, req.user._id).then((response) => {
@@ -73,13 +73,16 @@ async function meetingLookupAlgorithm(userProfileTagIds, userId) {
             });
 
             const results = await Promise.all(availabilityChecks);
-            const availableUserCounter = results.filter(Boolean).length;
+            const availableUsers = results.filter(Boolean);
 
-            if (availableUserCounter > 0) {
+            if (availableUsers.length > 0) {
+
+                //TODO: Notify users
+
                 return {
                     success: true,
                     message: "Meeting requests sent successfully",
-                    availableUserCounter: availableUserCounter
+                    availableUserCounter: availableUsers.length
                 };
             }
         }
