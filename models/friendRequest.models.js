@@ -3,11 +3,13 @@ const { v4: uuidv4 } = require('uuid');
 
 const FriendRequestSchema = mongoose.Schema({
     sender: {
-        type: String
+        type: String,
+        required: true
     },
 
     receiver: {
-        type: String
+        type: String,
+        required: true
     },
 
     timestamp: {
@@ -29,6 +31,7 @@ const FriendRequestSchema = mongoose.Schema({
     }
 })
 
+FriendRequestSchema.index({ sender: 1, receiver: 1 }, { unique: true });
 const FriendRequest = mongoose.model('FriendRequest', FriendRequestSchema)
 
 module.exports = FriendRequest;

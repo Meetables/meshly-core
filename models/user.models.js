@@ -91,7 +91,7 @@ const userSchema = mongoose.Schema({
     notifications: [{
         type: {
             type: String,
-            enum: ['friendRequest', 'friendRequesrResponse'],
+            enum: ['friendRequest', 'friendRequestResponse'],
             required: true
         },
 

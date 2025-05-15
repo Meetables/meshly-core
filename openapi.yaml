@@ -571,7 +571,7 @@ paths:
               type: object
               required:
                 - username
-                - response
+                - status
               properties:
                 username:
                   type: string

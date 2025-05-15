@@ -70,12 +70,37 @@ async function sendFriendRequest(req, res) {
             })
         }
 
+        if (username === req.user.username) {
+            return res.status(400).json({
+                success: false,
+                error: "You cannot send a friend request to yourself"
+            })
+        }
+
         const foundUser = await User.findOne({ username });
         if (!foundUser) {
             return res.status(404).json({ success: false, error: "User not found" });
         }
         const foundUserId = foundUser._id;
 
+       if(req.user.friends.includes(foundUserId)) {
+            return res.status(404).json({
+                success: false,
+                error: "You are already friends with this user"
+            })
+        }
+
+        const existingRequest = await FriendRequest.findOne({
+            sender: req.user._id,
+            receiver: foundUserId
+        });
+
+        if (existingRequest) {
+            return res.status(404).json({
+                success: false,
+                error: "Friend request already sent"
+            });
+        }
     
         const newRequest = new FriendRequest({
             sender: req.user._id,
@@ -112,34 +137,42 @@ async function respondToFriendRequest(req, res) {
         if (!username || !['accepted', 'rejected'].includes(status)) {
             return res.status(400).json({
                 success: false,
-                error: 'Username and valid status ("accept" or "rejected") are required'
+                error: 'Username and valid status ("accepted" or "rejected") are required'
             });
         }
 
-        // find the user who sent the request
         const sender = await User.findOne({ username });
         if (!sender) {
             return res.status(404).json({ success: false, error: 'User not found' });
         }
 
-        // load the pending friend request
-        const fr = await FriendRequest.findOne({
+        // Find all pending friend requests from sender to receiver
+        const requests = await FriendRequest.find({
             sender: sender._id,
             receiver: req.user._id,
             pending: true
-        });
-        if (!fr) {
+        }).sort({ createdAt: 1 });  // oldest first, optional but recommended
+
+        if (!requests || requests.length === 0) {
             return res.status(404).json({ success: false, error: 'Friend request not found' });
         }
 
-        // update the request
-        fr.pending = false;
-        fr.result = status; // "accepted" or "declined"
-        await fr.save();
+        // Keep only the first one
+        const [primaryRequest, ...duplicates] = requests;
 
-        // if accepted, add each other as friends
-        if (status === 'accept') {
-            // avoid duplicates
+        // Delete duplicates from DB
+        if (duplicates.length > 0) {
+            const duplicateIds = duplicates.map(r => r._id);
+            await FriendRequest.deleteMany({ _id: { $in: duplicateIds } });
+        }
+
+        // Update the selected request
+        primaryRequest.pending = false;
+        primaryRequest.result = status;
+        await primaryRequest.save();
+
+        // If accepted, add each other as friends
+        if (status === 'accepted') {
             if (!sender.friends.includes(req.user._id)) {
                 sender.friends.push(req.user._id);
             }
@@ -150,14 +183,13 @@ async function respondToFriendRequest(req, res) {
             await req.user.save();
         }
 
-        // notify the original sender
         await newNotification(
             {
                 type: 'friendRequestResponse',
                 content: {
                     from: req.user._id,
                     result: status,
-                    requestId: fr._id
+                    requestId: primaryRequest._id
                 },
                 timestamp: Date.now()
             },
@@ -170,6 +202,7 @@ async function respondToFriendRequest(req, res) {
         return res.status(500).json({ success: false, error: error.message });
     }
 }
+
 
 module.exports = {
     getFriendRequests,
