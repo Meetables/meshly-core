@@ -1,4 +1,5 @@
 const { get } = require("mongoose");
+const User = require("../../models/user.models");
 
 async function newNotification(notification, userId){
     const { type, content } = notification;
@@ -26,6 +27,8 @@ async function newNotification(notification, userId){
     user.notifications.push(newNotification);
 
     await user.save();
+
+    console.log("Notification sent to user: ", userId);
 
     return {
         success: true

@@ -1,9 +1,11 @@
 const express = require('express');
 
 const verifyAuth = require('../middleware/verifyAuth.middleware');
-const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests } = require('../controllers/profile/profile.controller');
+const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData } = require('../controllers/profile/profile.controller');
 
 const router = express.Router();
+
+router.get('/public-profile', verifyAuth, getPublicProfileData);
 
 router.post('/onboarding', verifyAuth, onboardUser);
 

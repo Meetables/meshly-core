@@ -63,7 +63,7 @@ async function sendFriendRequest(req, res) {
     try {
         const { username } = req.body;
 
-        if (!username) {
+        if (!username) {    
             return res.status(400).json({
                 success: false,
                 error: "Username is required"
@@ -76,8 +76,7 @@ async function sendFriendRequest(req, res) {
         }
         const foundUserId = foundUser._id;
 
-        //create new friend request, then notify the receiver
-
+    
         const newRequest = new FriendRequest({
             sender: req.user._id,
             receiver: foundUserId,
@@ -87,13 +86,14 @@ async function sendFriendRequest(req, res) {
 
         await newRequest.save();
 
-        newNotification(
+        await newNotification(
             {
                 type: "friendRequest",
-                content: JSON.parse({ title: "New friend request from user with username " + foundUser.username, friendRequestId: newRequest._id }),
+                content: JSON.stringify({ title: "New friend request from user with username " + foundUser.username, friendRequestId: newRequest._id }),
                 pending: true,
                 timestamp: Date.now()
-            }, foundUserId)
+            }, foundUserId
+        )
 
         return res.status(200).json({
             success: true

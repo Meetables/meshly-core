@@ -3,6 +3,28 @@ const User = require('../../models/user.models');
 const { getNotifications, newNotification } = require('./notifications');
 const { sendFriendRequest, getFriendRequests, respondToFriendRequest } = require('./friendManagement');
 
+//return public user data
+async function getPublicProfileData(req, res){
+    try {
+  
+        return res.status(200).json({
+            success: true,
+            user: {
+                username: req.user.username,
+                displayName: req.user.displayName,
+                profileDescription: req.user.profileDescription,
+                profileTags: req.user.profileTags
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
 //user onboarding function
 
 async function onboardUser(req, res) {
@@ -115,4 +137,4 @@ async function createNewStory(req, res) {
 }
 
 
-module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications }
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData }
