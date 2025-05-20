@@ -11,7 +11,7 @@ const {
 
 
 
-const findOptimalAmenityByCoordinates = async (P0s, first_check_radius, profile = "driving-car", metric = "distance") => {
+const meetingPointByCoordinates = async (P0s, first_check_radius, profile = "driving-car", metric = "distance") => {
     const center = calculateGeographicMidpoint(P0s);
     const coordinates = await getNearbyAmenityCoordinates(center, first_check_radius);
     if (!coordinates) {
@@ -28,7 +28,7 @@ const findOptimalAmenityByCoordinates = async (P0s, first_check_radius, profile 
 }
 
 
-const findOptimalAmenityByAddresses = async (P0s_addresses, first_check_radius, profile = "driving-car", metric = "distance") => {
+const meetingPointByAddresses = async (P0s_addresses, first_check_radius, profile = "driving-car", metric = "distance") => {
     const P0s = await Promise.all(P0s_addresses.map(getCoordinatesFromAddress));
     if (P0s.some(coord => coord === null)) {
         console.error("Could not fetch coordinates for all addresses.");
@@ -43,9 +43,4 @@ const findOptimalAmenityByAddresses = async (P0s_addresses, first_check_radius, 
     )
 }
 
-findOptimalAmenityByAddresses(
-    P0s_addresses=["Braunaugenstraße 53, 80939 München", "Prof-Angermair-Ring 40, 85748 Garching bei München"],
-    first_check_radius=1000
-).then(
-    result => console.log(result)
-)
+module.exports = { meetingPointByCoordinates, meetingPointByAddresses };
