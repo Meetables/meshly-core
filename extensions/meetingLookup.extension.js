@@ -1,11 +1,21 @@
 const { ENV_VARS } = require("../config/env-vars");
 const User = require("../models/user.models");
+const { setUserParam } = require("../utils/setUserParam");
 const { checkAvailability } = require("./checkAvailability.extensions");
 const { sendMeetingRequest } =  require("./send-meeting-request.extension");
 
 
 async function meetingLookup(req, res) {
     try {
+        if (!req.user || !req.user.profileTags || !req.lastLocation) {
+            return res.status(400).json({
+                success: false,
+                error: "data required in valid format"
+            })
+        }
+
+        await setUserParam(req.user._id, "lastLocation", req.lastLocation);
+
         meetingLookupAlgorithm(req.user.profileTags, req.user._id).then((response) => {
             if (response.success) {
                 return res.status(200).json({
@@ -24,12 +34,7 @@ async function meetingLookup(req, res) {
                     error: response.error
                 })
             }
-        }).catch((error) => {
-            return res.status(500).json({
-                success: false,
-                error: error
-            })
-        });
+        })
 
     } catch (error) {
         return res.status(500).json({

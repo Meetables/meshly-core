@@ -136,5 +136,4 @@ async function createNewStory(req, res) {
     }
 }
 
-
 module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData }

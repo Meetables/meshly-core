@@ -1,6 +1,7 @@
 const User = require("../models/user.models");
 const FriendRequest = require("../models/friendRequest.models"); // ensure filename matches
 const { v4: uuidv4 } = require("uuid");
+const { newNotification } = require("../controllers/profile/notifications");
 
 async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
   try {
@@ -28,7 +29,18 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
 
     await newRequest.save();
 
-    // Optionally notify the target user here (not shown)
+    newNotification(
+      {
+        type: isInstantMeet ? "instant_meet_request" : "meet_request",
+        timestamp: Date.now(),
+        content: JSOM.stringify({
+          isInstantMeet,
+          meetingRequestId: newRequest._id
+        }
+        ),
+        pending: true
+      }, targetUserId
+    );
 
     return {
       success: true,
