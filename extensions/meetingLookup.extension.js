@@ -7,16 +7,18 @@ const { sendMeetingRequest } =  require("./send-meeting-request.extension");
 
 async function meetingLookup(req, res) {
     try {
-        if (!req.user || !req.user.profileTags || !req.lastLocation) {
+        const {lastLocation} = req.body;
+       if (!req.user || !req.user.profileTags || !lastLocation) {
             return res.status(400).json({
                 success: false,
                 error: "data required in valid format"
             })
         }
 
-        await setUserParam(req.user._id, "lastLocation", req.lastLocation);
+       await setUserParam(req.body.user, "lastLocation", req.body.lastLocation);
+console.log("User last location: " + req.user.lastLocation);
+        meetingLookupAlgorithm(req.body.user.profileTags, req.body.user._id).then((response) => {
 
-        meetingLookupAlgorithm(req.user.profileTags, req.user._id).then((response) => {
             if (response.success) {
                 return res.status(200).json({
                     success: true,

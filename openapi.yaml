@@ -792,7 +792,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /api/v1/extensions/meeting-lookup:
-    post:
+    get:
       tags:
         - Extensions
       summary: Trigger meeting lookup and send meeting requests

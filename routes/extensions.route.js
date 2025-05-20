@@ -6,7 +6,7 @@ const { setAvailability } = require('../extensions/setAvailability.extension');
 
 const router = express.Router();
 
-router.get('/meeting-lookup', verifyAuth, meetingLookup);
+router.post('/meeting-lookup', verifyAuth, meetingLookup);
 
 router.post('/set-availability', verifyAuth, setAvailability);
 
