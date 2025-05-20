@@ -11,7 +11,7 @@ const {
 
 
 
-const meetingPointByCoordinates = async (P0s, first_check_radius, profile = "driving-car", metric = "distance") => {
+const meetingPointByCoordinates = async (P0s, first_check_radius=1000, profile = "driving-car", metric = "distance") => {
     const center = calculateGeographicMidpoint(P0s);
     const coordinates = await getNearbyAmenityCoordinates(center, first_check_radius);
     if (!coordinates) {
