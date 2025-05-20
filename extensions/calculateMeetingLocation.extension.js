@@ -28,7 +28,7 @@ const meetingPointByCoordinates = async (P0s, first_check_radius, profile = "dri
 }
 
 
-const meetingPointByAddresses = async (P0s_addresses, first_check_radius, profile = "driving-car", metric = "distance") => {
+const meetingPointByAddresses = async (P0s_addresses, first_check_radius=1000, profile = "driving-car", metric = "distance") => {
     const P0s = await Promise.all(P0s_addresses.map(getCoordinatesFromAddress));
     if (P0s.some(coord => coord === null)) {
         console.error("Could not fetch coordinates for all addresses.");
