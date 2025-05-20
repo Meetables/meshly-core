@@ -792,7 +792,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /api/v1/extensions/meeting-lookup:
-    get:
+    post:
       tags:
         - Extensions
       summary: Trigger meeting lookup and send meeting requests
@@ -828,6 +828,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
    
+  /api/v1/extensions/accept-instant-meeting-request:
+    post:
+      tags:
+        - Extensions
+      summary: Accept an instant meeting request
+      description: |
+        Accepts a pending instant meeting request, updates both users’ locations,
+        computes a meeting point, and notifies the requester.
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Request ID of the instant meet request and the responder’s current location
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - requestId
+                - location
+              properties:
+                requestId:
+                  type: string
+                  description: The Mongo ID of the FriendRequest
+                  example: "67f2ddf33d708e12caf2e143"
+                location:
+                  type: string
+                  description: The responder’s last known location (e.g. GPS or place name)
+                  example: "48.8566,2.3522"
+      responses:
+        '200':
+          description: Instant meet request accepted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Instant meet request accepted"
+                  requestId:
+                    type: string
+                    example: "67f2ddf33d708e12caf2e143"
+                  meetingLocationLink:
+                    type: string
+                    description: Google Maps link to the calculated meeting point
+                    example: "https://maps.google.com/?q=48.8584,2.2945"
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Request or sender location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
 components:
   securitySchemes:

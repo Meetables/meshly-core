@@ -1,17 +1,19 @@
 const User = require("../models/user.models")
 
 const setUserParam = async (user, key, value) => {
- 
-    user[key] = value;
 
-    await user.save();
+    try {
+        user[key] = value;
 
-    console.log("User parameter set: ", userId, key, value);
+        await user.save();
 
-    return {
-        success: true,
-        message: `User parameter ${key} set to ${value}`
+        return {
+            success: true,
+            message: `User parameter ${key} set to ${value}`
+        }
+    } catch (error) {
+        console.log("Error setting user parameter: ", error);
     }
 }
 
-module.exports = {setUserParam};
+module.exports = { setUserParam };

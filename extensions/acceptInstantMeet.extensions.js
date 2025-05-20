@@ -1,4 +1,6 @@
 const { newNotification } = require("../controllers/profile/notifications");
+const FriendRequest = require("../models/friendRequest.models");
+const User = require("../models/user.models");
 
 async function acceptInstantMeetRequest(req, res) {
     const { requestId, location } = req.body;
@@ -48,7 +50,7 @@ async function acceptInstantMeetRequest(req, res) {
       {
         type: "instant_meet_result_accepted",
         timestamp: Date.now(),
-        content: JSOM.stringify({
+        content: JSON.stringify({
           link: meetingLocationLink,
           text: req.user.username + " accepted your instant meet request"
         }

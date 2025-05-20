@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const axios = require('axios');
-const FriendRequest = require('../models/friendRequest.models');
 const User = require('../models/user.models');
 
 const API_BASE = 'http://localhost:3000/api/v1';
@@ -15,22 +14,21 @@ const AVAIL = {
   sun: '01:00-23:50',
 };
 
-// Store only the jwt-meshlycore cookie value
 const storedTokens = {
   testuser3: null,
   testuser4: null
 };
 
-/**
- * Create an axios client configured to send the jwt cookie in headers
- */
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function createClient(username, email, password, useStored = false) {
   const client = axios.create({
     baseURL: API_BASE,
     headers: { 'Content-Type': 'application/json' }
   });
 
-  // Attach interceptor to include JWT cookie header
   client.interceptors.request.use(config => {
     const token = storedTokens[username];
     if (token) {
@@ -39,79 +37,108 @@ function createClient(username, email, password, useStored = false) {
     return config;
   });
 
-  // If not reusing stored token, signup to get a fresh JWT
   if (!useStored) {
     return client.post('/auth/signup', { username, email, password })
       .then(response => {
-        const setCookieHeaders = response.headers['set-cookie'] || [];
-        // Extract only jwt-meshlycore cookie
-        const jwtCookie = setCookieHeaders
+        const setCookie = response.headers['set-cookie'] || [];
+        const jwtCookie = setCookie
           .map(c => c.split(';')[0])
           .find(c => c.startsWith('jwt-meshlycore='));
         if (jwtCookie) {
           storedTokens[username] = jwtCookie.split('=')[1];
-          console.log(`Stored JWT for ${username}: ${storedTokens[username]}`);
-        } else {
-          console.warn(`jwt-meshlycore cookie not found for ${username}`);
         }
         return client;
       });
   }
 
-  // If using stored token, return client directly
   return Promise.resolve(client);
 }
 
 async function main() {
   try {
-    // 1) Connect & delete existing users
+    // --- SETUP & CLEANUP ---
     await mongoose.connect('mongodb://localhost:27017/meshly-core', { useNewUrlParser: true });
+    // clean out any old test users & friend-requests
+    await mongoose.connection.collection('friendrequests').deleteMany({});
     await User.deleteMany({ username: { $in: ['testuser3', 'testuser4'] } });
-    await FriendRequest.deleteMany({ sender: { $in: ['testuser3', 'testuser4'] } });
-    console.log('Deleted any old testuser3/testuser4');
 
-    // 2) Signup or reuse tokens
+    // --- SIGNUP & ONBOARD ---
     const pw = 'password123';
-    console.log('Signing up testuser3…');
     const client3 = await createClient('testuser3', 'testuser3@example.com', pw, false);
-    console.log('Signing up testuser4…');
     const client4 = await createClient('testuser4', 'testuser4@example.com', pw, false);
 
-    // 3) Onboarding both users
-    console.log('Onboarding testuser3…');
     await client3.post('/profile/onboarding', {
       displayName: 'testuser3',
       profileTagIds: TAGS,
       profileDescription: 'just a bot'
     });
-    console.log('Onboarding testuser4…');
     await client4.post('/profile/onboarding', {
       displayName: 'testuser4',
       profileTagIds: TAGS,
       profileDescription: 'just a bot'
     });
 
-    // 4) Set availability
-    console.log('Setting availability for testuser3 & testuser4…');
+    // --- SET AVAILABILITY ---
     await client3.post('/extensions/set-availability', AVAIL);
     await client4.post('/extensions/set-availability', AVAIL);
 
-    // 5) Trigger meeting lookup as testuser3
-    console.log('Triggering meeting lookup as testuser3…');
-    const meetRes = await client3.post('/extensions/meeting-lookup', {
+    // --- TRIGGER MEETING LOOKUP AS TESTUSER3 ---
+      console.log('Triggering meeting lookup as testuser3…');
+  const meetRes = await client3.post('/extensions/meeting-lookup', {
         lastLocation: "48.12872785130619, 11.591843401497954"
     });
     console.log('Meeting lookup response:', meetRes.data);
-
-    // 6) Fetch notifications for both
-    console.log('Fetching notifications for testuser3…');
-    const notes3 = (await client3.get('/profile/notifications')).data;
-    console.log('testuser3 notifications:', notes3);
+    // --- FETCH NOTIFICATIONS FOR TESTUSER4 & EXTRACT REQUEST ID ---
     console.log('Fetching notifications for testuser4…');
     const notes4 = (await client4.get('/profile/notifications')).data;
-    console.log('testuser4 notifications:', notes4);
+    console.log('testuser4 notifications:', JSON.stringify(notes4, null, 2));
 
-    // Clean up
+    const instantReqNote = notes4.notifications.find(n => n.type === 'instant_meet_request');
+    if (!instantReqNote) throw new Error('No instant meeting request notification found');
+
+    const content = JSON.parse(instantReqNote.content);
+    const requestId = content.meetingRequestId;
+    console.log('Extracted meetingRequestId:', requestId);
+
+    // --- ACCEPT THE INSTANT MEETING REQUEST AS TESTUSER4 ---
+    console.log(`Accepting meeting request ${requestId} as testuser4…`);
+    const acceptRes = await client4.post('/extensions/accept-instant-meeting-request', {
+      requestId,
+      location: '48.1287,11.5918'
+    });
+    console.log('Accept response:', acceptRes.data);
+
+    // --- VERIFY NOTIFICATIONS AFTER ACCEPT ---
+    console.log('Fetching notifications for testuser3…');
+    const notes3After = (await client3.get('/profile/notifications')).data;
+    console.log('testuser3 notifications:', JSON.stringify(notes3After, null, 2));
+
+    console.log('Fetching notifications for testuser4…');
+    const notes4After = (await client4.get('/profile/notifications')).data;
+    console.log('testuser4 notifications:', JSON.stringify(notes4After, null, 2));
+
+  const start = Date.now();
+  let lastCount = 0;
+
+  // fetch initial count
+  {
+    const initial = (await client3.get('/profile/notifications')).data;
+    lastCount = initial.notifications.length;
+  }
+
+  while (Date.now() - start < 60_000) {
+    await sleep(5_000);  // wait 5 seconds between polls
+
+    const notes3 = (await client3.get('/profile/notifications')).data;
+    const count = notes3.notifications.length;
+
+    if (count > lastCount) {
+      console.log('Fetching notifications for testuser3…');
+      console.log('testuser3 notifications:', JSON.stringify(notes3, null, 2));
+      break;  // stop once we see new notifications
+    }
+  }
+
     await mongoose.disconnect();
   } catch (err) {
     console.error(err.response?.data || err.message || err);

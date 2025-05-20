@@ -6,6 +6,7 @@ const { newNotification } = require("../controllers/profile/notifications");
 async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
   try {
     // Verify both users exist
+    console.log("Sending meeting request from userId:", userId, "to targetUserId:", targetUserId);
     const [user, targetUser] = await Promise.all([
       User.findById(userId),
       User.findById(targetUserId)
@@ -33,7 +34,7 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
       {
         type: isInstantMeet ? "instant_meet_request" : "meet_request",
         timestamp: Date.now(),
-        content: JSOM.stringify({
+        content: JSON.stringify({
           isInstantMeet,
           meetingRequestId: newRequest._id
         }
