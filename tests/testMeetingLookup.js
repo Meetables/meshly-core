@@ -104,7 +104,7 @@ async function main() {
     console.log(`Accepting meeting request ${requestId} as testuser4…`);
     const acceptRes = await client4.post('/extensions/accept-instant-meeting-request', {
       requestId,
-      location: '48.1287,11.5918'
+      location: '48.132883397940454, 11.599547668506185'
     });
     console.log('Accept response:', acceptRes.data);
 

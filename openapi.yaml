@@ -834,7 +834,7 @@ paths:
         - Extensions
       summary: Accept an instant meeting request
       description: |
-        Accepts a pending instant meeting request, updates both users’ locations,
+        Accepts a pending instant meeting request,
         computes a meeting point, and notifies the requester.
       security:
         - bearerAuth: []
@@ -851,11 +851,11 @@ paths:
               properties:
                 requestId:
                   type: string
-                  description: The Mongo ID of the FriendRequest
+                  description: friendRequest ID
                   example: "67f2ddf33d708e12caf2e143"
                 location:
                   type: string
-                  description: The responder’s last known location (e.g. GPS or place name)
+                  description: The responder’s last known location as "lat,lng"
                   example: "48.8566,2.3522"
       responses:
         '200':
@@ -874,10 +874,10 @@ paths:
                   requestId:
                     type: string
                     example: "67f2ddf33d708e12caf2e143"
-                  meetingLocationLink:
-                    type: string
-                    description: Google Maps link to the calculated meeting point
-                    example: "https://maps.google.com/?q=48.8584,2.2945"
+                  meetingLocation:
+                    type: object
+                    description: The calculated meeting location (format depends on your implementation)
+                    example: { "lat": 48.8584, "lng": 2.2945 }
         '400':
           description: Missing required fields
           content:
