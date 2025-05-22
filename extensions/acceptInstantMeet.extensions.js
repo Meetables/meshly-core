@@ -1,6 +1,7 @@
 const { newNotification } = require("../controllers/profile/notifications");
 const FriendRequest = require("../models/friendRequest.models");
 const User = require("../models/user.models");
+const { meetingPointByCoordinates } = require("./calculateMeetingLocation.extension");
 
 async function acceptInstantMeetRequest(req, res) {
     const { requestId, location } = req.body;
@@ -45,20 +46,36 @@ async function acceptInstantMeetRequest(req, res) {
 
     //call algorithm to calculate meeting location here, return Google Maps link
 
-    const meetingLocationLink = "";
+    const loc1 = parseLocationString(req.user.lastLocation);
+    const loc2 = parseLocationString(senderLastLocation);
+
+    if (!loc1 || !loc2) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid location format"
+        });
+    }
+
+    //call algorithm to calculate meeting location here, return Google Maps link
+    const meetingLocation = await meetingPointByCoordinates(
+        [loc1, loc2],
+        1000,
+        "driving-car",
+        "distance"
+    );
 
     //notify user who sent the request originally
-     newNotification(
-      {
-        type: "instant_meet_result_accepted",
-        timestamp: Date.now(),
-        content: JSON.stringify({
-          link: meetingLocationLink,
-          text: req.user.username + " accepted your instant meet request"
-        }
-        ),
-        pending: true
-      }, request.sender
+    newNotification(
+        {
+            type: "instant_meet_result_accepted",
+            timestamp: Date.now(),
+            content: JSON.stringify({
+                meetingLocation: meetingLocation,
+                text: req.user.username + " accepted your instant meet request"
+            }
+            ),
+            pending: true
+        }, request.sender
     );
 
 
@@ -66,8 +83,16 @@ async function acceptInstantMeetRequest(req, res) {
         success: true,
         message: "Instant meet request accepted",
         requestId,
-        meetingLocationLink: ""
+        meetingLocation: meetingLocation
     });
+}
+
+function parseLocationString(str) {
+    if (Array.isArray(str)) return str;
+    if (typeof str !== "string") return null;
+    const parts = str.split(",").map(s => Number(s.trim()));
+    if (parts.length !== 2 || parts.some(isNaN)) return null;
+    return [parts[1], parts[0]];
 }
 
 module.exports = { acceptInstantMeetRequest };
