@@ -1,5 +1,13 @@
 const { mongoose } = require("mongoose");
 const {v4: uuidv4} = require('uuid');
+const { ENV_VARS } = require("../config/env-vars");
+
+const baseNotificationTypes = ['friendRequest', 'friendRequestResponse'];
+const extraNotificationTypes = Array.isArray(ENV_VARS.EXTENSIONS_EXTRA_NOTIFICATIONTYPES)
+    ? ENV_VARS.EXTENSIONS_EXTRA_NOTIFICATIONTYPES
+    : [];
+const allowedNotificationTypes = [...new Set([...baseNotificationTypes, ...extraNotificationTypes])];
+
 
 const userSchema = mongoose.Schema({
     accountType: {
@@ -91,7 +99,7 @@ const userSchema = mongoose.Schema({
     notifications: [{
         type: {
             type: String,
-            enum: ['friendRequest', 'friendRequestResponse'],
+            enum: allowedNotificationTypes,
             required: true
         },
 

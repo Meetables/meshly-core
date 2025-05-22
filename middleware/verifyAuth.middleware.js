@@ -6,8 +6,6 @@ const User = require("../models/user.models");
 const verifyAuth = async (req, res, next) => {
 	try {
 
-		console.log(req.headers.cookie)
-
 		if(!req.cookies){
 			return res.status(401).json({ success: false, message: "Unauthorized - No Token Provided" });
 		}
