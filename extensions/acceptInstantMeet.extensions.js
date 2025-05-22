@@ -31,7 +31,9 @@ async function acceptInstantMeetRequest(req, res) {
     request.accepted = true;
     await request.save();
 
-    const senderLastLocation = await User.findById(request.sender).lastLocation;
+    const sender = await User.findById(request.sender);
+
+    const senderLastLocation = sender.lastLocation;
 
     if (!senderLastLocation) {
         return res.status(404).json({
@@ -56,7 +58,7 @@ async function acceptInstantMeetRequest(req, res) {
         }
         ),
         pending: true
-      }, targetUserId
+      }, request.sender
     );
 
 
