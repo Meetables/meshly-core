@@ -27,6 +27,23 @@ async function acceptInstantMeetRequest(req, res) {
         });
     }
 
+    const instantMeetId = request.comment.replace("Instant Meet request with id ", "");
+
+    //look up whether there's an existing instant meet request, condition: request's comment includes case-insensitive "instant meet"
+    const instantMeetingRequestWithSameId = await FriendRequest.find({
+        comment: new RegExp(instantMeetId, "i"),
+        sender: request.sender,
+        pending: false,
+        accepted: true
+    })
+
+    if (instantMeetingRequestWithSameId.length) {
+        return res.status(406).json({
+            success: false,
+            error: "Instant Meeting already taken"
+        })
+    }
+
     //mark request as accepted
     request.pending = false;
     request.accepted = true;
@@ -42,7 +59,6 @@ async function acceptInstantMeetRequest(req, res) {
             error: "Sender location not found"
         });
     }
-
 
     //call algorithm to calculate meeting location here, return Google Maps link
 

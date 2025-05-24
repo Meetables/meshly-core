@@ -801,6 +801,20 @@ paths:
         Requires JWT in Authorization header.
       security:
         - bearerAuth: []
+      requestBody:
+        description: requires last location
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lastLocation
+              properties:
+                lastLocation:
+                  type: string
+                  description: The responder’s last known location as "lat,lng"
+                  example: "48.8566,2.3522"
       responses:
         200:
           description: Result of the meeting lookup
@@ -886,6 +900,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Request or sender location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '406':
+          description: An instant meeting is already taking place
           content:
             application/json:
               schema:

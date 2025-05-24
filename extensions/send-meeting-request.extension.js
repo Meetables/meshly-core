@@ -1,6 +1,5 @@
 const User = require("../models/user.models");
 const FriendRequest = require("../models/friendRequest.models"); // ensure filename matches
-const { v4: uuidv4 } = require("uuid");
 const { newNotification } = require("../controllers/profile/notifications");
 
 async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
@@ -21,11 +20,12 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
     }
 
     // Create a friend request (meeting request)
+    const instantMeetId = crypto.randomUUID();
     const newRequest = new FriendRequest({
       sender: userId,
       receiver: targetUserId,
       pending: true,
-      comment: isInstantMeet ? "Instant Meet request" : "Meet request"
+      comment: isInstantMeet ? `Instant Meet request with id ${instantMeetId}` : "Meet request"
     });
 
     await newRequest.save();

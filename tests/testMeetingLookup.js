@@ -59,7 +59,18 @@ async function main() {
     // --- SETUP & CLEANUP ---
     await mongoose.connect('mongodb://localhost:27017/meshly-core', { useNewUrlParser: true });
     // clean out any old test users & friend-requests
+    // Log friend requests before deletion
+    const before = await mongoose.connection.collection('friendrequests').find({}).toArray();
+    console.log('Friend requests before deletion:', before);
+
+    // Delete all friend requests
     await mongoose.connection.collection('friendrequests').deleteMany({});
+
+    // Log friend requests after deletion
+    const after = await mongoose.connection.collection('friendrequests').find({}).toArray();
+    console.log('Friend requests after deletion:', after);
+
+
     await User.deleteMany({ username: { $in: ['testuser3', 'testuser4'] } });
 
     // --- SIGNUP & ONBOARD ---
@@ -83,9 +94,9 @@ async function main() {
     await client4.post('/extensions/set-availability', AVAIL);
 
     // --- TRIGGER MEETING LOOKUP AS TESTUSER3 ---
-      console.log('Triggering meeting lookup as testuser3…');
-  const meetRes = await client3.post('/extensions/meeting-lookup', {
-        lastLocation: "48.12872785130619, 11.591843401497954"
+    console.log('Triggering meeting lookup as testuser3…');
+    const meetRes = await client3.post('/extensions/meeting-lookup', {
+      lastLocation: "48.12872785130619, 11.591843401497954"
     });
     console.log('Meeting lookup response:', meetRes.data);
     // --- FETCH NOTIFICATIONS FOR TESTUSER4 & EXTRACT REQUEST ID ---
@@ -117,27 +128,27 @@ async function main() {
     const notes4After = (await client4.get('/profile/notifications')).data;
     console.log('testuser4 notifications:', JSON.stringify(notes4After, null, 2));
 
-  const start = Date.now();
-  let lastCount = 0;
+    const start = Date.now();
+    let lastCount = 0;
 
-  // fetch initial count
-  {
-    const initial = (await client3.get('/profile/notifications')).data;
-    lastCount = initial.notifications.length;
-  }
-
-  while (Date.now() - start < 60_000) {
-    await sleep(5_000);  // wait 5 seconds between polls
-
-    const notes3 = (await client3.get('/profile/notifications')).data;
-    const count = notes3.notifications.length;
-
-    if (count > lastCount) {
-      console.log('Fetching notifications for testuser3…');
-      console.log('testuser3 notifications:', JSON.stringify(notes3, null, 2));
-      break;  // stop once we see new notifications
+    // fetch initial count
+    {
+      const initial = (await client3.get('/profile/notifications')).data;
+      lastCount = initial.notifications.length;
     }
-  }
+
+    while (Date.now() - start < 60_000) {
+      await sleep(5_000);  // wait 5 seconds between polls
+
+      const notes3 = (await client3.get('/profile/notifications')).data;
+      const count = notes3.notifications.length;
+
+      if (count > lastCount) {
+        console.log('Fetching notifications for testuser3…');
+        console.log('testuser3 notifications:', JSON.stringify(notes3, null, 2));
+        break;  // stop once we see new notifications
+      }
+    }
 
     await mongoose.disconnect();
   } catch (err) {
