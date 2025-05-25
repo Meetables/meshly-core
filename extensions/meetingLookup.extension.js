@@ -18,7 +18,11 @@ async function meetingLookup(req, res) {
         await setUserParam(req.user, "lastLocation", req.body.lastLocation);
 
         console.log("User last location: " + req.user.lastLocation);
-        meetingLookupAlgorithm(req.user.profileTags, req.user._id).then((response) => {
+
+        const required_matching_category_tags = ENV_VARS.DEFAULT_TAGS.filter(tag => tag.category == ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY).map(tag => tag._id);
+        const user_tags_matching_category = req.user.profileTags.filter(tag => required_matching_category_tags.includes(tag));
+       
+        meetingLookupAlgorithm(user_tags_matching_category, req.user._id).then((response) => {
             console.log("Response from meetingLookupAlgorithm: ", response);
             if (response.success) {
                 return res.status(200).json({
