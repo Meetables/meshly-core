@@ -4,7 +4,6 @@ info:
   version: '1.0.0'
   description: |
     The powerful and extensive backend making it easy to create Social Networks
-
 externalDocs:
   description: Meetables GitHub
   url: https://github.com/Meetables
