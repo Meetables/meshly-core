@@ -247,5 +247,65 @@
     "name": "music",
     "category": "interest",
     "icon": "🎵"
+  },
+  {
+    "_id": "661bb80e97c7a8efc3a3b040",
+    "name": "gaming",
+    "category": "interest",
+    "icon": "🎮"
+  },
+  {
+    "_id": "661bb80f97c7a8efc3a3b041",
+    "name": "gardening",
+    "category": "interest",
+    "icon": "🌱"
+  },
+  {
+    "_id": "661bb81097c7a8efc3a3b042",
+    "name": "hiking",
+    "category": "interest",
+    "icon": "🥾"
+  },
+  {
+    "_id": "661bb81197c7a8efc3a3b043",
+    "name": "yoga",
+    "category": "interest",
+    "icon": "🧘"
+  },
+  {
+    "_id": "661bb81297c7a8efc3a3b044",
+    "name": "painting",
+    "category": "interest",
+    "icon": "🎨"
+  },
+  {
+    "_id": "661bb81397c7a8efc3a3b045",
+    "name": "writing",
+    "category": "interest",
+    "icon": "✍️"
+  },
+  {
+    "_id": "661bb81497c7a8efc3a3b046",
+    "name": "dancing",
+    "category": "interest",
+    "icon": "💃"
+  },
+  {
+    "_id": "661bb81597c7a8efc3a3b047",
+    "name": "meditation",
+    "category": "interest",
+    "icon": "🧘‍♂️"
+  },
+  {
+    "_id": "661bb81697c7a8efc3a3b048",
+    "name": "birdwatching",
+    "category": "interest",
+    "icon": "🐦"
+  },
+  {
+    "_id": "661bb81797c7a8efc3a3b049",
+    "name": "board games",
+    "category": "interest",
+    "icon": "🎲"
   }
 ]
