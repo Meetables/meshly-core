@@ -236,7 +236,7 @@ paths:
                         type: array
                         items:
                           type: string
-                        example: ["tag1", "tag2"]
+                        example: ["tagId1", "tagId2"]
         '400':
           description: Bad request - Username is required.
           content:
@@ -320,6 +320,50 @@ paths:
                   error:
                     type: string
                     example: "Internal server error"
+  /api/v1/profile/public-profile:
+    get:
+      summary: get public profile data
+      tags:
+        - user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User onboarded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        example: 'username2'
+                      displayName:
+                        type: string
+                        example: 'User'
+                      profileDescription:
+                        type: string
+                        example: 'I am a user'
+                      profileTags:
+                          type: array
+                          items:
+                            type: string
+                          example: ["tagId1", "tagId2"]
+                      
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+      
   
   /api/v1/profile/onboarding:
     post:
