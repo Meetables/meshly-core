@@ -5,6 +5,16 @@ const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, 
 
 const router = express.Router();
 
+router.get('/me', verifyAuth, (req, res) => {
+    res.status(200).json({
+			success: true,
+			user: {
+				...req.user._doc,
+				password: "",
+			},
+		});
+})
+
 router.get('/public-profile', verifyAuth, getPublicProfileData);
 
 router.post('/onboarding', verifyAuth, onboardUser);
