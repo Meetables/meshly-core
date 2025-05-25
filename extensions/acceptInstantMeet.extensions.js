@@ -73,12 +73,20 @@ async function acceptInstantMeetRequest(req, res) {
     }
 
     //call algorithm to calculate meeting location here, return Google Maps link
+    console.log("calculating meeting location")
     const meetingLocation = await meetingPointByCoordinates(
         [loc1, loc2],
         1000,
         "driving-car",
         "distance"
     );
+
+    if (!meetingLocation) {
+        res.status(400).json({
+            success: false,
+            error: ""
+        })
+    }
 
     //notify user who sent the request originally
     newNotification(

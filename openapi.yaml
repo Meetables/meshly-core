@@ -880,6 +880,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/extensions/get-availability:
+    get:
+      tags:
+        - Extensions
+      summary: Get user's weekly availability
+      description: |
+        Retrieves the availability time ranges for each day of the week as set by the user.  
+        Requires a valid 'jwt-meshlycore' cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        200:
+          description: Availability retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  availability:
+                    type: object
+                    properties:
+                      mon:
+                        type: string
+                        example: "12:00-21:00"
+                      tue:
+                        type: string
+                        example: "12:00-21:00"
+                      wed:
+                        type: string
+                        example: "12:00-21:00"
+                      thu:
+                        type: string
+                        example: "12:00-21:00"
+                      fri:
+                        type: string
+                        example: "12:00-21:00"
+                      sat:
+                        type: string
+                        example: "12:00-21:00"
+                      sun:
+                        type: string
+                        example: "12:00-21:00"
+        401:
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Availability not set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/v1/extensions/set-availability:
     post:
