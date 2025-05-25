@@ -1050,6 +1050,13 @@ paths:
                   error:
                     type: string
                     nullable: true
+        400:
+         description: Either no lastLocation has been passed to the function or the user doesn't have a required tag attached to his profile
+         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+   
         500:
           description: Internal server error
           content:
