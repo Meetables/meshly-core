@@ -65,7 +65,7 @@ async function meetingLookupAlgorithm(userProfileTagIds, userId) {
 
         for (const id of userProfileTagIds) {
             const users = await User.find({ profileTags: id });
-            const userQueue = users.map(user => user._id);
+            const userQueue = users.map(user => user._id).filter(someUserId => !someUserId.equals(userId));
     
             if (userQueue.length === 0) {
                 console.log("No users found with tag: " + id);
