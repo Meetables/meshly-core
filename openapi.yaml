@@ -111,12 +111,8 @@ paths:
       description: |
         Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
         The JWT is verified using middleware before accessing this endpoint.
-      parameters:
-      - in: cookie
-        name: jwt-meshlycore
-        required: true
-        schema:
-          type: string
+      security:
+        - jwtCookie: []
       responses:
         200:
           description: Authorized successfully.
@@ -153,12 +149,8 @@ paths:
       description: |
         Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
         The JWT is verified using middleware before accessing this endpoint.
-      parameters:
-      - in: cookie
-        name: jwt-meshlycore
-        required: true
-        schema:
-          type: string
+      security:
+        - jwtCookie: []
       responses:
         '200':
           description: 'Success'
@@ -195,7 +187,7 @@ paths:
         Requires the 'jwt-meshlycore' cookie with a valid token.  
         Returns the public profile information (username, displayName, profileDescription, profileTags) for the given username.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         description: Request containing the username whose public profile data is needed.
         required: true
@@ -275,7 +267,7 @@ paths:
             schema:
               $ref: '#/components/schemas/GetUserSuggestionsRequest'   
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       responses:
         '200':
           description: List of recommendations
@@ -320,13 +312,133 @@ paths:
                   error:
                     type: string
                     example: "Internal server error"
+
+  /api/v1/profile/me:
+    get:
+      summary: get user data
+      tags:
+        - user
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: Successful retrieval of authenticated user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "6832e6f9b2e85233e9f62a82"
+                      username:
+                        type: string
+                        example: "testuser3"
+                      email:
+                        type: string
+                        example: "testuser3@example.com"
+                      profileTags:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - "661bb62a97c7a8efc3a3b02d"
+                          - "661bb80197c7a8efc3a3b032"
+                      ignoredRecommendations:
+                        type: array
+                        items:
+                          type: string
+                        example: []
+                      stories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            visibility:
+                              type: string
+                              example: "public"
+                            contentType:
+                              type: string
+                              example: "encodedJSON"
+                            content:
+                              type: string
+                              example: '{"mon":"01:00-23:50","tue":"01:00-23:50","wed":"01:00-23:50","thu":"01:00-23:50","fri":"01:00-23:50","sat":"01:00-23:50","sun":"01:00-23:50"}'
+                            timestampPosted:
+                              type: string
+                              format: date-time
+                              example: "2025-05-25T09:46:33.620Z"
+                            _id:
+                              type: string
+                              example: "6832e6f9b2e85233e9f62a8d"
+                      friends:
+                        type: array
+                        items:
+                          type: string
+                        example: []
+                      notifications:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              example: "instant_meet_request"
+                            pending:
+                              type: boolean
+                              example: true
+                            content:
+                              type: string
+                              example: '{"isInstantMeet":true,"meetingRequestId":"6832e6f9b2e85233e9f62aa2"}'
+                            timestamp:
+                              type: string
+                              format: date-time
+                              example: "2025-05-25T09:46:33.638Z"
+                            _id:
+                              type: string
+                              example: "6832e6f9b2e85233e9f62aab"
+                      uid:
+                        type: string
+                        example: "e6ff4263-e75c-4f87-87e4-9ee66488db8b"
+                      __v:
+                        type: integer
+                        example: 4
+                      displayName:
+                        type: string
+                        example: "testuser3"
+                      profileDescription:
+                        type: string
+                        example: "just a bot"
+                      lastLocation:
+                        type: string
+                        example: "48.12872785130619, 11.591843401497954"
+                      password:
+                        type: string
+                        example: ""
+        '401':
+          description: Unauthorized - Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/profile/public-profile:
     get:
       summary: get public profile data
       tags:
         - user
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       responses:
         '200':
           description: User onboarded successfully
@@ -362,9 +474,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-      
-  
   /api/v1/profile/onboarding:
     post:
       summary: Onboard user
@@ -375,7 +484,7 @@ paths:
       tags:
         - user
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -425,7 +534,7 @@ paths:
         Requires a valid 'jwt-meshlycore' cookie.  
         The specified user will be added to the list of ignored recommendations.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -484,7 +593,7 @@ paths:
         Requires a valid 'jwt-meshlycore' cookie.  
         The story will be created and associated with the authenticated user.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -544,7 +653,7 @@ paths:
         Requires a valid 'jwt-meshlycore' cookie.  
         The friend request will be sent to the specified username.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -606,7 +715,7 @@ paths:
         Requires a valid 'jwt-meshlycore' cookie.  
         The response will be sent to the specified username.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -671,7 +780,7 @@ paths:
         Protected endpoint to retrieve pending friend requests for the authenticated user.  
         Requires a valid 'jwt-meshlycore' cookie.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       responses:
         '200':
           description: Pending friend requests retrieved successfully
@@ -729,7 +838,7 @@ paths:
         Protected endpoint to retrieve notifications for the authenticated user.  
         Requires a valid 'jwt-meshlycore' cookie.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       responses:
         '200':
           description: Notifications retrieved successfully
@@ -779,7 +888,7 @@ paths:
       summary: Set weekly availability
       description: Set user's availability for each day of the week using time ranges like "12:00-21:00".
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -844,7 +953,7 @@ paths:
         Uses profile tag matching and user availability to send meeting requests.
         Requires JWT in Authorization header.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         description: requires last location
         required: true
@@ -895,7 +1004,7 @@ paths:
         Accepts a pending instant meeting request,
         computes a meeting point, and notifies the requester.
       security:
-        - bearerAuth: []
+        - jwtCookie: []
       requestBody:
         description: Request ID of the instant meet request and the responder’s current location
         required: true
@@ -964,11 +1073,10 @@ paths:
 
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
+    jwtCookie:
+      type: apiKey
+      in: cookie
+      name: jwt-meshlycore
   schemas:
     LoginRequest:
       type: object
