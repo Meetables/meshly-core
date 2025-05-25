@@ -13,6 +13,7 @@ const {
 
 const meetingPointByCoordinates = async (P0s, first_check_radius=1000, profile = "driving-car", metric = "distance") => {
     const center = calculateGeographicMidpoint(P0s);
+    console.log("geographic midpoint: " + center)
     const coordinates = await getNearbyAmenityCoordinates(center, first_check_radius);
     if (!coordinates) {
         console.error("No place given. Can't extract coordinates.");
