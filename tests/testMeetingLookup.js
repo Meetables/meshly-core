@@ -14,6 +14,16 @@ const AVAIL = {
   sun: '01:00-23:50',
 };
 
+const AVAIL2 = {
+  mon: '01:00-23:00',
+  tue: '01:00-23:00',
+  wed: '01:00-23:00',
+  thu: '01:00-23:00',
+  fri: '01:00-23:00',
+  sat: '01:00-23:00',
+  sun: '01:00-23:00',
+};
+
 const storedTokens = {
   testuser3: null,
   testuser4: null
@@ -22,6 +32,8 @@ const storedTokens = {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
 
 function createClient(username, email, password, useStored = false) {
   const client = axios.create({
@@ -53,24 +65,23 @@ function createClient(username, email, password, useStored = false) {
 
   return Promise.resolve(client);
 }
+// ...existing requires and constants remain unchanged
+
+async function logAvailability(client, label) {
+  const res = await client.get('/extensions/get-availability');
+  console.log(`${label} availability:`, JSON.stringify(res.data, null, 2));
+}
 
 async function main() {
   try {
-    // --- SETUP & CLEANUP ---
     await mongoose.connect('mongodb://localhost:27017/meshly-core', { useNewUrlParser: true });
-    // clean out any old test users & friend-requests
-    // Log friend requests before deletion
+
+    // --- CLEANUP ---
     const before = await mongoose.connection.collection('friendrequests').find({}).toArray();
     console.log('Friend requests before deletion:', before);
-
-    // Delete all friend requests
     await mongoose.connection.collection('friendrequests').deleteMany({});
-
-    // Log friend requests after deletion
     const after = await mongoose.connection.collection('friendrequests').find({}).toArray();
     console.log('Friend requests after deletion:', after);
-
-
     await User.deleteMany({ username: { $in: ['testuser3', 'testuser4'] } });
 
     // --- SIGNUP & ONBOARD ---
@@ -89,17 +100,25 @@ async function main() {
       profileDescription: 'just a bot'
     });
 
-    // --- SET AVAILABILITY ---
+    // --- SET & GET AVAILABILITY ---
     await client3.post('/extensions/set-availability', AVAIL);
-    await client4.post('/extensions/set-availability', AVAIL);
+    await logAvailability(client3, 'testuser3');
 
-    // --- TRIGGER MEETING LOOKUP AS TESTUSER3 ---
+    await client4.post('/extensions/set-availability', AVAIL);
+    await logAvailability(client4, 'testuser4');
+
+       await client3.post('/extensions/set-availability', AVAIL2);
+    await logAvailability(client3, 'testuser3');
+
+
+    // --- TRIGGER MEETING LOOKUP ---
     console.log('Triggering meeting lookup as testuser3…');
     const meetRes = await client3.post('/extensions/meeting-lookup', {
       lastLocation: "48.12872785130619, 11.591843401497954"
     });
     console.log('Meeting lookup response:', meetRes.data);
-    // --- FETCH NOTIFICATIONS FOR TESTUSER4 & EXTRACT REQUEST ID ---
+
+    // --- FETCH & ACCEPT MEETING REQUEST ---
     console.log('Fetching notifications for testuser4…');
     const notes4 = (await client4.get('/profile/notifications')).data;
     console.log('testuser4 notifications:', JSON.stringify(notes4, null, 2));
@@ -111,7 +130,6 @@ async function main() {
     const requestId = content.meetingRequestId;
     console.log('Extracted meetingRequestId:', requestId);
 
-    // --- ACCEPT THE INSTANT MEETING REQUEST AS TESTUSER4 ---
     console.log(`Accepting meeting request ${requestId} as testuser4…`);
     const acceptRes = await client4.post('/extensions/accept-instant-meeting-request', {
       requestId,
@@ -128,27 +146,33 @@ async function main() {
     const notes4After = (await client4.get('/profile/notifications')).data;
     console.log('testuser4 notifications:', JSON.stringify(notes4After, null, 2));
 
+    // --- POLL FOR NEW NOTIFICATIONS ---
     const start = Date.now();
     let lastCount = 0;
-
-    // fetch initial count
     {
       const initial = (await client3.get('/profile/notifications')).data;
       lastCount = initial.notifications.length;
     }
 
     while (Date.now() - start < 60_000) {
-      await sleep(5_000);  // wait 5 seconds between polls
-
+      await sleep(5_000);
       const notes3 = (await client3.get('/profile/notifications')).data;
       const count = notes3.notifications.length;
 
       if (count > lastCount) {
         console.log('Fetching notifications for testuser3…');
         console.log('testuser3 notifications:', JSON.stringify(notes3, null, 2));
-        break;  // stop once we see new notifications
+        break;
       }
     }
+
+    // --- SET & GET AVAILABILITY AGAIN ---
+    console.log('Re-setting and fetching availability again for both users…');
+    await client3.post('/extensions/set-availability', AVAIL);
+    await logAvailability(client3, 'testuser3 (again)');
+
+    await client4.post('/extensions/set-availability', AVAIL);
+    await logAvailability(client4, 'testuser4 (again)');
 
     await mongoose.disconnect();
   } catch (err) {
