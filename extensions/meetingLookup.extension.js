@@ -8,7 +8,7 @@ const { sendMeetingRequest } = require("./send-meeting-request.extension");
 async function meetingLookup(req, res) {
     try {
         const { lastLocation } = req.body;
-        if (!req.user || !req.user.profileTags || !lastLocation) {
+        if (!lastLocation) {
             return res.status(400).json({
                 success: false,
                 error: "data required in valid format"
@@ -18,7 +18,18 @@ async function meetingLookup(req, res) {
         await setUserParam(req.user, "lastLocation", req.body.lastLocation);
 
         console.log("User last location: " + req.user.lastLocation);
-        meetingLookupAlgorithm(req.user.profileTags, req.user._id).then((response) => {
+
+        const required_matching_category_tags = ENV_VARS.DEFAULT_TAGS.filter(tag => tag.category == ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY).map(tag => tag._id);
+        const user_tags_matching_category = req.user.profileTags.filter(tag => required_matching_category_tags.includes(tag));
+
+        if (!user_tags_matching_category) {
+            return res.status(400).json({
+                success: false,
+                error: "User doesn't have a " + ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY + "tag associated with his profile"
+            })
+        }
+
+        meetingLookupAlgorithm(user_tags_matching_category, req.user._id).then((response) => {
             console.log("Response from meetingLookupAlgorithm: ", response);
             if (response.success) {
                 return res.status(200).json({
@@ -66,7 +77,7 @@ async function meetingLookupAlgorithm(userProfileTagIds, userId) {
         for (const id of userProfileTagIds) {
             const users = await User.find({ profileTags: id });
             const userQueue = users.map(user => user._id).filter(someUserId => !someUserId.equals(userId));
-    
+
             if (userQueue.length === 0) {
                 console.log("No users found with tag: " + id);
                 continue;
