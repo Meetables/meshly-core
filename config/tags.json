@@ -1,133 +1,251 @@
 [
-    {
-      "_id": "661bb62a97c7a8efc3a3b030",
-      "name": "Greater Munich Metropolitan Area",
-      "category": "location",
-      "icon": "🌇"
-    },
-    {
-      "_id": "661bb62a97c7a8efc3a3b02f",
-      "name": "Munich",
-      "category": "location",
-      "superiorTagId": "661bb62a97c7a8efc3a3b030",
-      "icon": "🏙️"
-    },
-    {
-      "_id": "661bb62a97c7a8efc3a3b02d",
-      "name": "München Au-Haidhausen",
-      "category": "location",
-      "icon": "🏙️",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02f"
-    },
-    {
-      "_id": "661bb62a97c7a8efc3a3b040",
-      "name": "Köln",
-      "category": "location",
-      "icon": "🌆"
-    },
-    {
-      "_id": "661bb62a97c7a8efc3a3b041",
-      "name": "Rhine-Ruhr Area",
-      "category": "location",
-      "icon": "🏞️"
-    },
-    {
-      "_id": "661bb62a97c7a8efc3a3b02e",
-      "name": "sports",
-      "category": "interest",
-      "icon": "🏅"
-    },
-    {
-      "_id": "661bb80097c7a8efc3a3b031",
-      "name": "soccer",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "⚽"
-    },
-    {
-      "_id": "661bb80197c7a8efc3a3b032",
-      "name": "basketball",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "🏀"
-    },
-    {
-      "_id": "661bb80297c7a8efc3a3b033",
-      "name": "running",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "🏃"
-    },
-    {
-      "_id": "661bb80397c7a8efc3a3b034",
-      "name": "cycling",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "🚴"
-    },
-    {
-      "_id": "661bb80497c7a8efc3a3b035",
-      "name": "fitness",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "🏋️"
-    },
-    {
-      "_id": "661bb80597c7a8efc3a3b036",
-      "name": "swimming",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "🏊"
-    },
-    {
-      "_id": "661bb80697c7a8efc3a3b037",
-      "name": "tennis",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "🎾"
-    },
-    {
-      "_id": "661bb80797c7a8efc3a3b038",
-      "name": "skiing",
-      "category": "interest",
-      "superiorTagId": "661bb62a97c7a8efc3a3b02e",
-      "icon": "⛷️"
-    },
-    {
-      "_id": "661bb80897c7a8efc3a3b039",
-      "name": "photography",
-      "category": "interest",
-      "icon": "📸"
-    },
-    {
-      "_id": "661bb80997c7a8efc3a3b03a",
-      "name": "travel",
-      "category": "interest",
-      "icon": "✈️"
-    },
-    {
-      "_id": "661bb80a97c7a8efc3a3b03b",
-      "name": "cooking",
-      "category": "interest",
-      "icon": "🍳"
-    },
-    {
-      "_id": "661bb80b97c7a8efc3a3b03c",
-      "name": "technology",
-      "category": "interest",
-      "icon": "💻"
-    },
-    {
-      "_id": "661bb80c97c7a8efc3a3b03d",
-      "name": "reading",
-      "category": "interest",
-      "icon": "📚"
-    },
-    {
-      "_id": "661bb80d97c7a8efc3a3b03e",
-      "name": "music",
-      "category": "interest",
-      "icon": "🎵"
-    }
-  ]
-  
+  {
+    "_id": "661bb62a97c7a8efc3a3b030",
+    "name": "Greater Munich Metropolitan Area",
+    "category": "location",
+    "icon": "🌇"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b02f",
+    "name": "Munich",
+    "category": "location",
+    "superiorTagId": "661bb62a97c7a8efc3a3b030",
+    "icon": "🏙️"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b02d",
+    "name": "München Au-Haidhausen",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b100",
+    "name": "München Schwabing-West",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b101",
+    "name": "München Schwabing-Freimann",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b102",
+    "name": "München Maxvorstadt",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b103",
+    "name": "München Ludwigsvorstadt-Isarvorstadt",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b104",
+    "name": "München Neuhausen-Nymphenburg",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b105",
+    "name": "München Moosach",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b106",
+    "name": "München Milbertshofen-Am Hart",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b107",
+    "name": "München Bogenhausen",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b108",
+    "name": "München Berg am Laim",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b109",
+    "name": "München Trudering-Riem",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b10a",
+    "name": "München Ramersdorf-Perlach",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b10b",
+    "name": "München Obergiesing-Fasangarten",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b10c",
+    "name": "München Hadern",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b10d",
+    "name": "München Pasing-Obermenzing",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b10e",
+    "name": "München Laim",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b10f",
+    "name": "München Allach-Untermenzing",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b110",
+    "name": "München Feldmoching-Hasenbergl",
+    "category": "location",
+    "icon": "🏙️",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02f"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b040",
+    "name": "Köln",
+    "category": "location",
+    "icon": "🌆"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b041",
+    "name": "Rhine-Ruhr Area",
+    "category": "location",
+    "icon": "🏞️"
+  },
+  {
+    "_id": "661bb62a97c7a8efc3a3b02e",
+    "name": "sports",
+    "category": "interest",
+    "icon": "🏅"
+  },
+  {
+    "_id": "661bb80097c7a8efc3a3b031",
+    "name": "soccer",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "⚽"
+  },
+  {
+    "_id": "661bb80197c7a8efc3a3b032",
+    "name": "basketball",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "🏀"
+  },
+  {
+    "_id": "661bb80297c7a8efc3a3b033",
+    "name": "running",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "🏃"
+  },
+  {
+    "_id": "661bb80397c7a8efc3a3b034",
+    "name": "cycling",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "🚴"
+  },
+  {
+    "_id": "661bb80497c7a8efc3a3b035",
+    "name": "fitness",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "🏋️"
+  },
+  {
+    "_id": "661bb80597c7a8efc3a3b036",
+    "name": "swimming",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "🏊"
+  },
+  {
+    "_id": "661bb80697c7a8efc3a3b037",
+    "name": "tennis",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "🎾"
+  },
+  {
+    "_id": "661bb80797c7a8efc3a3b038",
+    "name": "skiing",
+    "category": "interest",
+    "superiorTagId": "661bb62a97c7a8efc3a3b02e",
+    "icon": "⛷️"
+  },
+  {
+    "_id": "661bb80897c7a8efc3a3b039",
+    "name": "photography",
+    "category": "interest",
+    "icon": "📸"
+  },
+  {
+    "_id": "661bb80997c7a8efc3a3b03a",
+    "name": "travel",
+    "category": "interest",
+    "icon": "✈️"
+  },
+  {
+    "_id": "661bb80a97c7a8efc3a3b03b",
+    "name": "cooking",
+    "category": "interest",
+    "icon": "🍳"
+  },
+  {
+    "_id": "661bb80b97c7a8efc3a3b03c",
+    "name": "technology",
+    "category": "interest",
+    "icon": "💻"
+  },
+  {
+    "_id": "661bb80c97c7a8efc3a3b03d",
+    "name": "reading",
+    "category": "interest",
+    "icon": "📚"
+  },
+  {
+    "_id": "661bb80d97c7a8efc3a3b03e",
+    "name": "music",
+    "category": "interest",
+    "icon": "🎵"
+  }
+]
