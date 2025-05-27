@@ -27,6 +27,12 @@ jobs:
             git clone https://github.com/Meetables/meshly-core.git $TEMP_DIR
             
             cd $TEMP_DIR
+
+            if docker ps -a --format '{{.Names}}' | grep -q '^mongo$'; then
+              docker stop mongo || true
+              docker rm mongo || true
+            fi
+
             
             docker compose -f ./docker-compose.yaml down --remove-orphans
             docker compose -f ./docker-compose.yaml up -d --force-recreate
