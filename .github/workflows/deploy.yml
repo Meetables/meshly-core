@@ -35,6 +35,7 @@ jobs:
 
             
             docker compose -f ./docker-compose.yaml down --remove-orphans
+            docker network prune -f
             docker compose -f ./docker-compose.yaml up -d --force-recreate
 
             rm -rf $TEMP_DIR
