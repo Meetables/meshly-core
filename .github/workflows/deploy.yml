@@ -28,12 +28,6 @@ jobs:
             
             cd $TEMP_DIR
 
-            if docker ps -a --format '{{.Names}}' | grep -q '^mongo$'; then
-              docker stop mongo || true
-              docker rm mongo || true
-            fi
-
-            
             docker compose -f ./docker-compose.yaml down --remove-orphans
             docker network prune -f
             docker compose -f ./docker-compose.yaml up -d --force-recreate
