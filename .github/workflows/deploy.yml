@@ -23,6 +23,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no meetables.meshlycore.test@codeclub.check24.fun << 'EOF'
             
             TEMP_DIR=$(mktemp -d)
+
+             for PORT in 27017 3003; do
+              CONTAINER_ID=\$(docker ps --filter "publish=\$PORT" --format "{{.ID}}")
+              if [ ! -z "\$CONTAINER_ID" ]; then
+                echo "Stopping container using port \$PORT: \$CONTAINER_ID"
+                docker stop \$CONTAINER_ID
+                docker rm \$CONTAINER_ID
+              fi
+            done
             
             git clone https://github.com/Meetables/meshly-core.git $TEMP_DIR
             
