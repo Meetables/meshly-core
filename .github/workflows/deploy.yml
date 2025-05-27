@@ -28,7 +28,8 @@ jobs:
             
             cd $TEMP_DIR
             
+            docker compose -f ./docker-compose.yaml down --remove-orphans
             docker compose -f ./docker-compose.yaml up -d --force-recreate
-           
+
             rm -rf $TEMP_DIR
           EOF
