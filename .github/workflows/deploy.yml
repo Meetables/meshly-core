@@ -32,9 +32,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: SSH into server and update stack
+      - name: SSH to create stack
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no meetables.meshlycore.test@codeclub.check24.fun << 'EOF'
+            
             echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
             cd ${{ secrets.DEPLOY_DIR }}
