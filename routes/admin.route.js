@@ -1,3 +1,4 @@
+//NOT YET IN USE
 const express = require('express');
 const { signup, login, logout } = require('../controllers/auth.controller');
 const verifyAuth = require('../middleware/verifyAuth.middleware');
