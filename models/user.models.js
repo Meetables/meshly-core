@@ -88,6 +88,12 @@ const userSchema = mongoose.Schema({
         type: String
     },
 
+    //usedEndpoints as an object where endpoints are keys and values when they were last used
+    usedEndpoints: {
+        type: Object,
+        default: {}
+    },
+
     profilePictureUrl: {
         type: String
     },
