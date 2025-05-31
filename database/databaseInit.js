@@ -39,7 +39,7 @@ async function initDb() {
             const newUser = new User({
                 email: ENV_VARS.DEV_ADMINUSER_EMAIL,
                 password: await bcryptjs.hash(adminLoginToken, await bcryptjs.genSalt(10)),
-                username: "user0",
+                username: ENV_VARS.DEV_ADMINUSER_USERNAME,
                 clearanceLevel: 1
             })
 
