@@ -44,7 +44,8 @@ async function signup(req, res) {
         const newUser = new User({
             email,
             password: hashedPassword,
-            username
+            username,
+            clearanceLevel: 0
         })
 
         

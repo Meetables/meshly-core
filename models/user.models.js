@@ -10,8 +10,10 @@ const allowedNotificationTypes = [...new Set([...baseNotificationTypes, ...extra
 
 
 const userSchema = mongoose.Schema({
-    accountType: {
-        type: String
+    clearanceLevel: {
+        type: Number,
+        enum: [0, 1],
+        required: true
     },
 
     username: {
