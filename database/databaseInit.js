@@ -36,13 +36,12 @@ async function initDb() {
             const adminLoginToken = crypto.randomUUID();
 
             const salt = await bcryptjs.genSalt(10);
-            const hashedPassword = await bcryptjs.hash(crypto.randomUUID(), salt);
+            const hashedPassword = await bcryptjs.hash(adminLoginToken, salt);
 
             const newUser = new User({
                 email: ENV_VARS.DEV_ADMINUSER_EMAIL,
                 password: hashedPassword,
-                username: "admin",
-                adminLoginToken: adminLoginToken
+                username: "admin"
             })
 
             await newUser.save();
