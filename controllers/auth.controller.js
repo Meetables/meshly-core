@@ -116,7 +116,7 @@ const test = async (req, res) => {
     const token = req.cookies["jwt-meshlycore"];
 
     try {
-        const user = await User.findOne({_id: jwt.verify(token, ENV_VARS.JWT_SECRET).userId})
+        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId);
         if (!user) {
             res.status(500).json({ "authorized": "false", "message": "User not found even though valid Token" });
         } else {
