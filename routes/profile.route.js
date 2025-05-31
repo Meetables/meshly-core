@@ -1,9 +1,12 @@
 const express = require('express');
 
-const verifyAuth = require('../middleware/verifyAuth.middleware');
+const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData } = require('../controllers/profile/profile.controller');
 
+
+
 const router = express.Router();
+
 
 router.get('/me', verifyAuth, (req, res) => {
     res.status(200).json({

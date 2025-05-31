@@ -4,7 +4,8 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.route.js');
 const profileRoutes = require('./routes/profile.route.js')
 const discoverRoutes = require('./routes/discover.route.js')
-const extensionRoutes = require('./routes/extensions.route.js');    
+const extensionRoutes = require('./routes/extensions.route.js');   
+const adminRoutes = require('./routes/admin.route.js'); 
 
 const { ENV_VARS } = require('./config/env-vars.js');
 const { connectToMongo } = require('./database/databaseConnect.js');
@@ -41,6 +42,8 @@ app.use("/api/v1/discover", discoverRoutes);
 app.use("/api/v1/profile", profileRoutes);
 
 app.use("/api/v1/extensions", extensionRoutes);
+
+app.use("/api/v1/admin", adminRoutes);
 
 app.listen(_port, () => {
     console.log("Server started at port " + _port)
