@@ -32,7 +32,7 @@ async function initDb() {
         }
 
         //Test for present admin user, if not present print a token to console
-        if (!(await User.findOne({accountType: "admin"}))) {
+        if (!(await User.findOne({clearanceLevel: 1}))) {
             //create admin user "blueprint", log token
             const adminLoginToken = crypto.randomUUID();
 
