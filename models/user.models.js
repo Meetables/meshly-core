@@ -94,10 +94,6 @@ const userSchema = mongoose.Schema({
         type: String
     },
 
-    adminLoginToken: {
-        type: String
-    },
-
     notifications: [{
         type: {
             type: String,
