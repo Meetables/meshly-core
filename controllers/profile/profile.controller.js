@@ -56,7 +56,7 @@ async function onboardUser(req, res) {
 
         await req.user.save();
 
-        return res.status(200).json({ success: true, message: "User has been onboarded successfully" })
+        return res.status(204);
     } catch (error) {
         console.log("Error in onboard user function", error.message);
         res.status(500).json({ success: false, message: "Internal server error" });
@@ -86,9 +86,7 @@ async function ignoreSuggestedProfile(req, res) {
         req.user.ignoredRecommendations.push(userId);
         await req.user.save();
 
-        return res.status(200).json({
-            success: true
-        })
+        return res.status(204);
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -99,6 +97,7 @@ async function ignoreSuggestedProfile(req, res) {
 
 //story functions
 
+//TODO: Validate openapi.yaml
 async function createNewStory(req, res) {
     try {
         const { content, contentType, visibility, updatePrev } = req.body;
