@@ -1,34 +1,46 @@
-name: Deploy Main API
+name: Build and Deploy API
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: SSH
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/meshly-core:latest
+
+      - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY  }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: SSH then clone repo
+      - name: SSH to create stack
         run: |
           ssh -o StrictHostKeyChecking=no meetables.meshlycore.test@codeclub.check24.fun << 'EOF'
             
-            TEMP_DIR=$(mktemp -d)
+            echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+            cd ${{ secrets.DEPLOY_DIR }}
             
-            git clone https://github.com/Meetables/meshly-core.git $TEMP_DIR
-            
-            cd $TEMP_DIR
-            
-            docker compose -f ./docker-compose.yaml up -d
-           
-            rm -rf $TEMP_DIR
+            docker compose pull
+            docker compose down --remove-orphans
+            docker compose up -d --force-recreate
           EOF
