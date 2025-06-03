@@ -61,7 +61,7 @@ async function profileMatchingAlgorithm() {
 
             }
         } else {
-            // [TODO] in case no matching tag is required, test everyone
+            // [TODO] in case no matching tag is required, test every one
             //Create one userGraph
 
         }

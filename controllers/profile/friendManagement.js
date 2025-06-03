@@ -18,7 +18,7 @@ async function getFriendRequests(req, res) {
     if (!friendRequests.length) {
       return res.status(200).json({
         success: false,
-        error: "No friend requests found"
+        friendRequests: []
       });
     }
 
@@ -34,6 +34,7 @@ async function getFriendRequests(req, res) {
       return acc;
     }, {});
 
+    // [TODO] Return result
     const formattedRequests = friendRequests.map(fr => {
       const isSender = fr.sender === userId;
       const involvedUserId = isSender ? fr.receiver : fr.sender;
@@ -71,7 +72,7 @@ async function sendFriendRequest(req, res) {
         }
 
         if (username === req.user.username) {
-            return res.status(400).json({
+            return res.status(418).json({
                 success: false,
                 error: "You cannot send a friend request to yourself"
             })
@@ -84,7 +85,7 @@ async function sendFriendRequest(req, res) {
         const foundUserId = foundUser._id;
 
        if(req.user.friends.includes(foundUserId)) {
-            return res.status(404).json({
+            return res.status(409).json({
                 success: false,
                 error: "You are already friends with this user"
             })
@@ -96,7 +97,7 @@ async function sendFriendRequest(req, res) {
         });
 
         if (existingRequest) {
-            return res.status(404).json({
+            return res.status(409).json({
                 success: false,
                 error: "Friend request already sent"
             });
@@ -120,9 +121,7 @@ async function sendFriendRequest(req, res) {
             }, foundUserId
         )
 
-        return res.status(200).json({
-            success: true
-        })
+        return res.status(204);
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -196,7 +195,7 @@ async function respondToFriendRequest(req, res) {
             sender._id
         );
 
-        return res.status(200).json({ success: true });
+        return res.status(204);
     } catch (error) {
         console.error('respondToFriendRequest error:', error);
         return res.status(500).json({ success: false, error: error.message });

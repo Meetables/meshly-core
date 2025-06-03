@@ -37,13 +37,13 @@ async function signup(req, res) {
         const existingUserByEmail = await User.findOne({ email: email })
 
         if (existingUserByEmail) {
-            return res.status(400).json({ success: false, message: "User with email already exists" })
+            return res.status(409).json({ success: false, message: "User with email already exists" })
         }
 
         const existingUserByUsername = await User.findOne({ username: username })
 
         if (existingUserByUsername) {
-            return res.status(400).json({ success: false, message: "User with username already exists" })
+            return res.status(409).json({ success: false, message: "User with username already exists" })
         }
 
         //create password hash
@@ -128,7 +128,7 @@ async function logout(req, res) {
     try {
         //clear the jwt cookie
         res.clearCookie("jwt-meshlycore");
-        res.status(200).json({ success: true, message: "Logged out successfully" });
+        res.status(204);
     } catch (error) {
         console.log("Error in logout controller", error.message);
         res.status(500).json({ success: false, message: "Internal server error" });
