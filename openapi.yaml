@@ -4,7 +4,6 @@ info:
   version: '1.0.0'
   description: |
     The powerful and extensive backend making it easy to create Social Networks
-
 externalDocs:
   description: Meetables GitHub
   url: https://github.com/Meetables
@@ -111,12 +110,8 @@ paths:
       description: |
         Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
         The JWT is verified using middleware before accessing this endpoint.
-      parameters:
-      - in: cookie
-        name: jwt-meshlycore
-        required: true
-        schema:
-          type: string
+      security:
+        - jwtCookie: []
       responses:
         200:
           description: Authorized successfully.
@@ -153,12 +148,8 @@ paths:
       description: |
         Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
         The JWT is verified using middleware before accessing this endpoint.
-      parameters:
-      - in: cookie
-        name: jwt-meshlycore
-        required: true
-        schema:
-          type: string
+      security:
+        - jwtCookie: []
       responses:
         '200':
           description: 'Success'
@@ -194,12 +185,8 @@ paths:
         Protected endpoint for retrieving public profile data by username.  
         Requires the 'jwt-meshlycore' cookie with a valid token.  
         Returns the public profile information (username, displayName, profileDescription, profileTags) for the given username.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - jwtCookie: []
       requestBody:
         description: Request containing the username whose public profile data is needed.
         required: true
@@ -240,7 +227,7 @@ paths:
                         type: array
                         items:
                           type: string
-                        example: ["tag1", "tag2"]
+                        example: ["tagId1", "tagId2"]
         '400':
           description: Bad request - Username is required.
           content:
@@ -278,13 +265,9 @@ paths:
           application/json:    
             schema:
               $ref: '#/components/schemas/GetUserSuggestionsRequest'   
-      parameters:
-      - in: cookie
-        name: jwt-meshlycore
-        required: true
-        schema:
-          type: string
-        responses:
+      security:
+        - jwtCookie: []
+      responses:
         '200':
           description: List of recommendations
           content:
@@ -328,7 +311,168 @@ paths:
                   error:
                     type: string
                     example: "Internal server error"
-  
+
+  /api/v1/profile/me:
+    get:
+      summary: get user data
+      tags:
+        - user
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: Successful retrieval of authenticated user profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        example: "6832e6f9b2e85233e9f62a82"
+                      username:
+                        type: string
+                        example: "testuser3"
+                      email:
+                        type: string
+                        example: "testuser3@example.com"
+                      profileTags:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - "661bb62a97c7a8efc3a3b02d"
+                          - "661bb80197c7a8efc3a3b032"
+                      ignoredRecommendations:
+                        type: array
+                        items:
+                          type: string
+                        example: []
+                      stories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            visibility:
+                              type: string
+                              example: "public"
+                            contentType:
+                              type: string
+                              example: "encodedJSON"
+                            content:
+                              type: string
+                              example: '{"mon":"01:00-23:50","tue":"01:00-23:50","wed":"01:00-23:50","thu":"01:00-23:50","fri":"01:00-23:50","sat":"01:00-23:50","sun":"01:00-23:50"}'
+                            timestampPosted:
+                              type: string
+                              format: date-time
+                              example: "2025-05-25T09:46:33.620Z"
+                            _id:
+                              type: string
+                              example: "6832e6f9b2e85233e9f62a8d"
+                      friends:
+                        type: array
+                        items:
+                          type: string
+                        example: []
+                      notifications:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                              example: "instant_meet_request"
+                            pending:
+                              type: boolean
+                              example: true
+                            content:
+                              type: string
+                              example: '{"isInstantMeet":true,"meetingRequestId":"6832e6f9b2e85233e9f62aa2"}'
+                            timestamp:
+                              type: string
+                              format: date-time
+                              example: "2025-05-25T09:46:33.638Z"
+                            _id:
+                              type: string
+                              example: "6832e6f9b2e85233e9f62aab"
+                      uid:
+                        type: string
+                        example: "e6ff4263-e75c-4f87-87e4-9ee66488db8b"
+                      __v:
+                        type: integer
+                        example: 4
+                      displayName:
+                        type: string
+                        example: "testuser3"
+                      profileDescription:
+                        type: string
+                        example: "just a bot"
+                      lastLocation:
+                        type: string
+                        example: "48.12872785130619, 11.591843401497954"
+                      password:
+                        type: string
+                        example: ""
+        '401':
+          description: Unauthorized - Missing or invalid JWT
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/profile/public-profile:
+    get:
+      summary: get public profile data
+      tags:
+        - user
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: User onboarded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        example: 'username2'
+                      displayName:
+                        type: string
+                        example: 'User'
+                      profileDescription:
+                        type: string
+                        example: 'I am a user'
+                      profileTags:
+                          type: array
+                          items:
+                            type: string
+                          example: ["tagId1", "tagId2"]
+                      
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v1/profile/onboarding:
     post:
       summary: Onboard user
@@ -338,12 +482,8 @@ paths:
         A user can only be onboarded once — if profile data already exists, this will return a 409.
       tags:
         - user
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -392,12 +532,8 @@ paths:
         Protected endpoint to ignore a suggested user profile.  
         Requires a valid 'jwt-meshlycore' cookie.  
         The specified user will be added to the list of ignored recommendations.
-      parameters:
-        - in: cookie
-          name: jwt-meshlycore
-          required: true
-          schema:
-            type: string
+      security:
+        - jwtCookie: []
       requestBody:
         required: true
         content:
@@ -446,7 +582,570 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/profile/create-story:
+    post:
+      tags:
+        - user
+      summary: Create a new story
+      description: |
+        Protected endpoint to create a new story.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The story will be created and associated with the authenticated user.
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: "My First Story"
+                content:
+                  type: string
+                  example: "This is the content of my first story."
+      responses:
+        '200':
+          description: Story created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Story has been created successfully.
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/send-friend-request:
+    post:
+      tags:
+        - user
+      summary: Send a friend request
+      description: |
+        Protected endpoint to send a friend request to another user.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The friend request will be sent to the specified username.
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: "friend_user"
+      responses:
+        '200':
+          description: Friend request sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Friend request has been sent successfully.
+        '400':
+          description: Bad request - Username missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found or already friends
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/respond-to-friend-request:
+    post:
+      tags:
+        - user
+      summary: Respond to a friend request
+      description: |
+        Protected endpoint to respond to a friend request.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        The response will be sent to the specified username.
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - status
+              properties:
+                username:
+                  type: string
+                  example: "friend_user"
+                status:
+                  type: string
+                  enum: [accepted, rejected]
+      responses:
+        '200':
+          description: Friend request response sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Friend request has been responded to successfully.
+        '400':
+          description: Bad request - Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found or no pending friend requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/friend-requests:
+    get:
+      tags:
+        - user
+      summary: Get pending friend requests associated with the authenticated user
+      description: |
+        Protected endpoint to retrieve pending friend requests for the authenticated user.  
+        Requires a valid 'jwt-meshlycore' cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: Pending friend requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  friendRequests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        isSender:
+                          type: boolean
+                          example: true
+                        involvedUserUsername:
+                          type: string
+                          example: "friend_user"
+                        result:
+                          type: string
+                          enum: ["rejected", "accepted"]
+                        pending:
+                          type: boolean
+                          example: true
+                        comment:
+                          type: string
+                          example: "Friend request from friend_user"
+                        timestamp:
+                          type: string
+                          format: date-time
+                          example: "2023-10-01T12:00:00Z"
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/profile/notifications:
+    get:
+      tags:
+        - user
+      summary: Get notifications
+      description: |
+        Protected endpoint to retrieve notifications for the authenticated user.  
+        Requires a valid 'jwt-meshlycore' cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  notifications:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        pending:
+                          type: boolean
+                          example: true
+                        type:
+                          type: string
+                          example: "friend_request"
+                        content:
+                          type: string
+                          example: "Friend request from friend_user"
+                        timestamp:
+                          type: string
+                          format: date-time
+                          example: "2023-10-01T12:00:00Z"
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse' 
+  /api/v1/extensions/get-availability:
+    get:
+      tags:
+        - Extensions
+      summary: Get user's weekly availability
+      description: |
+        Retrieves the availability time ranges for each day of the week as set by the user.  
+        Requires a valid 'jwt-meshlycore' cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        200:
+          description: Availability retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  availability:
+                    type: object
+                    properties:
+                      mon:
+                        type: string
+                        example: "12:00-21:00"
+                      tue:
+                        type: string
+                        example: "12:00-21:00"
+                      wed:
+                        type: string
+                        example: "12:00-21:00"
+                      thu:
+                        type: string
+                        example: "12:00-21:00"
+                      fri:
+                        type: string
+                        example: "12:00-21:00"
+                      sat:
+                        type: string
+                        example: "12:00-21:00"
+                      sun:
+                        type: string
+                        example: "12:00-21:00"
+        401:
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Availability not set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/extensions/set-availability:
+    post:
+      tags:
+        - Extensions
+      summary: Set weekly availability
+      description: Set user's availability for each day of the week using time ranges like "12:00-21:00".
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mon:
+                  type: string
+                  example: "12:00-21:00"
+                tue:
+                  type: string
+                  example: "12:00-21:00"
+                wed:
+                  type: string
+                  example: "12:00-21:00"
+                thu:
+                  type: string
+                  example: "12:00-21:00"
+                fri:
+                  type: string
+                  example: "12:00-21:00"
+                sat:
+                  type: string
+                  example: "12:00-21:00"
+                sun:
+                  type: string
+                  example: "12:00-21:00"
+      responses:
+        200:
+          description: Availability set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Availability set successfully"
+        400:
+          description: Missing availability data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/extensions/meeting-lookup:
+    post:
+      tags:
+        - Extensions
+      summary: Trigger meeting lookup and send meeting requests
+      description: |
+        Uses profile tag matching and user availability to send meeting requests.
+        Requires JWT in Authorization header.
+      security:
+        - jwtCookie: []
+      requestBody:
+        description: requires last location
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - lastLocation
+              properties:
+                lastLocation:
+                  type: string
+                  description: The responder’s last known location as "lat,lng"
+                  example: "48.8566,2.3522"
+      responses:
+        200:
+          description: Result of the meeting lookup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Meeting requests sent successfully"
+                  availableUserCounter:
+                    type: integer
+                    example: 3
+                  error:
+                    type: string
+                    nullable: true
+        400:
+         description: Either no lastLocation has been passed to the function or the user doesn't have a required tag attached to his profile
+         content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorResponse'
+   
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+   
+  /api/v1/extensions/accept-instant-meeting-request:
+    post:
+      tags:
+        - Extensions
+      summary: Accept an instant meeting request
+      description: |
+        Accepts a pending instant meeting request,
+        computes a meeting point, and notifies the requester.
+      security:
+        - jwtCookie: []
+      requestBody:
+        description: Request ID of the instant meet request and the responder’s current location
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - requestId
+                - location
+              properties:
+                requestId:
+                  type: string
+                  description: friendRequest ID
+                  example: "67f2ddf33d708e12caf2e143"
+                location:
+                  type: string
+                  description: The responder’s last known location as "lat,lng"
+                  example: "48.8566,2.3522"
+      responses:
+        '200':
+          description: Instant meet request accepted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Instant meet request accepted"
+                  requestId:
+                    type: string
+                    example: "67f2ddf33d708e12caf2e143"
+                  meetingLocation:
+                    type: object
+                    description: The calculated meeting location (format depends on your implementation)
+                    example: { "lat": 48.8584, "lng": 2.2945 }
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Request or sender location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '406':
+          description: An instant meeting is already taking place
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
 components:
+  securitySchemes:
+    jwtCookie:
+      type: apiKey
+      in: cookie
+      name: jwt-meshlycore
   schemas:
     LoginRequest:
       type: object
@@ -541,7 +1240,7 @@ components:
         - max_suggestions
       properties: 
         max_suggestions:
-          type: Number
+          type: number
     TagResponse:
       type: object
       properties:

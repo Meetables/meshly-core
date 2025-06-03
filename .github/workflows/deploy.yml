@@ -16,7 +16,7 @@ jobs:
       - name: SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY  }}
 
       - name: SSH then clone repo
         run: |
@@ -28,7 +28,7 @@ jobs:
             
             cd $TEMP_DIR
             
-            docker-compose -f ./docker-compose.development.yaml up -d
+            docker compose -f ./docker-compose.yaml up -d
            
             rm -rf $TEMP_DIR
           EOF
