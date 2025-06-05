@@ -37,7 +37,7 @@ async function getUser(req, res) {
 async function getUsers(req, res) {
     //! implement filtering:
         // new User({
-        //     clearanceLevel: 1,
+        //     clearance: ENV_VARS.USER_ROLES.ADMINISTRATOR,
         //     username: "john_doe",
         //     email: "john.doe@example.com",
         //     password: "securepassword123",

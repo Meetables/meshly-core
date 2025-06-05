@@ -62,8 +62,8 @@ const verifyAuthAdmin = async (req, res, next) => {
 			return res.status(404).json({ success: false, message: "User not found" });
 		}
 
-		if (user.clearanceLevel == 0) {
-			return res.status(403).json({ success: false, message: "Insufficient Clearance Level" });
+		if (user.clearance !== ENV_VARS.USER_ROLES.ADMINISTRATOR) {
+			return res.status(403).json({ success: false, message: "Insufficient Clearance" });
 		}
 
 		req.user = user;

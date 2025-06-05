@@ -10,9 +10,9 @@ const allowedNotificationTypes = [...new Set([...baseNotificationTypes, ...extra
 
 
 const userSchema = mongoose.Schema({
-    clearanceLevel: {
+    clearance: {
         type: Number,
-        enum: [0, 1],
+        enum: Object.values(ENV_VARS.USER_ROLES),
         required: true
     },
 

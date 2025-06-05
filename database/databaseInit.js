@@ -22,7 +22,7 @@ async function initDb() {
                 email: ENV_VARS.DEV_TESTUSER_EMAIL,
                 password: hashedPassword,
                 username: ENV_VARS.DEV_TESTUSER_USERNAME,
-                clearanceLevel: 0
+                clearance: ENV_VARS.USER_ROLES.NORMAL
             })
 
             await newUser.save();
@@ -32,7 +32,7 @@ async function initDb() {
         }
 
         //Test for present admin user, if not present print a token to console
-        if (!(await User.findOne({clearanceLevel: 1}))) {
+        if (!(await User.findOne({clearance: ENV_VARS.USER_ROLES.ADMINISTRATOR}))) {
             //create admin user "blueprint", log token
             const adminLoginToken = crypto.randomUUID();
 
@@ -40,7 +40,7 @@ async function initDb() {
                 email: ENV_VARS.DEV_ADMINUSER_EMAIL,
                 password: await bcryptjs.hash(adminLoginToken, await bcryptjs.genSalt(10)),
                 username: ENV_VARS.DEV_ADMINUSER_USERNAME,
-                clearanceLevel: 1
+                clearance: ENV_VARS.USER_ROLES.ADMINISTRATOR
             })
 
             await newUser.save();

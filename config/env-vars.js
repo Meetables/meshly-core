@@ -2,6 +2,7 @@ const dotenv = require('dotenv')
 
 const tags = require('./tags.json')
 const config = require('./config.json')
+const user_roles = require('./roles.json')
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const ENV_VARS = {
     JWT_SECRET: config.JWT_SECRET,
     NODE_ENV: config.NODE_ENV,
     TAG_CATEGORIES: config.TAG_CATEGORIES,
+    USER_ROLES: user_roles,
     DEFAULT_TAGS: tags,
     ENABLE_PROFILE_SUGGESTIONS: config.ENABLE_PROFILE_SUGGESTIONS,
     REQUIRED_MATCHING_TAG_CATEGORY: config.REQUIRED_MATCHING_TAG_CATEGORY || false,

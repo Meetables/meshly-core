@@ -47,7 +47,7 @@ async function signup(req, res) {
             email,
             password: hashedPassword,
             username,
-            clearanceLevel: 0
+            clearance: ENV_VARS.USER_ROLES.NORMAL
         })
 
         
