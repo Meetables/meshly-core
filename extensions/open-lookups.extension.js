@@ -1,5 +1,6 @@
 const User = require("../models/user.models");
 
+// todo: test
 async function openLookups(req, res) {
     // count how many users have queried meetingLookup in the last hour
     try {

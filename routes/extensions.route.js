@@ -7,9 +7,9 @@ const verifyAuth = require('../middleware/verifyAuth.middleware');
 
 //import extensions
 const { meetingLookup } = require('../extensions/meetingLookup.extension');
-const { setAvailability } = require('../extensions/setAvailability.extension');
+const { setAvailability } = require('../extensions/availability/setAvailability.extension');
 const { acceptInstantMeetRequest } = require('../extensions/acceptInstantMeet.extensions');
-const { getAvailability } = require('../extensions/getAvailability');
+const { getAvailability } = require('../extensions/availability/getAvailability');
 
 //Create router
 const router = express.Router();

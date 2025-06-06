@@ -1,8 +1,8 @@
 const { ENV_VARS } = require("../config/env-vars");
 const User = require("../models/user.models");
 const { setUserParam } = require("../utils/setUserParam");
-const { checkAvailability } = require("./checkAvailability.extensions");
-const { sendMeetingRequest } = require("./send-meeting-request.extension");
+const { checkAvailability } = require("./helpers/checkAvailability.extensions");
+const { sendMeetingRequest } = require("./helpers/send-meeting-request.extension");
 
 
 async function meetingLookup(req, res) {
