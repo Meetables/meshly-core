@@ -1,11 +1,14 @@
+const { newNotification } = require("../controllers/profile/notifications");
+const FriendRequest = require("../models/friendRequest.models");
+
 async function respondToMeetRequest(req, res) {
     const { requestId, result, suggestions } = req.body;
     //suggestions: JSON as string encoded object with either location, time or both
 
-    if (!requestId || !result) {
+    if (!requestId || ["accepted", "rejected"].includes(result) === false) {
         return res.status(400).json({
             success: false,
-            error: "Missing required fields"
+            error: "Missing required fields or wrong result format provided"
         });
     }
 
@@ -22,7 +25,7 @@ async function respondToMeetRequest(req, res) {
             error: "Meeting request not found"
         });
     }
-    
+
     request.accepted = (result === "accepted");
 
     //if there are suggestions, add them to the request's comment
@@ -47,7 +50,7 @@ async function respondToMeetRequest(req, res) {
         }
     }
 
-    if (!suggestions && result === "accepted") {
+    if (!_suggestions.lat && !suggestions.time && result === "accepted") {
         request.pending = false;
     }
 
