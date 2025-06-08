@@ -22,8 +22,7 @@ async function respondToMeetRequest(req, res) {
             error: "Meeting request not found"
         });
     }
-
-    request.pending = false;
+    
     request.accepted = (result === "accepted");
 
     //if there are suggestions, add them to the request's comment
@@ -46,6 +45,10 @@ async function respondToMeetRequest(req, res) {
         } else {
             request.comment = request.comment.replace(/user [\w-]+/, `user ${req.user.username}`);
         }
+    }
+
+    if (!suggestions && result === "accepted") {
+        request.pending = false;
     }
 
     await request.save();
