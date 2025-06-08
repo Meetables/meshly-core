@@ -21,7 +21,7 @@ const router = express.Router();
 // Endpoint to retrieve the currently authenticated user's data
 router.get('/me', verifyAuth, (req, res) => {
   // Return the user's data with password removed
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     user: {
       ...req.user._doc,

@@ -15,7 +15,7 @@ router.post("/login", login)
 router.post("/logout", logout)
 
 router.post("/test", verifyAuth, (req, res) => {
-    res.status(200).json({"authorized": "true"})
+    return res.status(200).json({"authorized": "true"})
 })
 
 //export router

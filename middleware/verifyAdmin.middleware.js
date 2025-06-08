@@ -35,7 +35,7 @@ const verifyAdminAuth = async (req, res, next) => {
 		next();
 	} catch (error) {
 		console.log("Error in verifyAdminAuth middleware: ", error.message);
-		res.status(500).json({ success: false, message: "Internal Server Error" });
+		return res.status(500).json({ success: false, message: "Internal Server Error" });
 	}
 };
 

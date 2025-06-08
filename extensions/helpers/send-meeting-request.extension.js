@@ -33,7 +33,7 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet, lat, lon,
       sender: userId,
       receiver: targetUserId,
       pending: true,
-      comment: isInstantMeet ? `Instant Meet request with id ${instantMeetId}` : `Meet request for location ${location} on ${datetime}`
+      comment: isInstantMeet ? `Instant Meet request with id ${instantMeetId}` : `Meet request for location with lat ${lat} and lon ${lon} on ${datetime}`
     });
 
     await newRequest.save();

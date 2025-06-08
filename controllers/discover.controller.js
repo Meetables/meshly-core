@@ -31,7 +31,7 @@ async function getPublicProfileData(req, res) {
         const { username } = req.body;
 
         if (!username) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 error: "Username is required"
             })

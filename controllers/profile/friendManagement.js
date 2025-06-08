@@ -121,7 +121,7 @@ async function sendFriendRequest(req, res) {
             }, foundUserId
         )
 
-        return res.status(204);
+        return res.sendStatus(204);;
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -195,7 +195,7 @@ async function respondToFriendRequest(req, res) {
             sender._id
         );
 
-        return res.status(204);
+        return res.sendStatus(204);
     } catch (error) {
         console.error('respondToFriendRequest error:', error);
         return res.status(500).json({ success: false, error: error.message });
