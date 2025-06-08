@@ -7,7 +7,7 @@ const router = express.Router();
 
 
 router.post("/test", verifyAuth, (req, res) => {
-    res.status(200).json({"authorized": "true"})
+    return (200).json({"authorized": "true"})
 })
 
 module.exports = router; 

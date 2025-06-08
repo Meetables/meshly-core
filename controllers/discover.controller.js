@@ -31,7 +31,7 @@ async function getPublicProfileData(req, res) {
         const { username } = req.body;
 
         if (!username) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 error: "Username is required"
             })
@@ -39,7 +39,13 @@ async function getPublicProfileData(req, res) {
 
         const user = await User.findOne({ username: username });
 
-        //TODO: When user not found, return a 404
+        // When user not found, return a 404
+        if (!user) {
+            return res.status(404).json({
+             success: false,
+             error: "User not found"
+            })
+        }
 
         return res.status(200).json({
             success: true,

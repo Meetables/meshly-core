@@ -56,7 +56,7 @@ async function onboardUser(req, res) {
 
         await req.user.save();
 
-        return res.status(204);
+        return res.sendStatus(204);
     } catch (error) {
         console.log("Error in onboard user function", error.message);
         res.status(500).json({ success: false, message: "Internal server error" });
@@ -86,7 +86,7 @@ async function ignoreSuggestedProfile(req, res) {
         req.user.ignoredRecommendations.push(userId);
         await req.user.save();
 
-        return res.status(204);
+        return res.sendStatus(204);
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -131,7 +131,7 @@ async function createNewStory(req, res) {
         return res.status(200).json({ success: true, message: "Story created successfully" })
     } catch (error) {
         console.log("Error in create new story function", error.message);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
 

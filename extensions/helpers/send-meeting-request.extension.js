@@ -1,10 +1,18 @@
-const User = require("../models/user.models");
-const FriendRequest = require("../models/friendRequest.models"); // ensure filename matches
-const { newNotification } = require("../controllers/profile/notifications");
+const User = require("../../models/user.models");
+const FriendRequest = require("../../models/friendRequest.models"); // ensure filename matches
+const { newNotification } = require("../../controllers/profile/notifications");
 
-async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
+async function sendMeetingRequest(userId, targetUserId, isInstantMeet, lat, lon, datetime) {
   try {
     // Verify both users exist
+
+    if (!isInstantMeet && (!lat || !lon || !datetime)) {
+      return {
+        success: false,
+        error: "Meeting requests must contain a location and a time"
+      }
+    }
+
     console.log("Sending meeting request from userId:", userId, "to targetUserId:", targetUserId);
     const [user, targetUser] = await Promise.all([
       User.findById(userId),
@@ -25,7 +33,7 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet) {
       sender: userId,
       receiver: targetUserId,
       pending: true,
-      comment: isInstantMeet ? `Instant Meet request with id ${instantMeetId}` : "Meet request"
+      comment: isInstantMeet ? `Instant Meet request with id ${instantMeetId}` : `Meet request for location with lat ${lat} and lon ${lon} on ${datetime}`
     });
 
     await newRequest.save();

@@ -64,7 +64,7 @@ async function signup(req, res) {
         await newUser.save();
 
         //success!!
-        res.status(201).json({
+        return res.status(201).json({
             success: true, user: {
                 ...newUser._doc, password: ""
             }
@@ -74,7 +74,7 @@ async function signup(req, res) {
         //error handling
         console.log("Error in signup controller: " + error.message)
 
-        res.status(500).json({ success: false, message: "Internal Server Error" })
+        return res.status(500).json({ success: false, message: "Internal Server Error" })
     }
 
 }
@@ -110,7 +110,7 @@ async function login(req, res) {
         generateTokenAndSetCookie(user._id, res);
 
         //return the user data without the password
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             user: {
                 ...user._doc,
@@ -120,7 +120,7 @@ async function login(req, res) {
     } catch (error) {
         //error handling
         console.log("Error in login controller", error.message);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
 
@@ -128,10 +128,10 @@ async function logout(req, res) {
     try {
         //clear the jwt cookie
         res.clearCookie("jwt-meshlycore");
-        res.status(204);
+        res.sendStatus(204);
     } catch (error) {
         console.log("Error in logout controller", error.message);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
 
