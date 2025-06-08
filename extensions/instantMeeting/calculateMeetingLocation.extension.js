@@ -1,13 +1,13 @@
 const {
     calculateGeographicMidpoint,
     getCoordinatesFromAddress
-} = require('./calculateMeetingLocation.components/coordinates');
+} = require('../calculateMeetingLocation.components/coordinates');
 const {
     findClosestBySquaredRouteDistanceSum
-} = require('./calculateMeetingLocation.components/distance');
+} = require('../calculateMeetingLocation.components/distance');
 const {
     getNearbyAmenityCoordinates
-} = require('./calculateMeetingLocation.components/apiQuery');
+} = require('../calculateMeetingLocation.components/apiQuery');
 
 
 

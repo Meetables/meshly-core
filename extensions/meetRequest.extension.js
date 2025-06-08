@@ -12,6 +12,16 @@ async function meetingRequest(req, res) {
         });
     }
 
+    //make sure datetime is a valid date in the future
+    const date = new Date(datetime);
+    if (isNaN(date.getTime()) || date <= new Date()) {
+        //throw a 400
+        return res.status(400).json({
+            success: false,
+            message: "Invalid datetime value, must be a future date"
+        });
+    }
+
     //implement a check whether the lat/lon values are actually on earth
     if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
         return res.status(400).json({
