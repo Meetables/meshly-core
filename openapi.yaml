@@ -735,6 +735,136 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/extensions/send-meeting-request:
+    post:
+      tags:
+        - Extensions
+      summary: Send a meeting request
+      description: |
+        Sends a meeting request from the authenticated user to another user at a specified time and location.
+        Requires a valid `jwt-meshlycore` cookie.
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - datetime
+                - lat
+                - lon
+              properties:
+                username:
+                  type: string
+                  description: The target user's username
+                  example: "john_doe"
+                datetime:
+                  type: string
+                  format: date-time
+                  description: ISO 8601 timestamp for the meeting (UTC)
+                  example: "2025-06-10T15:00:00Z"
+                lat:
+                  type: number
+                  description: Latitude of the meeting location (−90 to 90)
+                  example: 48.8566
+                lon:
+                  type: number
+                  description: Longitude of the meeting location (−180 to 180)
+                  example: 2.3522
+      responses:
+        204:
+          description: Meeting request sent successfully (no content)
+        400:
+          description: Missing or invalid fields (username, datetime, lat, lon)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        404:
+          description: User not found or invalid username
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        418:
+          description: Can't send a meeting request to yourself
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/extensions/respond-to-meeting-request:
+    post:
+      tags:
+        - Extensions
+      summary: Respond to a meeting request
+      description: |
+        Accepts or rejects a pending meeting request and optionally provides suggested location (lat/lon) and/or time.
+        Suggestions must be provided as a JSON‐encoded string.
+        Requires a valid 'jwt-meshlycore' cookie.
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - requestId
+                - result
+              properties:
+                requestId:
+                  type: string
+                  description: The ID of the FriendRequest to respond to
+                  example: "67f2ddf33d708e12caf2e143"
+                result:
+                  type: string
+                  description: Whether the request is accepted or rejected
+                  enum:
+                    - accepted
+                    - rejected
+                  example: "accepted"
+                suggestions:
+                  type: string
+                  description: >
+                    JSON‐encoded object with optional fields:
+                      • lat (number)  
+                      • lon (number)  
+                      • time (ISO 8601 string)  
+                    e.g. '{"lat":48.8584,"lon":2.2945,"time":"2025-06-09T15:00:00Z"}'
+      responses:
+        204:
+          description: Meeting request response recorded successfully, no content
+        400:
+          description: Missing required fields or invalid suggestions format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: Meeting request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
 components:
   securitySchemes:

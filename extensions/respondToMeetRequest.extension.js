@@ -10,7 +10,7 @@ async function respondToMeetRequest(req, res) {
     }
 
     let _suggestions = {};
-    if (suggestions){
+    if (suggestions) {
         _suggestions = JSON.parse(suggestions);
     }
 
@@ -29,7 +29,7 @@ async function respondToMeetRequest(req, res) {
     //if there are suggestions, add them to the request's comment
     //comment format: Meet request for location with lat ${lat} and lon ${lon} on ${datetime}
 
-    if (_suggestions && ((_suggestions.lat && _suggestions.lon)  || _suggestions.time)) {
+    if (_suggestions && ((_suggestions.lat && _suggestions.lon) || _suggestions.time)) {
         const requestComment = request.comment;
         //if there's a suggested location, replace the old lat and lon with the new ones - if there's a new suggested time, replace the old one with the new one
         if (_suggestions.lat && _suggestions.lon) {
@@ -40,15 +40,19 @@ async function respondToMeetRequest(req, res) {
             request.comment = requestComment.replace(/on [\d-: ]+/, `on ${_suggestions.time}`);
         }
 
-        //add "(includes suggestions fron user ${req.user.username})" to the end of the comment 
-        request.comment += ` (includes suggestions from user ${req.user.username})`;
+        //add "(includes suggestions fron user ${req.user.username})" to the end of the comment if it doesn't already include that part or change the username respectively
+        if (!request.comment.includes(`(includes suggestions from user`)) {
+            request.comment += ` (includes suggestions from user ${req.user.username})`;
+        } else {
+            request.comment = request.comment.replace(/user [\w-]+/, `user ${req.user.username}`);
+        }
     }
 
     await request.save();
 
     //notify the other user who's id isn't that of the one responding that the request has been responded to
     const userToNotify = request.sender.toString() === req.user._id.toString() ? request.receiver : request.sender;
-    
+
     newNotification({
         type: "meet_request_response",
         timestamp: Date.now(),
@@ -72,3 +76,5 @@ async function respondToMeetRequest(req, res) {
         });
 
 }
+
+module.exports = { respondToMeetRequest };

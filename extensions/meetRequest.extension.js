@@ -12,7 +12,31 @@ async function meetingRequest(req, res) {
         });
     }
 
+    //implement a check whether the lat/lon values are actually on earth
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid latitude or longitude values"
+        });
+    }
+
     const targetUser = await User.findOne({username: username});
+
+    if (!targetUser) {
+        //throw a 404
+        return res.status(404).json({
+            success: false,
+            message: "User not found"
+        });
+    }
+
+    if (targetUser._id.toString() === req.user._id.toString()) {
+        //throw a 418
+        return res.status(418).json({
+            success: false,
+            message: "You cannot send a meeting request to yourself"
+        });
+    }
 
     sendMeetingRequest(req.user._id.toString(), targetUser._id, false, lat, lon, datetime).then(() => {
         //successful
