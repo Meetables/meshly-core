@@ -5,6 +5,10 @@ const { sendMeetingRequest } = require("./helpers/send-meeting-request.extension
 async function suggestMeetingContext(req, res) {
     try {
         // [TODO] Implement the algorithm to suggest a meeting time and location
+
+        //map out a time where both users are available
+
+        
         
         return res.status(200).json({
             success: true,

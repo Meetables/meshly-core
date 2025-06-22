@@ -209,6 +209,105 @@ paths:
         500:
           description: Internal Server error
 
+  /api/v1/discover/profile-picture:
+    get:
+      tags:
+        - Discover
+      summary: Get user profile picture
+      description: |
+        Retrieves a user's profile picture from storage.  
+        If no userId is provided, returns the authenticated user's profile picture.  
+        If userId is provided, returns the specified user's profile picture.  
+        Requires authentication via JWT cookie.
+      security:
+        - jwtCookie: []
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: false
+          description: |
+            The ID of the user whose profile picture to retrieve.  
+            If not provided, returns the authenticated user's profile picture.
+          example: "60d5ec49f1b2c8b1f8e4e123"
+      responses:
+        '200':
+          description: Profile picture retrieved successfully
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/gif:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+          headers:
+            Content-Type:
+              description: MIME type of the image
+              schema:
+                type: string
+                example: "image/jpeg"
+            Content-Length:
+              description: Size of the image in bytes
+              schema:
+                type: integer
+                example: 2048576
+        '400':
+          description: Bad request - Missing userId when not authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Missing userId"
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Profile picture not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Profile picture not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Internal server error"
+
   /api/v1/profile/me:
     get:
       summary: get user data
@@ -474,6 +573,89 @@ paths:
           description: User not found
         500:
           description: Internal server error
+
+  /api/v1/profile/upload-profile-pic:
+    post:
+      tags:
+        - Profile
+      summary: Upload user profile picture
+      description: |
+        Protected endpoint to upload a profile picture for the authenticated user.  
+        Requires a valid 'jwt-meshlycore' cookie.  
+        Accepts image files and uploads them to the file storage backend.
+        The uploaded file replaces any existing profile picture.
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - profilePicture
+              properties:
+                profilePicture:
+                  type: string
+                  format: binary
+                  description: Image file for the profile picture
+            encoding:
+              profilePicture:
+                contentType: image/png, image/jpeg, image/jpg, image/gif, image/webp
+      responses:
+        '200':
+          description: Profile picture uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Profile picture uploaded"
+                  key:
+                    type: string
+                    example: "profile-pictures/60d5ec49f1b2c8b1f8e4e123"
+                    description: Storage key for the uploaded file
+                  url:
+                    type: string
+                    example: "https://meetables-api-endpoint/api/v1/discover/profile-picture?userId=60d5ec49f1b2c8b1f8e4e123"
+                    description: Public URL to access the uploaded profile picture
+        '400':
+          description: Bad request - Missing file or user ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Missing file or user ID"
+        '401':
+          description: Unauthorized - Missing or invalid JWT cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Internal server error"
 
   /api/v1/extensions/get-availability:
     get:

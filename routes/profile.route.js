@@ -12,8 +12,13 @@ const {
   getNotifications, 
   respondToFriendRequest, 
   getFriendRequests, 
-  getPublicProfileData 
+  getPublicProfileData, 
+  uploadProfilePicture
 } = require('../controllers/profile/profile.controller');
+
+const multer = require('multer');
+
+const upload = multer({ dest: 'uploads/' });
 
 // Create a new router instance
 const router = express.Router();
@@ -53,6 +58,11 @@ router.get('/friend-requests', verifyAuth, getFriendRequests);
 
 // Endpoint to retrieve a list of notifications
 router.get('/notifications', verifyAuth, getNotifications);
+
+//upload a profile picture
+router.post('/upload-profile-pic', verifyAuth, upload.single('profilePicture'), uploadProfilePicture);
+
+
 
 // Export the router instance
 module.exports = router;
