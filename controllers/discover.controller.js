@@ -3,6 +3,9 @@ const Tag = require("../models/tag.models");
 const User = require("../models/user.models");
 const userGraph = require("../models/userGraph.models");
 const { ENV_VARS } = require("../config/env-vars");
+const { get } = require("mongoose");
+const { GetObjectCommand } = require("@aws-sdk/client-s3");
+const { fileClient, fileBucket } = require("../file-backend/connect");
 
 
 
@@ -42,8 +45,8 @@ async function getPublicProfileData(req, res) {
         // When user not found, return a 404
         if (!user) {
             return res.status(404).json({
-             success: false,
-             error: "User not found"
+                success: false,
+                error: "User not found"
             })
         }
 
@@ -154,5 +157,30 @@ async function getEdgesByUserId(userId) {
     }
 }
 
+async function getProfilePicture(req, res) {
+    const userId = req.query.userId || req.user._id; // Use the userId from query or fall back to authenticated user
+    if (!userId) {
+        return res.status(400).json({ success: false, message: "Missing userId" });
+    }
 
-module.exports = { getTags, getPublicProfileData, getFriendRecommendations };
+    try {
+        const key = `profile-pictures/${userId}`;
+        
+        const command = new GetObjectCommand({
+            Bucket: fileBucket,
+            Key: key,
+        });
+
+        const s3Response = await fileClient.send(command);
+
+        res.setHeader('Content-Type', s3Response.ContentType || 'image/jpeg'); // default fallback
+        res.setHeader('Content-Length', s3Response.ContentLength);
+
+        s3Response.Body.pipe(res);
+    } catch (error) {
+        console.error("Failed to fetch profile picture:", error);
+        res.status(404).json({ success: false, message: "Profile picture not found" });
+    }
+}
+
+module.exports = { getTags, getPublicProfileData, getFriendRecommendations, getProfilePicture };
