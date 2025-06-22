@@ -171,7 +171,7 @@ async function uploadProfilePicture(req, res) {
             success: true,
             message: "Profile picture uploaded",
             key,
-            url: `${ENV_VARS.FILEBACKEND_URL}/${fileBucket}/${key}`
+            url: `meetables-api-endpoint/api/v1/discover/profile-picture?userId=${userId}`
         });
     } catch (error) {
         console.error("Error in upload profile picture function:", error.message);
