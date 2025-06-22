@@ -2,12 +2,14 @@
   {
     "_id": "661bb62a97c7a8efc3a3b030",
     "name": "Greater Munich Metropolitan Area",
+    "de_name": "Metropolregion München",
     "category": "location",
     "icon": "🌇"
   },
   {
     "_id": "661bb62a97c7a8efc3a3b02f",
     "name": "Munich",
+    "de_name": "München",
     "category": "location",
     "superiorTagId": "661bb62a97c7a8efc3a3b030",
     "icon": "🏙️"
@@ -15,6 +17,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b02d",
     "name": "München Au-Haidhausen",
+    "de_name": "München Au-Haidhausen",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -22,6 +25,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b100",
     "name": "München Schwabing-West",
+    "de_name": "München Schwabing-West",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -29,6 +33,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b101",
     "name": "München Schwabing-Freimann",
+    "de_name": "München Schwabing-Freimann",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -36,6 +41,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b102",
     "name": "München Maxvorstadt",
+    "de_name": "München Maxvorstadt",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -43,6 +49,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b103",
     "name": "München Ludwigsvorstadt-Isarvorstadt",
+    "de_name": "München Ludwigsvorstadt-Isarvorstadt",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -50,6 +57,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b104",
     "name": "München Neuhausen-Nymphenburg",
+    "de_name": "München Neuhausen-Nymphenburg",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -57,6 +65,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b105",
     "name": "München Moosach",
+    "de_name": "München Moosach",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -64,6 +73,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b106",
     "name": "München Milbertshofen-Am Hart",
+    "de_name": "München Milbertshofen-Am Hart",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -71,6 +81,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b107",
     "name": "München Bogenhausen",
+    "de_name": "München Bogenhausen",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -78,6 +89,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b108",
     "name": "München Berg am Laim",
+    "de_name": "München Berg am Laim",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -85,6 +97,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b109",
     "name": "München Trudering-Riem",
+    "de_name": "München Trudering-Riem",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -92,6 +105,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b10a",
     "name": "München Ramersdorf-Perlach",
+    "de_name": "München Ramersdorf-Perlach",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -99,6 +113,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b10b",
     "name": "München Obergiesing-Fasangarten",
+    "de_name": "München Obergiesing-Fasangarten",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -106,6 +121,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b10c",
     "name": "München Hadern",
+    "de_name": "München Hadern",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -113,6 +129,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b10d",
     "name": "München Pasing-Obermenzing",
+    "de_name": "München Pasing-Obermenzing",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -120,6 +137,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b10e",
     "name": "München Laim",
+    "de_name": "München Laim",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -127,6 +145,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b10f",
     "name": "München Allach-Untermenzing",
+    "de_name": "München Allach-Untermenzing",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -134,6 +153,7 @@
   {
     "_id": "661bb62a97c7a8efc3a3b110",
     "name": "München Feldmoching-Hasenbergl",
+    "de_name": "München Feldmoching-Hasenbergl",
     "category": "location",
     "icon": "🏙️",
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
@@ -141,24 +161,28 @@
   {
     "_id": "661bb62a97c7a8efc3a3b040",
     "name": "Köln",
+    "de_name": "Köln",
     "category": "location",
     "icon": "🌆"
   },
   {
     "_id": "661bb62a97c7a8efc3a3b041",
     "name": "Rhine-Ruhr Area",
+    "de_name": "Rhein-Ruhr-Gebiet",
     "category": "location",
     "icon": "🏞️"
   },
   {
     "_id": "661bb62a97c7a8efc3a3b02e",
     "name": "sports",
+    "de_name": "Sport",
     "category": "interest",
     "icon": "🏅"
   },
   {
     "_id": "661bb80097c7a8efc3a3b031",
     "name": "soccer",
+    "de_name": "Fußball",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "⚽"
@@ -166,6 +190,7 @@
   {
     "_id": "661bb80197c7a8efc3a3b032",
     "name": "basketball",
+    "de_name": "Basketball",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "🏀"
@@ -173,6 +198,7 @@
   {
     "_id": "661bb80297c7a8efc3a3b033",
     "name": "running",
+    "de_name": "Laufen",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "🏃"
@@ -180,6 +206,7 @@
   {
     "_id": "661bb80397c7a8efc3a3b034",
     "name": "cycling",
+    "de_name": "Radfahren",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "🚴"
@@ -187,6 +214,7 @@
   {
     "_id": "661bb80497c7a8efc3a3b035",
     "name": "fitness",
+    "de_name": "Fitness",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "🏋️"
@@ -194,6 +222,7 @@
   {
     "_id": "661bb80597c7a8efc3a3b036",
     "name": "swimming",
+    "de_name": "Schwimmen",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "🏊"
@@ -201,6 +230,7 @@
   {
     "_id": "661bb80697c7a8efc3a3b037",
     "name": "tennis",
+    "de_name": "Tennis",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "🎾"
@@ -208,6 +238,7 @@
   {
     "_id": "661bb80797c7a8efc3a3b038",
     "name": "skiing",
+    "de_name": "Skifahren",
     "category": "interest",
     "superiorTagId": "661bb62a97c7a8efc3a3b02e",
     "icon": "⛷️"
@@ -215,96 +246,112 @@
   {
     "_id": "661bb80897c7a8efc3a3b039",
     "name": "photography",
+    "de_name": "Fotografie",
     "category": "interest",
     "icon": "📸"
   },
   {
     "_id": "661bb80997c7a8efc3a3b03a",
     "name": "travel",
+    "de_name": "Reisen",
     "category": "interest",
     "icon": "✈️"
   },
   {
     "_id": "661bb80a97c7a8efc3a3b03b",
     "name": "cooking",
+    "de_name": "Kochen",
     "category": "interest",
     "icon": "🍳"
   },
   {
     "_id": "661bb80b97c7a8efc3a3b03c",
     "name": "technology",
+    "de_name": "Technologie",
     "category": "interest",
     "icon": "💻"
   },
   {
     "_id": "661bb80c97c7a8efc3a3b03d",
     "name": "reading",
+    "de_name": "Lesen",
     "category": "interest",
     "icon": "📚"
   },
   {
     "_id": "661bb80d97c7a8efc3a3b03e",
     "name": "music",
+    "de_name": "Musik",
     "category": "interest",
     "icon": "🎵"
   },
   {
     "_id": "661bb80e97c7a8efc3a3b040",
     "name": "gaming",
+    "de_name": "Gaming",
     "category": "interest",
     "icon": "🎮"
   },
   {
     "_id": "661bb80f97c7a8efc3a3b041",
     "name": "gardening",
+    "de_name": "Gartenarbeit",
     "category": "interest",
     "icon": "🌱"
   },
   {
     "_id": "661bb81097c7a8efc3a3b042",
     "name": "hiking",
+    "de_name": "Wandern",
     "category": "interest",
     "icon": "🥾"
   },
   {
     "_id": "661bb81197c7a8efc3a3b043",
     "name": "yoga",
+    "de_name": "Yoga",
     "category": "interest",
     "icon": "🧘"
   },
   {
     "_id": "661bb81297c7a8efc3a3b044",
     "name": "painting",
+    "de_name": "Malen",
     "category": "interest",
     "icon": "🎨"
   },
   {
     "_id": "661bb81397c7a8efc3a3b045",
     "name": "writing",
+    "de_name": "Schreiben",
     "category": "interest",
     "icon": "✍️"
   },
   {
     "_id": "661bb81497c7a8efc3a3b046",
     "name": "dancing",
+    "de_name": "Tanzen",
     "category": "interest",
     "icon": "💃"
   },
   {
     "_id": "661bb81597c7a8efc3a3b047",
     "name": "meditation",
+    "de_name": "Meditation",
     "category": "interest",
     "icon": "🧘‍♂️"
   },
   {
     "_id": "661bb81697c7a8efc3a3b048",
     "name": "birdwatching",
+    "de_name": "Vogelbeobachtung",
     "category": "interest",
     "icon": "🐦"
   },
   {
     "_id": "661bb81797c7a8efc3a3b049",
     "name": "board games",
+    "de_name": "Brettspiele",
     "category": "interest",
     "icon": "🎲"
   }

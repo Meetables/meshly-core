@@ -6,12 +6,12 @@ const express = require('express');
 const verifyAuth = require('../middleware/verifyAuth.middleware');
 
 //import extensions
-const { meetingLookup } = require('../extensions/meetingLookup.extension');
+const { meetingLookup } = require('../extensions/instantMeeting/meetingLookup.extension');
 const { setAvailability } = require('../extensions/availability/setAvailability.extension');
-const { acceptInstantMeetRequest } = require('../extensions/acceptInstantMeet.extensions');
+const { acceptInstantMeetRequest } = require('../extensions/instantMeeting/acceptInstantMeet.extensions');
 const { getAvailability } = require('../extensions/availability/getAvailability');
 const { respondToMeetRequest } = require('../extensions/respondToMeetRequest.extension');
-const { meetingRequest } = require('../extensions/meetRequest.extension');
+const { meetingRequest, suggestMeetingContext } = require('../extensions/meetRequest.extension');
 
 //Create router
 const router = express.Router();
@@ -24,6 +24,8 @@ router.post('/set-availability', verifyAuth, setAvailability);
 router.get('/get-availability', verifyAuth, getAvailability);
 
 router.post('/accept-instant-meeting-request', verifyAuth, acceptInstantMeetRequest);
+
+router.post('/suggest-meeting-context', verifyAuth, suggestMeetingContext);
 
 router.post('/send-meeting-request', verifyAuth, meetingRequest);
 
