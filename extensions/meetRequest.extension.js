@@ -1,6 +1,25 @@
 const User = require("../models/user.models")
 const { sendMeetingRequest } = require("./helpers/send-meeting-request.extension")
 
+// Algrotihm suggesting a meeting time and location
+async function suggestMeetingContext(req, res) {
+    try {
+        // [TODO] Implement the algorithm to suggest a meeting time and location
+        
+        return res.status(200).json({
+            success: true,
+            message: "Suggested meeting context is not implemented yet"
+        });
+    } catch (error) {
+        console.error("Error in suggestedMeetingContext controller:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message || error
+        });
+    }
+}
+
 async function meetingRequest(req, res) {
     const {username, datetime, lat, lon} = req.body
 
@@ -63,4 +82,4 @@ async function meetingRequest(req, res) {
 
 }
 
-module.exports = {meetingRequest}
+module.exports = {meetingRequest, suggestMeetingContext}
