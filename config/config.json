@@ -10,7 +10,7 @@
     "DEV_TESTUSER_USERNAME": "testuser",
     "DEV_TESTUSER_PASSWORD": "supersecret",
     "DEV_ADMINUSER_EMAIL": "adminuser@meetables.com",
-    "DEV_ADMINUSER_USERNAME": "adminuser",
+    "DEV_ADMINUSER_USERNAME": "user0",
     "EXTENSIONS_EXTRA_NOTIFICATIONTYPES": [
        "instant_meet_request", "meet_request", "instant_meet_result_accepted", "instant_meet_result_rejected"
     ]

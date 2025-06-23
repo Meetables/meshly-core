@@ -1,6 +1,12 @@
 const express = require('express');
-const { signup, login, logout } = require('../controllers/auth.controller');
-const verifyAuth = require('../middleware/verifyAuth.middleware');
+const jwt = require('jsonwebtoken');
+
+const { signup, login, logout, test } = require('../controllers/auth.controller');
+const { verifyAuth } = require('../middleware/verifyAuth.middleware');
+const User = require("../models/user.models");
+const { ENV_VARS } = require('../config/env-vars');
+
+
 
 const router = express.Router();
 
@@ -11,8 +17,9 @@ router.post("/login", login)
 
 router.post("/logout", logout)
 
-router.post("/test", verifyAuth, (req, res) => {
-    res.status(200).json({"authorized": "true"})
-})
+router.post("/test", verifyAuth, test)
 
-module.exports = router; 
+
+
+
+module.exports = router;
