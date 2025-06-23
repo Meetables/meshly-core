@@ -17,7 +17,7 @@ router.post("/login", login)
 
 router.post("/logout", logout)
 
-router.post("/test", verifyAuth, test)
+router.get("/test", verifyAuth, test)
 
 
 

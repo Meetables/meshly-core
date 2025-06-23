@@ -16,7 +16,7 @@ router.get("/user", verifyAuthAdmin, getUser);
 
 router.get("/users", verifyAuthAdmin, getUsers);
 
-router.post("/test", verifyAuthAdmin, test)
+router.get("/test", verifyAuthAdmin, test)
 
 router.post("/elevation", verifyAuthAdmin, userElevation)
 
