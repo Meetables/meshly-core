@@ -48,5 +48,49 @@ async function getUsers(req, res) {
     }
 }
 
+async function userElevation(req, res) {
+    const { uid, username, email, clearance } = req.body;
+    if (!uid && !username && !email) {
+        return res.status(400).json({ success: false, message: "At least one of uid, username, or email is required" });
+    }
+    if (!clearance) {
+        return res.status(400).json({ success: false, message: "Clearance is required" });
+    }
 
-module.exports = { getUser, getUsers };
+    let query = {};
+    if (username !== undefined) {
+        query.username = username;
+    }
+    if (uid !== undefined) {
+        query.uid = uid;
+    }
+    if (email !== undefined) {
+        query.email = email;
+    }
+    let user;
+    try {
+        user = await User.findOne(query);
+    } catch (err) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+    if (user.clearance === clearance) {
+        return res.status(400).json({ success: false, message: "User already has this clearance" });
+    }
+    user.clearance = clearance;
+    try {
+        await user.save();
+        return res.status(200).json({ success: true, user });
+    } catch (err) {
+        console.error("Error updating user clearance:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+    
+
+
+
+module.exports = { getUser, getUsers, userElevation };
