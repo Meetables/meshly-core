@@ -68,36 +68,39 @@ async function signup(req, res) {
 
 async function login(req, res) {
     try {
-		const { email, password } = req.body;
+        const { email, username, password } = req.body;
 
-		if (!email || !password) {
-			return res.status(400).json({ success: false, message: "All fields are required" });
-		}
+        if ((!email && !username) || !password) {
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
 
-		const user = await User.findOne({ email: email });
-		if (!user) {
-			return res.status(404).json({ success: false, message: "Invalid credentials" });
-		}
+        let query = {};
+        if (email) query.email = email;
+        if (username) query.username = username;
 
-		const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+        const user = await User.findOne(query);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "Invalid credentials" });
+        }
 
-		if (!isPasswordCorrect) {
-			return res.status(404).json({ success: false, message: "Invalid credentials" });
-		}
+        const isPasswordCorrect = await bcryptjs.compare(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(404).json({ success: false, message: "Invalid credentials" });
+        }
 
-		generateTokenAndSetCookie(user._id, res);
+        generateTokenAndSetCookie(user._id, res);
 
-		res.status(200).json({
-			success: true,
-			user: {
-				...user._doc,
+        res.status(200).json({
+            success: true,
+            user: {
+                ...user._doc,
                 password: undefined
-			},
-		});
-	} catch (error) {
-		console.log("Error in login controller", error.message);
-		res.status(500).json({ success: false, message: "Internal server error" });
-	}
+            },
+        });
+    } catch (error) {
+        console.log("Error in login controller", error.message);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
 }
 
 async function logout(req, res) {
