@@ -55,9 +55,7 @@ async function signup(req, res) {
         await newUser.save();
 
         res.status(201).json({
-            success: true, user: {
-                ...newUser._doc, password: ""
-            }
+            success: true, user: {...newUser._doc, password: undefined}
         })
 
     } catch (error) {
@@ -93,7 +91,7 @@ async function login(req, res) {
 			success: true,
 			user: {
 				...user._doc,
-				password: "",
+                password: undefined
 			},
 		});
 	} catch (error) {
@@ -116,12 +114,11 @@ const test = async (req, res) => {
     const token = req.cookies["jwt-meshlycore"];
 
     try {
-        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId);
+        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId).select("-password");
         if (!user) {
             res.status(500).json({ "authorized": "false", "message": "User not found even though valid Token" });
         } else {
-            const { password, ...userWithoutPassword } = user.toObject();
-            res.status(200).json({ authorized: "true", user: userWithoutPassword });
+            res.status(200).json({ authorized: "true", user: user._doc });
         }
     } catch (err) {
         res.status(401).json({ "authorized": "false", "message": "Invalid token"});

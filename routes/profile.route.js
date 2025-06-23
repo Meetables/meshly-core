@@ -13,7 +13,7 @@ router.get('/me', verifyAuth, (req, res) => {
 			success: true,
 			user: {
 				...req.user._doc,
-				password: "",
+				password: undefined,
 			},
 		});
 })
