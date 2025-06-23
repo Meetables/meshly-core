@@ -1,0 +1,5 @@
+- documentation + openapi
+
+- algorithm: lon lat
+
+- extract functions: e.g.: find user by [username, password, uid]
