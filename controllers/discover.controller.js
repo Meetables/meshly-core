@@ -84,7 +84,8 @@ async function getFriendRecommendations(req, res) {
 
         //TODO: If there are no edges, return a success message containing no suggestions
 
-        if (!edges) {
+        if (edges.length === 0) {
+
             return res.status(200).json({
                 success: true,
                 recommendations: 0
