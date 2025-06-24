@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const axios = require('axios');
 const User = require('../models/user.models');
 
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = 'http://meetables.check24.fun/api/v1';
 const TAGS = ['661bb62a97c7a8efc3a3b02d', '661bb80197c7a8efc3a3b032'];
 const AVAIL = {
   mon: '01:00-23:50',
