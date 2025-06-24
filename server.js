@@ -7,7 +7,8 @@ const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth.route.js');
 const profileRoutes = require('./routes/profile.route.js')
 const discoverRoutes = require('./routes/discover.route.js')
-const extensionRoutes = require('./routes/extensions.route.js');    
+const extensionRoutes = require('./routes/extensions.route.js');
+const adminRoutes = require('./routes/admin.route.js');
 
 //other internal dependencies
 const { ENV_VARS } = require('./config/env-vars.js');
@@ -49,6 +50,8 @@ app.use("/api/v1/discover", discoverRoutes);
 app.use("/api/v1/profile", profileRoutes);
 
 app.use("/api/v1/extensions", extensionRoutes);
+
+app.use("/api/v1/admin", adminRoutes);
 
 //listen on port _port
 app.listen(_port, () => {

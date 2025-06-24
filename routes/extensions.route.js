@@ -3,7 +3,7 @@
 const express = require('express');
 
 //import veritfy auth middleware to 'protect' endpoints, so to require an authenticated user
-const verifyAuth = require('../middleware/verifyAuth.middleware');
+const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 
 //import extensions
 const { meetingLookup } = require('../extensions/instantMeeting/meetingLookup.extension');

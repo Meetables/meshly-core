@@ -1,20 +1,9 @@
 const express = require('express');
 
 // Import verifyAuth middleware to authenticate user requests
-const verifyAuth = require('../middleware/verifyAuth.middleware');
-
+const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 // Import profile controller functions to handle user profile operations
-const { 
-  onboardUser, 
-  ignoreSuggestedProfile, 
-  createNewStory, 
-  sendFriendRequest, 
-  getNotifications, 
-  respondToFriendRequest, 
-  getFriendRequests, 
-  getPublicProfileData, 
-  uploadProfilePicture
-} = require('../controllers/profile/profile.controller');
+const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData } = require('../controllers/profile/profile.controller');
 
 const multer = require('multer');
 
@@ -25,14 +14,14 @@ const router = express.Router();
 
 // Endpoint to retrieve the currently authenticated user's data
 router.get('/me', verifyAuth, (req, res) => {
-  // Return the user's data with password removed
-  return res.status(200).json({
-    success: true,
-    user: {
-      ...req.user._doc,
-      password: "",
-    },
-  });
+    // Return the user's data with password removed
+    res.status(200).json({
+			success: true,
+			user: {
+				...req.user._doc,
+				password: undefined,
+			},
+		});
 })
 
 // Endpoint to retrieve a user's public profile data

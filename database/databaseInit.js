@@ -21,7 +21,8 @@ async function initDb() {
             const newUser = new User({
                 email: ENV_VARS.DEV_TESTUSER_EMAIL,
                 password: hashedPassword,
-                username: ENV_VARS.DEV_TESTUSER_USERNAME
+                username: ENV_VARS.DEV_TESTUSER_USERNAME,
+                clearance: ENV_VARS.USER_ROLES.NORMAL
             })
 
             await newUser.save();
@@ -31,23 +32,20 @@ async function initDb() {
         }
 
         //Test for present admin user, if not present print a token to console
-        if (!(await User.findOne({accountType: "admin"}))) {
+        if (!(await User.findOne({clearance: ENV_VARS.USER_ROLES.ADMINISTRATOR}))) {
             //create admin user "blueprint", log token
             const adminLoginToken = crypto.randomUUID();
 
-            const salt = await bcryptjs.genSalt(10);
-            const hashedPassword = await bcryptjs.hash(crypto.randomUUID(), salt);
-
             const newUser = new User({
                 email: ENV_VARS.DEV_ADMINUSER_EMAIL,
-                password: hashedPassword,
-                username: "admin",
-                adminLoginToken: adminLoginToken
+                password: await bcryptjs.hash(adminLoginToken, await bcryptjs.genSalt(10)),
+                username: ENV_VARS.DEV_ADMINUSER_USERNAME,
+                clearance: ENV_VARS.USER_ROLES.ADMINISTRATOR
             })
 
             await newUser.save();
 
-            console.log("Adminuser token: " + adminLoginToken)
+            console.log("admin \"user0\" token: " + adminLoginToken)
         } else {
             
         }

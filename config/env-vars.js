@@ -2,6 +2,7 @@ const dotenv = require('dotenv')
 
 const tags = require('./tags.json')
 const config = require('./config.json')
+const user_roles = require('./roles.json')
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const ENV_VARS = {
     JWT_SECRET: config.JWT_SECRET,
     NODE_ENV: config.NODE_ENV,
     TAG_CATEGORIES: config.TAG_CATEGORIES,
+    USER_ROLES: user_roles,
     FILEBACKEND_ENABLED: process.env.FILEBACKEND_ENABLED || false,
     FILEBACKEND_URL: process.env.FILEBACKEND_URL,
     FILEBACKEND_ACCESS_KEY: process.env.FILEBACKEND_ACCESS_KEY,
@@ -23,6 +25,7 @@ const ENV_VARS = {
     PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS: parseFloat(config.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS) || 24,
     PROFILE_SUGGESTION_HOT_THRESHOLD: parseFloat(config.PROFILE_SUGGESTION_HOT_THRESHOLD) || 0.45,
     DEV_ADMINUSER_EMAIL: config.DEV_ADMINUSER_EMAIL,
+    DEV_ADMINUSER_USERNAME: config.DEV_ADMINUSER_USERNAME,
     EXTENSIONS_EXTRA_NOTIFICATIONTYPES: config.EXTENSIONS_EXTRA_NOTIFICATIONTYPES || []
 }
 

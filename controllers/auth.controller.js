@@ -1,6 +1,8 @@
 //import dependencies
 const validator = require("validator");
 const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { ENV_VARS } = require("../config/env-vars");
 
 //load User model/document from database
 const User = require("../models/user.models");
@@ -54,7 +56,8 @@ async function signup(req, res) {
         const newUser = new User({
             email,
             password: hashedPassword,
-            username
+            username,
+            clearance: ENV_VARS.USER_ROLES.NORMAL
         })
 
         //generate a token, then send it as a 🍪 to the user
@@ -63,11 +66,8 @@ async function signup(req, res) {
         //then save the document
         await newUser.save();
 
-        //success!!
-        return res.status(201).json({
-            success: true, user: {
-                ...newUser._doc, password: ""
-            }
+        res.status(201).json({
+            success: true, user: {...newUser._doc, password: undefined}
         })
 
     } catch (error) {
@@ -92,7 +92,7 @@ async function login(req, res) {
 
         //find the user by email
         const user = await User.findOne({ email: email });
-        
+
         //if user is not found, return an error
         if (!user) {
             return res.status(404).json({ success: false, message: "Invalid credentials" });
@@ -110,18 +110,17 @@ async function login(req, res) {
         generateTokenAndSetCookie(user._id, res);
 
         //return the user data without the password
-        return res.status(200).json({
-            success: true,
-            user: {
-                ...user._doc,
-                password: "",
-            },
-        });
-    } catch (error) {
-        //error handling
-        console.log("Error in login controller", error.message);
-        return res.status(500).json({ success: false, message: "Internal server error" });
-    }
+		res.status(200).json({
+			success: true,
+			user: {
+				...user._doc,
+                password: undefined
+			},
+		});
+	} catch (error) {
+		console.log("Error in login controller", error.message);
+		res.status(500).json({ success: false, message: "Internal server error" });
+	}
 }
 
 async function logout(req, res) {
@@ -135,4 +134,21 @@ async function logout(req, res) {
     }
 }
 
-module.exports = { signup, login, logout };
+const test = async (req, res) => {
+    const token = req.cookies["jwt-meshlycore"];
+
+    try {
+        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId).select("-password");
+        if (!user) {
+            res.status(500).json({ "authorized": "false", "message": "User not found even though valid Token" });
+        } else {
+            res.status(200).json({ authorized: "true", user: user._doc });
+        }
+    } catch (err) {
+        res.status(401).json({ "authorized": "false", "message": "Invalid token"});
+    }
+}
+
+
+
+module.exports = { signup, login, logout, test };
