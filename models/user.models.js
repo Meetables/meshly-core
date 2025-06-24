@@ -94,14 +94,6 @@ const userSchema = mongoose.Schema({
         default: {}
     },
 
-    profilePictureUrl: {
-        type: String
-    },
-
-    adminLoginToken: {
-        type: String
-    },
-
     notifications: [{
         type: {
             type: String,
