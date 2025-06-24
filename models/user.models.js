@@ -2,7 +2,7 @@ const { mongoose } = require("mongoose");
 const {v4: uuidv4} = require('uuid');
 const { ENV_VARS } = require("../config/env-vars");
 
-const baseNotificationTypes = ['friendRequest', 'friendRequestResponse'];
+const baseNotificationTypes = ['friend_request', 'friend_request_response'];
 const extraNotificationTypes = Array.isArray(ENV_VARS.EXTENSIONS_EXTRA_NOTIFICATIONTYPES)
     ? ENV_VARS.EXTENSIONS_EXTRA_NOTIFICATIONTYPES
     : [];
@@ -87,10 +87,6 @@ const userSchema = mongoose.Schema({
     }],
 
     lastLocation: {
-        type: String
-    },
-
-    profilePictureUrl: {
         type: String
     },
 

@@ -1,4 +1,4 @@
-# meshly-core
+# meshly-core (To be updated)
 The core backend for creating social networks. WIP as of now.
 
 ## A brief introduction to helping us at Meetables build meshly-core
