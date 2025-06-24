@@ -1360,6 +1360,9 @@ components:
               name:
                 type: string
                 example: "Hiking"
+              de_name:
+                type: string
+                example: "Wandern"
               category:
                 type: string
                 example: "Activity"
