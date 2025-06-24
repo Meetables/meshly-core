@@ -1120,10 +1120,7 @@ components:
         profileDescription:
           type: string
           example: "just a bot"
-        profilePictureUrl:
-          type: string
-          example: "https://meetables.check24.fun/image/12345"
-        profileTagIds:
+        profileTags:
           type: array
           items:
             type: string
