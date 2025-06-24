@@ -1,4 +1,5 @@
 const User = require('../models/user.models');
+const bcryptjs = require("bcryptjs");
 
 
 
@@ -89,8 +90,49 @@ async function userElevation(req, res) {
     }
 }
 
+async function forceResetPassword(req, res) {
+    const { uid, username, email, newPassword } = req.body;
+    if (!uid && !username && !email) {
+        return res.status(400).json({ success: false, message: "At least one of uid, username, or email is required" });
+    }
+    if (!newPassword) {
+        return res.status(400).json({ success: false, message: "New password is required" });
+    }
+
+    let query = {};
+    if (username !== undefined) {
+        query.username = username;
+    }
+    if (uid !== undefined) {
+        query.uid = uid;
+    }
+    if (email !== undefined) {
+        query.email = email;
+    }
+    
+    let user;
+    try {
+        user = await User.findOne(query);
+    } catch (err) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+    
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    user.password = await bcryptjs.hash(newPassword, 10);
+    try {
+        await user.save();
+        return res.status(200).json({ success: true, message: "Password changed successfully" });
+    } catch (err) {
+        console.error("Error updating user password:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
     
 
 
 
-module.exports = { getUser, getUsers, userElevation };
+module.exports = { getUser, getUsers, userElevation, forceResetPassword };
