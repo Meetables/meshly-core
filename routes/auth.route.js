@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
-const { signup, login, logout, test } = require('../controllers/auth.controller');
+const { signup, login, logout, test, confirmation } = require('../controllers/auth.controller');
 const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 const User = require("../models/user.models");
 const { ENV_VARS } = require('../config/env-vars');
@@ -16,6 +16,8 @@ router.post("/signup", signup)
 router.post("/login", login)
 
 router.post("/logout", logout)
+
+router.post("/confirmation", confirmation)
 
 router.get("/test", verifyAuth, test)
 
