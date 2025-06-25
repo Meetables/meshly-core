@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const tags = require('./tags.json')
 const config = require('./config.json')
 const user_roles = require('./roles.json')
+const internal_secuurity = require("./internal-security.json")
 
 dotenv.config();
 
@@ -22,7 +23,8 @@ const ENV_VARS = {
     PROFILE_SUGGESTION_HOT_THRESHOLD: parseFloat(config.PROFILE_SUGGESTION_HOT_THRESHOLD) || 0.45,
     DEV_ADMINUSER_EMAIL: config.DEV_ADMINUSER_EMAIL,
     DEV_ADMINUSER_USERNAME: config.DEV_ADMINUSER_USERNAME,
-    EXTENSIONS_EXTRA_NOTIFICATIONTYPES: config.EXTENSIONS_EXTRA_NOTIFICATIONTYPES || []
+    EXTENSIONS_EXTRA_NOTIFICATIONTYPES: config.EXTENSIONS_EXTRA_NOTIFICATIONTYPES || [],
+    DISALLOWED_USER_CHANGES: internal_secuurity.USER_CHANGES.DISALLOWED_FIELDS
 }
 
 if (process.env.NODE_ENV = 'development') {

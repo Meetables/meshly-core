@@ -6,49 +6,26 @@ const { ENV_VARS } = require("../config/env-vars");
 const User = require("../models/user.models");
 const generateTokenAndSetCookie = require("../utils/generateToken");
 
+const { getUserByIndividualFeatures, changeUserAttributs, mongo2object } = require("../middleware/databaseHandling");
+
 async function signup(req, res) {
-
-
     try {
-         const { email, password, username } = req.body;
-
-        if (!email || !password || !username) {
-            return res.status(400).json({ success: false, message: "All fields are required" })
-        }
-
-        if (!validator.isEmail(email)) {
-            return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
-        }
-
+        const { email, password, username } = req.body;
+        if (!password) return res.status(400).json({ success: false, message: "Password is required" })
+        if (!validator.isEmail(email)) return res.status(400).json({ success: false, message: "Invalid email format" })
         //TODO: Prevent XSS
-
-        if(!validator.isAlphanumeric(username)){
-            return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
-        }
-
+        if(!validator.isAlphanumeric(username)) return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
         //TODO: Check for secure password also on backend-side
-
-        const existingUserByEmail = await User.findOne({ email: email })
-
-        if (existingUserByEmail) {
-            return res.status(400).json({ success: false, message: "User with email already exists" })
-        }
-
-        const existingUserByUsername = await User.findOne({ username: username })
-
-        if (existingUserByUsername) {
-            return res.status(400).json({ success: false, message: "User with username already exists" })
-        }
+        if (await User.findOne({ email: email })) return res.status(400).json({ success: false, message: "User with email already exists" })
+        if (await User.findOne({ username: username })) return res.status(400).json({ success: false, message: "User with username already exists" })
  
-        const salt = await bcryptjs.genSalt(10);
-        const hashedPassword = await bcryptjs.hash(password, salt);
 
         const newUser = new User({
-            confirmed: false,
             email,
-            password: hashedPassword,
             username,
-            clearance: ENV_VARS.USER_ROLES.NORMAL
+            password: await bcryptjs.hash(password, await bcryptjs.genSalt(10)),
+            clearance: ENV_VARS.USER_ROLES.NORMAL,
+            confirmed: false
         })
 
         const confirmationToken = jwt.sign(
@@ -120,21 +97,17 @@ async function login(req, res) {
     try {
         const { email, username, password } = req.body;
 
-        if ((!email && !username) || !password) {
-            return res.status(400).json({ success: false, message: "All fields are required" });
+        if (!password) {
+            return res.status(400).json({ success: false, message: "Password is required" });
         }
 
-        let query = {};
-        if (email) query.email = email;
-        if (username) query.username = username;
-
-        const user = await User.findOne(query);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "Invalid credentials" });
+        get_user = await getUserByIndividualFeatures({ email, username }); // {success: <bool>, result: {status: <http code>, outcome: <data to be returned>}}
+        if (!get_user.success) {
+            return res.status(get_user.outcome.status).json({ success: false, ...get_user.outcome.result });
         }
+        const user = get_user.outcome.result.user;
 
-        const isPasswordCorrect = await bcryptjs.compare(password, user.password);
-        if (!isPasswordCorrect) {
+        if (!await bcryptjs.compare(password, user.password)) {
             return res.status(404).json({ success: false, message: "Invalid credentials" });
         }
 
@@ -146,10 +119,7 @@ async function login(req, res) {
 
         res.status(200).json({
             success: true,
-            user: {
-                ...user._doc,
-                password: undefined
-            },
+            user: mongo2object(user, ["password", "_id"])
         });
     } catch (error) {
         console.log("Error in login controller", error.message);
@@ -202,17 +172,23 @@ async function resetPassword(req, res) {
 const test = async (req, res) => {
     const token = req.cookies["jwt-meshlycore"];
 
-    try {
-        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId).select("-password");
-        if (!user) {
-            res.status(500).json({ "authorized": "false", "message": "User not found even though valid Token" });
-        } else {
-            res.status(200).json({ authorized: "true", user: user._doc });
-        }
-    } catch (err) {
-        res.status(401).json({ "authorized": "false", "message": "Invalid token"});
+    if (!token) {
+        return res.status(401).json({ authorized: "false", message: "Token missing" });
     }
-}
+
+    try {
+        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId).select("-password -_id");
+
+        if (!user) {
+            console.log("User not found even though valid token")
+            return res.status(500).json({ authorized: "false", message: "Internal server error" });
+        }
+
+        return res.status(200).json({ authorized: "true", user: mongo2object(user) });
+    } catch (err) {
+        return res.status(401).json({ authorized: "false", message: "Invalid or expired token" });
+    }
+};
 
 
 

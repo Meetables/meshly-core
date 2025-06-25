@@ -51,35 +51,22 @@ async function getUsers(req, res) {
 
 async function userElevation(req, res) {
     const { uid, username, email, clearance } = req.body;
-    if (!uid && !username && !email) {
-        return res.status(400).json({ success: false, message: "At least one of uid, username, or email is required" });
-    }
     if (!clearance) {
         return res.status(400).json({ success: false, message: "Clearance is required" });
     }
 
-    let query = {};
-    if (username !== undefined) {
-        query.username = username;
-    }
-    if (uid !== undefined) {
-        query.uid = uid;
-    }
-    if (email !== undefined) {
-        query.email = email;
-    }
-    let user;
-    try {
-        user = await User.findOne(query);
-    } catch (err) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
-    if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
+    const user = await getUserByIndividualFeatures(
+        uid=uid,
+        username=username,
+        email=email,
+        res
+    )
+    if (user === null) return
+
     if (user.clearance === clearance) {
         return res.status(400).json({ success: false, message: "User already has this clearance" });
     }
+
     user.clearance = clearance;
     try {
         await user.save();
@@ -92,34 +79,16 @@ async function userElevation(req, res) {
 
 async function forceResetPassword(req, res) {
     const { uid, username, email, newPassword } = req.body;
-    if (!uid && !username && !email) {
-        return res.status(400).json({ success: false, message: "At least one of uid, username, or email is required" });
-    }
     if (!newPassword) {
         return res.status(400).json({ success: false, message: "New password is required" });
     }
 
-    let query = {};
-    if (username !== undefined) {
-        query.username = username;
-    }
-    if (uid !== undefined) {
-        query.uid = uid;
-    }
-    if (email !== undefined) {
-        query.email = email;
-    }
-    
-    let user;
-    try {
-        user = await User.findOne(query);
-    } catch (err) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
-    
-    if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
+    const user = await getUserByIndividualFeatures(
+        uid=uid,
+        username=username,
+        email=email,
+        res=res
+    )
 
     user.password = await bcryptjs.hash(newPassword, 10);
     try {
