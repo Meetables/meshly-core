@@ -139,6 +139,68 @@ paths:
         500:
           description: Internal server error
   
+  /api/v1/discover/search:
+   post:
+    tags:
+      - Discover
+    summary: Search for users by query string
+    description: |
+      Searches users based on a query matching username, display name, email, profile description, or tags.
+      Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
+    security:
+      - jwtCookie: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+                description: The search query string.
+              maxResults:
+                type: integer
+                minimum: 1
+                description: Optional maximum number of results to return.
+            required:
+              - query
+    responses:
+      200:
+        description: Users matching the search query
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                users:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      displayName:
+                        type: string
+                      profileDescription:
+                        type: string
+                      profileTags:
+                        type: array
+                        items:
+                          type: string
+      400:
+        description: Invalid query input
+      401:
+        description: Unauthorized
+      404:
+        description: No users matching the query
+      500:
+        description: Internal server error
+
+
   /api/v1/discover/profile:
     get:
       tags:

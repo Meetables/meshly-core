@@ -7,8 +7,6 @@ const { get } = require("mongoose");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const { fileClient, fileBucket } = require("../file-backend/connect");
 
-
-
 async function getTags(req, res) {
     try {
         const tags = await Tag.find({});
@@ -184,4 +182,48 @@ async function getProfilePicture(req, res) {
     }
 }
 
-module.exports = { getTags, getPublicProfileData, getFriendRecommendations, getProfilePicture };
+async function userLookup(req, res) {
+    try {
+        const { query, maxResults } = req.body; //maxResults: optional number bigger than 0
+
+        if (!query || typeof query !== 'string' || query.trim() === '') {
+            return res.status(400).json({ success: false, message: "Query is required and must be a non-empty string" });
+        }
+
+        //if query includes an @, make sure something is in front of it
+        if (query.includes('@') && query.startsWith('@')) {
+            return res.status(400).json({ success: false, message: "Invalid query format" });
+        }
+
+        const usersMatchingQuery = await User.find({
+            $or: [
+                { username: { $regex: query, $options: 'i' } },
+                { displayName: { $regex: query, $options: 'i' } },
+                { email: { $regex: query, $options: 'i' } },
+                { profileDescription: { $regex: query, $options: 'i' } },
+                { profileTags: { $regex: query, $options: 'i' } }
+            ]
+        }).select('username displayName profileDescription profileTags');
+
+        if (usersMatchingQuery.length === 0) {
+            return res.status(404).json({success: false, message: "No users matching the query"});
+        }
+
+        // Limit results if maxResults is provided
+
+        if (maxResults && !isNaN(maxResults)) {
+            return res.status(200).json({
+                success: true,
+                users: usersMatchingQuery.slice(0, parseInt(maxResults))
+            });
+        }
+
+        return res.status(200).json({success: true, users: usersMatchingQuery});
+
+    } catch (error) { 
+        console.error('Error fetching users:', error);
+        return res.status(500).json({success: false, error: error.message});
+    }
+}
+
+module.exports = { userLookup, getTags, getPublicProfileData, getFriendRecommendations, getProfilePicture };
