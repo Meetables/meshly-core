@@ -140,7 +140,7 @@ paths:
           description: Internal server error
   
   /api/v1/discover/search:
-   post:
+   get:
     tags:
       - Discover
     summary: Search for users by query string
