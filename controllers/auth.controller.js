@@ -6,7 +6,7 @@ const { ENV_VARS } = require("../config/env-vars");
 const User = require("../models/user.models");
 const generateTokenAndSetCookie = require("../utils/generateToken");
 
-const { getUserByIndividualFeatures, changeUserAttributs, mongo2object } = require("../middleware/databaseHandling");
+const { getUserByIndividualFeatures, getUserByMongoID, changeUserAttributes, mongo2object } = require("../middleware/databaseHandling");
 
 async function signup(req, res) {
     try {
@@ -40,9 +40,15 @@ async function signup(req, res) {
 
         await newUser.save();
 
-        return res.status(201).json({
-            success: true, user: {...newUser._doc, password: undefined, _id: undefined}
-        })
+        const trimmed_user = mongo2object(newUser, ["password", "_id"])
+        if (!trimmed_user.success) {
+            return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
+        }
+
+        res.status(200).json({
+            success: true,
+            user: trimmed_user.outcome.result.user
+        });
 
     } catch (error) {
         console.log("Error in signup controller: " + error.message)
@@ -71,10 +77,11 @@ async function confirmation(req, res) {
             return res.status(400).json({ success: false, message: "Token is not for confirmation" });
         }
 
-        const user = await User.findById(decoded._id);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
+        const result = await getUserByMongoID(decoded._id, ["password"]);
+        if (!result.success) {
+            return res.status(result.outcome.status).json({ success: false, ...result.outcome.result });
         }
+        const user = result.outcome.result.user;
 
         if (user.confirmed) {
             return res.status(400).json({ success: false, message: "Email already confirmed" });
@@ -117,9 +124,14 @@ async function login(req, res) {
 
         generateTokenAndSetCookie(user._id, res);
 
+        const trimmed_user = mongo2object(user, ["password", "_id"])
+        if (!trimmed_user.success) {
+            return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
+        }
+
         res.status(200).json({
             success: true,
-            user: mongo2object(user, ["password", "_id"])
+            user: trimmed_user.outcome.result.user
         });
     } catch (error) {
         console.log("Error in login controller", error.message);
@@ -184,7 +196,13 @@ const test = async (req, res) => {
             return res.status(500).json({ authorized: "false", message: "Internal server error" });
         }
 
-        return res.status(200).json({ authorized: "true", user: mongo2object(user) });
+
+        const trimmed_user = mongo2object(user)
+        if (!trimmed_user.success) {
+            return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
+        }
+
+        return res.status(200).json({ authorized: "true", user: trimmed_user.outcome.result.user });
     } catch (err) {
         return res.status(401).json({ authorized: "false", message: "Invalid or expired token" });
     }
