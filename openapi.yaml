@@ -140,7 +140,7 @@ paths:
           description: Internal server error
   
   /api/v1/discover/search:
-   post:
+   get:
     tags:
       - Discover
     summary: Search for users by query string
@@ -867,9 +867,21 @@ paths:
                 - lastLocation
               properties:
                 lastLocation:
-                  type: string
-                  description: The responder’s last known location as "lat,lng"
-                  example: "48.8566,2.3522"
+                  type: object
+                  required:
+                    - lat
+                    - lon
+                  properties:
+                    lat:
+                      type: number
+                      format: float
+                      description: Latitude of the responder's last known location (−90 to 90)
+                      example: 48.8566
+                    lon:
+                      type: number
+                      format: float
+                      description: Longitude of the responder's last known location (−180 to 180)
+                      example: 2.3522
       responses:
         200:
           description: Result of the meeting lookup
@@ -930,9 +942,21 @@ paths:
                   description: friendRequest ID
                   example: "67f2ddf33d708e12caf2e143"
                 location:
-                  type: string
-                  description: The responder’s last known location as "lat,lng"
-                  example: "48.8566,2.3522"
+                  type: object
+                  required:
+                    - lat
+                    - lon
+                  properties:
+                    lat:
+                      type: number
+                      format: float
+                      description: Latitude of the responder's last known location (−90 to 90)
+                      example: 48.8566
+                    lon:
+                      type: number
+                      format: float
+                      description: Longitude of the responder's last known location (−180 to 180)
+                      example: 2.3522
       responses:
         '200':
           description: Instant meet request accepted successfully
