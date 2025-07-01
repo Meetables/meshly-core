@@ -20,6 +20,7 @@ connectToMongo().then(() => {
     initDb();
 });
 
+
 //enable profile matching algorithm
 if (ENV_VARS.ENABLE_PROFILE_SUGGESTIONS && ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL) {
     const profileMatchingAlgorithm = require('./services/suggest-profiles.service.js');

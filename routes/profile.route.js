@@ -3,7 +3,7 @@ const express = require('express');
 // Import verifyAuth middleware to authenticate user requests
 const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 // Import profile controller functions to handle user profile operations
-const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData } = require('../controllers/profile/profile.controller');
+const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData, uploadProfilePicture } = require('../controllers/profile/profile.controller');
 
 const multer = require('multer');
 

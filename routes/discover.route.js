@@ -1,13 +1,16 @@
 const express = require('express');
 
 //import verifyAuth middleware and discover functions from disciver controllers
-const verifyAuth = require('../middleware/verifyAuth.middleware');
-const { getTags, getFriendRecommendations, getPublicProfileData, getProfilePicture } = require('../controllers/discover.controller');
+
+const { getTags, getFriendRecommendations, getPublicProfileData, getProfilePicture, userLookup } = require('../controllers/discover.controller');
+const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 
 //Create router
 const router = express.Router();
 
 //endpoints
+router.get('/search', verifyAuth, userLookup)
+
 router.get('/tags', verifyAuth, getTags);
 
 router.get('/profile', verifyAuth, getPublicProfileData);
