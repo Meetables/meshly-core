@@ -86,7 +86,7 @@ async function getFriendRecommendations(req, res) {
 
             return res.status(200).json({
                 success: true,
-                recommendations: 0
+                recommendations: []
             });
         }
 
