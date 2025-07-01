@@ -4,6 +4,7 @@ const tags = require('./tags.json')
 const config = require('./config.json')
 const user_roles = require('./roles.json')
 const internal_secuurity = require("./internal-security.json")
+const mailing = require('./mailing.json')
 
 dotenv.config();
 
@@ -24,7 +25,9 @@ const ENV_VARS = {
     DEV_ADMINUSER_EMAIL: config.DEV_ADMINUSER_EMAIL,
     DEV_ADMINUSER_USERNAME: config.DEV_ADMINUSER_USERNAME,
     EXTENSIONS_EXTRA_NOTIFICATIONTYPES: config.EXTENSIONS_EXTRA_NOTIFICATIONTYPES || [],
-    DISALLOWED_USER_CHANGES: internal_secuurity.USER_CHANGES.DISALLOWED_FIELDS
+    DISALLOWED_USER_CHANGES: internal_secuurity.USER_CHANGES.DISALLOWED_FIELDS,
+    DOMAIN: config.DOMAIN,
+    CONFIRMATION_MAILING: mailing.CONFIRMATION
 }
 
 if (process.env.NODE_ENV = 'development') {

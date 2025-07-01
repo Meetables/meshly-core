@@ -3,6 +3,7 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { ENV_VARS } = require("../config/env-vars");
 
+const { sendConfirmationEmail } = require("../middleware/sendMail");
 const User = require("../models/user.models");
 const generateTokenAndSetCookie = require("../utils/generateToken");
 
@@ -33,10 +34,8 @@ async function signup(req, res) {
             ENV_VARS.JWT_SECRET,
             { expiresIn: '30m' }
         );
-        const confirmationUrl = `http://yourapp.com/confirm?token=${confirmationToken}`;
-        console.log(`Confirmation link: ${confirmationUrl}`);
-
-        //! SEND CONFIRMATION EMAIL HERE WITH UID AS PARAM!!!!!!!!!!!!!!!
+        const confirmationUrl = `${ENV_VARS.DOMAIN}/api/v1/auth/confirmation/?token=${confirmationToken}`; //! don't let user directly access this URL, use a frontend route instead + DONOT HARD CODE DOMAIN!!!!
+        await sendConfirmationEmail(newUser.email, confirmationUrl);
 
         await newUser.save();
 

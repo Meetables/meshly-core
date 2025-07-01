@@ -14,5 +14,6 @@
     "DEV_ADMINUSER_USERNAME": "user0",
     "EXTENSIONS_EXTRA_NOTIFICATIONTYPES": [
        "instant_meet_request", "meet_request", "instant_meet_result_accepted", "instant_meet_result_rejected"
-    ]
+    ],
+    "DOMAIN": "127.0.0.1:3000"
 }

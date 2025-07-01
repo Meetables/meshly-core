@@ -1,0 +1,10 @@
+{
+    "CONFIRMATION": {
+        "SMTP_HOST": "smtp.gmail.com",
+        "SMTP_PORT": 587,
+        "SMTP_SECURE": false,
+        "SMTP_USERNAME": "confirmation.meetables@gmail.com",
+        "SMTP_PASSWORD": "xwzu mext zhjy winv",
+        "SMTP_FROM": "confirmation.meetables@gmail.com"
+    }
+}
