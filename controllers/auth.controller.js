@@ -9,6 +9,7 @@ const User = require("../models/user.models");
 
 //load helper function to generate the JWT and send it as a cookie
 const generateTokenAndSetCookie = require("../utils/generateToken");
+const { filterUserDto } = require("../middleware/filterUserDto.middleware");
 
 //sign up function
 async function signup(req, res) {
@@ -66,8 +67,12 @@ async function signup(req, res) {
         //then save the document
         await newUser.save();
 
+        req.user = newUser;
+
+        await filterUserDto(req, res, () => {});
+
         res.status(201).json({
-            success: true, user: {...newUser._doc, password: undefined}
+            success: true, user: req.user
         })
 
     } catch (error) {
@@ -109,13 +114,13 @@ async function login(req, res) {
         //generate a token and send it as a cookie to the user
         generateTokenAndSetCookie(user._id, res);
 
+        req.user = user;
+
+        await filterUserDto(req, res, () => {}); // Assign user to req.user for further processing
         //return the user data without the password
 		res.status(200).json({
 			success: true,
-			user: {
-				...user._doc,
-                password: undefined
-			},
+			user: req.user,
 		});
 	} catch (error) {
 		console.log("Error in login controller", error.message);
