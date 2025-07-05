@@ -6,6 +6,7 @@ const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData, uploadProfilePicture } = require('../controllers/profile/profile.controller');
 
 const multer = require('multer');
+const { filterUserDto } = require('../middleware/filterUserDto.middleware');
 
 const upload = multer({ dest: 'uploads/' });
 
@@ -13,14 +14,11 @@ const upload = multer({ dest: 'uploads/' });
 const router = express.Router();
 
 // Endpoint to retrieve the currently authenticated user's data
-router.get('/me', verifyAuth, (req, res) => {
+router.get('/me', verifyAuth, filterUserDto, (req, res) => {
     // Return the user's data with password removed
     res.status(200).json({
 			success: true,
-			user: {
-				...req.user._doc,
-				password: undefined,
-			},
+			user: req.user
 		});
 })
 
