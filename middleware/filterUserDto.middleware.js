@@ -1,7 +1,7 @@
 const filterUserDto = async (req, res, next) => {
     try {
         const user = req.user._doc;
-        
+
         const filteredUser = {
             ...('_id' in user && { _id: user._id }),
             ...('username' in user && { username: user.username }),
@@ -10,8 +10,13 @@ const filterUserDto = async (req, res, next) => {
             ...('profileDescription' in user && { profileDescription: user.profileDescription }),
             ...('profileTags' in user && { profileTags: user.profileTags }),
             ...('ignoredUserIds' in user && { ignoredUserIds: user.ignoredUserIds }),
-            ...('lastLocation' in user && { lastLocation: user.lastLocation }),
-            ...('__v' in user && { __v: user.__v }),
+            ...(
+                'lastLocation' in user &&
+                typeof user.lastLocation === 'object' &&
+                user.lastLocation !== null &&
+                { lastLocation: user.lastLocation }
+            ),
+             ...('__v' in user && { __v: user.__v }),
         };
         req.user = filteredUser;
         next();
