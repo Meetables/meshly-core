@@ -195,7 +195,7 @@ async function userLookup(req, res) {
             return res.status(400).json({ success: false, message: "Invalid query format" });
         }
 
-        const usersMatchingQuery = await User.find({
+        let usersMatchingQuery = await User.find({
             $or: [
                 { username: { $regex: query, $options: 'i' } },
                 { displayName: { $regex: query, $options: 'i' } },
@@ -203,7 +203,16 @@ async function userLookup(req, res) {
                 { profileDescription: { $regex: query, $options: 'i' } },
                 { profileTags: { $regex: query, $options: 'i' } }
             ]
-        }).select('username displayName profileDescription profileTags');
+        }).select('_id username displayName profileDescription profileTags');
+       
+        usersMatchingQuery = usersMatchingQuery.map(user => ({
+            userId: user._id,
+            username: user.username,
+            displayName: user.displayName,
+            profileDescription: user.profileDescription,
+            profileTags: user.profileTags
+        })
+        )
 
         if (usersMatchingQuery.length === 0) {
             return res.status(404).json({success: false, message: "No users matching the query"});
