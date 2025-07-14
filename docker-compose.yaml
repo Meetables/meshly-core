@@ -21,7 +21,7 @@ services:
       - "27017:27017"
     restart: always
     volumes:
-      - mongo-data:/data/db
+      - ../meetables_data/mongo:/data/db
 
   minio:
     image: minio/minio
@@ -34,8 +34,4 @@ services:
       - MINIO_ROOT_PASSWORD=meshlycore-miniofilebackend
     command: server /data --console-address ":9001"
     volumes:
-      - minio-data:/data
-
-volumes:
-  minio-data:
-  mongo-data:
+      - ../meetables_data/minio:/data

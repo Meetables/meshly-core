@@ -87,7 +87,13 @@ const userSchema = mongoose.Schema({
     }],
 
     lastLocation: {
-        type: String
+        //is an object with 'lat' and 'lon'
+        lat: {
+            type: Number
+        },
+        lon: {
+            type: Number
+        }
     },
 
     notifications: [{
