@@ -155,6 +155,8 @@ async function uploadProfilePicture(req, res) {
         
         const key = `profile-pictures/${userId}`;
 
+        console.log(req.file);
+
         const command = new PutObjectCommand({
             Bucket: ENV_VARS.FILEBACKEND_BUCKET,
             Key: key,
