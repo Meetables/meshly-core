@@ -297,6 +297,15 @@ paths:
             The ID of the user whose profile picture to retrieve.  
             If not provided, returns the authenticated user's profile picture.
           example: "60d5ec49f1b2c8b1f8e4e123"
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: false
+          description: |
+            The ID of the user whose profile picture to retrieve.  
+            If not provided, returns the authenticated user's profile picture.
+          example: "testuser"
       responses:
         '200':
           description: Profile picture retrieved successfully

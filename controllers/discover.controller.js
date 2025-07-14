@@ -157,14 +157,26 @@ async function getEdgesByUserId(userId) {
 }
 
 async function getProfilePicture(req, res) {
-    const userId = req.query.userId || req.user._id; // Use the userId from query or fall back to authenticated user
-    if (!userId) {
-        return res.status(400).json({ success: false, message: "Missing userId" });
+    let userId = req.query.userId || req.user._id; // Use the userId from query or fall back to authenticated user
+    const username = req.query.username;
+    
+    if (!userId && !username) {
+        return res.status(400).json({ success: false, message: "Missing userId or username" });
+    }
+
+    if (username) {
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        userId = user._id; 
     }
 
     try {
         const key = `profile-pictures/${userId}`;
-        
+
         const command = new GetObjectCommand({
             Bucket: fileBucket,
             Key: key,
@@ -204,18 +216,17 @@ async function userLookup(req, res) {
                 { profileTags: { $regex: query, $options: 'i' } }
             ]
         }).select('_id username displayName profileDescription profileTags');
-       
+
         usersMatchingQuery = usersMatchingQuery.map(user => ({
             userId: user._id,
             username: user.username,
             displayName: user.displayName,
             profileDescription: user.profileDescription,
             profileTags: user.profileTags
-        })
-        )
+        }));
 
         if (usersMatchingQuery.length === 0) {
-            return res.status(404).json({success: false, message: "No users matching the query"});
+            return res.status(404).json({ success: false, message: "No users matching the query" });
         }
 
         // Limit results if maxResults is provided
@@ -227,11 +238,11 @@ async function userLookup(req, res) {
             });
         }
 
-        return res.status(200).json({success: true, users: usersMatchingQuery});
+        return res.status(200).json({ success: true, users: usersMatchingQuery });
 
-    } catch (error) { 
+    } catch (error) {
         console.error('Error fetching users:', error);
-        return res.status(500).json({success: false, error: error.message});
+        return res.status(500).json({ success: false, error: error.message });
     }
 }
 
