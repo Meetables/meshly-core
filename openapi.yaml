@@ -674,9 +674,6 @@ paths:
                   type: string
                   format: binary
                   description: Image file for the profile picture
-            encoding:
-              profilePicture:
-                contentType: image/png, image/jpeg, image/jpg, image/gif, image/webp
       responses:
         '200':
           description: Profile picture uploaded successfully

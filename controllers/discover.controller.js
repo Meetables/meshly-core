@@ -166,7 +166,7 @@ async function getProfilePicture(req, res) {
 
     if (username) {
         const user = await User.findById(userId);
-        
+
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
@@ -184,6 +184,7 @@ async function getProfilePicture(req, res) {
 
         const s3Response = await fileClient.send(command);
 
+        console.log("S3 cotent type:", s3Response.ContentType);
         res.setHeader('Content-Type', s3Response.ContentType || 'image/jpeg'); // default fallback
         res.setHeader('Content-Length', s3Response.ContentLength);
 
