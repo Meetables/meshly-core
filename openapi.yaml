@@ -159,6 +159,7 @@ paths:
               query:
                 type: string
                 description: The search query string.
+                example: "john"
               maxResults:
                 type: integer
                 minimum: 1
@@ -181,6 +182,9 @@ paths:
                   items:
                     type: object
                     properties:
+                      userId:
+                        type: string
+                        format: uuid
                       username:
                         type: string
                       displayName:
@@ -293,6 +297,15 @@ paths:
             The ID of the user whose profile picture to retrieve.  
             If not provided, returns the authenticated user's profile picture.
           example: "60d5ec49f1b2c8b1f8e4e123"
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: false
+          description: |
+            The ID of the user whose profile picture to retrieve.  
+            If not provided, returns the authenticated user's profile picture.
+          example: "testuser"
       responses:
         '200':
           description: Profile picture retrieved successfully
@@ -661,9 +674,6 @@ paths:
                   type: string
                   format: binary
                   description: Image file for the profile picture
-            encoding:
-              profilePicture:
-                contentType: image/png, image/jpeg, image/jpg, image/gif, image/webp
       responses:
         '200':
           description: Profile picture uploaded successfully
