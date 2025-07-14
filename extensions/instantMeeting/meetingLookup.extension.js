@@ -32,9 +32,9 @@ async function meetingLookup(req, res) {
         meetingLookupAlgorithm(user_tags_matching_category, req.user._id).then(async (response) => {
             console.log("Response from meetingLookupAlgorithm: ", response);
 
-            //set usedEndpoint.meetingLookup's value to the current date
+           /* //set usedEndpoint.meetingLookup's value to the current date
             req.user.usedEndpoints.meetingLookup = new Date();
-            await req.user.save();
+            await req.user.save(); */
 
             if (response.success) {
                 return res.status(200).json({
