@@ -2,12 +2,13 @@ const validator = require("validator");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { ENV_VARS } = require("../config/env-vars");
+const speakeasy = require("speakeasy");
 
 const { sendConfirmationEmail } = require("../middleware/sendMail");
 const User = require("../models/user.models");
 const generateTokenAndSetCookie = require("../utils/generateToken");
 
-const { getUserByIndividualFeatures, getUserByMongoID, changeUserAttributes, mongo2object } = require("../middleware/databaseHandling");
+const { getUserByIndividualFeatures, getUserByMongoID, mongo2object } = require("../middleware/databaseHandling");
 
 async function signup(req, res) {
     try {
@@ -57,6 +58,31 @@ async function signup(req, res) {
 }
 
 
+async function setup2fa(req, res) {
+    const token = req.cookies["jwt-meshlycore"];
+    try {
+        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const secret = speakeasy.generateSecret({ name: `Meetables: ${user.username}` });
+        user.auth2FA.secret = secret.base32;
+        user.auth2FA.enabled = true;
+        await user.save();
+        
+        return res.status(200).json({
+            success: true,
+            qrCodeUrl: secret.otpauth_url
+        });
+
+    } catch (error) {
+        console.log("Error in setup2fa controller", error.message);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+
 async function confirmation(req, res) {
     try {
         const { token } = req.query;
@@ -99,7 +125,7 @@ async function confirmation(req, res) {
 }
 
 
-async function login(req, res) {
+async function verifyBasicCredentials(req, res) {
     try {
         const { email, username, password } = req.body;
 
@@ -121,9 +147,63 @@ async function login(req, res) {
             return res.status(403).json({ success: false, message: "Email not confirmed" });
         }
 
+        return res.status(200).json({
+            success: true
+        });
+    } catch (error) {
+        console.log("Error in login controller", error.message);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+
+async function login(req, res) { //! FINISH
+    try {
+        const { email, username, password, verification_code } = req.body;
+
+        if (!password) {
+            return res.status(400).json({ success: false, message: "Password is required" });
+        }
+
+        get_user = await getUserByIndividualFeatures({ email, username }); // {success: <bool>, result: {status: <http code>, outcome: <data to be returned>}}
+        if (!get_user.success) {
+            return res.status(get_user.outcome.status).json({ success: false, ...get_user.outcome.result });
+        }
+        const user = get_user.outcome.result.user;
+
+        if (!await bcryptjs.compare(password, user.password)) {
+            return res.status(404).json({ success: false, message: "Invalid credentials" });
+        }
+
+        if (!user.confirmed) {
+            return res.status(403).json({ success: false, message: "Email not confirmed" });
+        }
+
+
+
+        // 2FA Check
+        if (user.auth2FA.enabled) {
+            if (!verification_code) {
+                return res.status(400).json({ success: false, message: "Verification code is required" });
+            }
+
+            const verified = speakeasy.totp.verify({
+                secret: user.auth2FA.secret,
+                encoding: "base32",
+                token: verification_code
+            });
+
+            if (!verified) {
+                return res.status(401).json({ success: false, message: "Invalid verification code" });
+            }
+        }
+        // End of 2FA Check
+
+
+
         generateTokenAndSetCookie(user._id, res);
 
-        const trimmed_user = mongo2object(user, ["password", "_id"])
+        const trimmed_user = mongo2object(user, ["password", "_id"]);
         if (!trimmed_user.success) {
             return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
         }
@@ -209,4 +289,4 @@ const test = async (req, res) => {
 
 
 
-module.exports = { signup, login, logout, test, confirmation, resetPassword };
+module.exports = { signup, login, logout, test, confirmation, resetPassword, setup2fa, verifyBasicCredentials };

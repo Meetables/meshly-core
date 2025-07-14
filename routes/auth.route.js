@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
-const { signup, login, logout, test, confirmation, resetPassword } = require('../controllers/auth.controller');
+const { signup, login, logout, test, confirmation, resetPassword, setup2fa, verifyBasicCredentials } = require('../controllers/auth.controller');
 const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 
 
@@ -20,6 +20,10 @@ router.get("/confirmation", confirmation)
 router.post("/resetPassword", verifyAuth, resetPassword)
 
 router.get("/test", verifyAuth, test)
+
+router.post("/setup2fa", verifyAuth, setup2fa)
+
+router.post("/verifyBasicCredentials", verifyBasicCredentials)
 
 
 

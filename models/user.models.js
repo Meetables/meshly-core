@@ -125,6 +125,16 @@ const userSchema = mongoose.Schema({
         type: String,
         unique: true,
         default: uuidv4
+    },
+
+    auth2FA: {
+        enabled: {
+            type: Boolean,
+            default: false
+        },
+        secret: {
+            type: String //! ENCRYPT!!!
+        },
     }
 })
 

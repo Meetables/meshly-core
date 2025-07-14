@@ -1,5 +1,6 @@
 const User = require('../models/user.models');
 const bcryptjs = require("bcryptjs");
+const { getUserByIndividualFeatures } = require("../middleware/databaseHandling");
 
 
 
@@ -55,12 +56,14 @@ async function userElevation(req, res) {
         return res.status(400).json({ success: false, message: "Clearance is required" });
     }
 
-    const user = await getUserByIndividualFeatures(
-        uid=uid,
-        username=username,
-        email=email,
-        res
+    const result = await getUserByIndividualFeatures(
+        {uid, username, email}
     )
+    if (!result.success) {
+        return res.status(result.outcome.status).json({ success: false, message: result.outcome.result.message });
+    }
+    const user = result.outcome.result.user;
+
     if (user === null) return
 
     if (user.clearance === clearance) {
