@@ -35,7 +35,6 @@ jobs:
       - name: SSH to create stack
         run: |
           ssh -o StrictHostKeyChecking=no meetables.meshlycore.test@codeclub.check24.fun << 'EOF'
-            
             echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
             rm -rf ${{ secrets.DEPLOY_DIR }}
