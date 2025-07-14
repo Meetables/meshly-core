@@ -14,6 +14,7 @@ const adminRoutes = require('./routes/admin.route.js');
 const { ENV_VARS } = require('./config/env-vars.js');
 const { connectToMongo } = require('./database/databaseConnect.js');
 const initDb = require('./database/databaseInit.js');
+const { runHealthcheck } = require('./services/healthcheck.service.js');
 
 //initialize db connection
 connectToMongo().then(() => {
@@ -58,4 +59,18 @@ app.use("/api/v1/admin", adminRoutes);
 app.listen(_port, () => {
     console.log("Server started at port " + _port)
 })
+
+//wait a minute first, then run healthcheck hourly
+setTimeout(() => {
+    console.log("Running initial healthcheck...");
+
+    runHealthcheck().then(result => {
+        console.log(result.message + ' ' + (result.error ? (result.error + ' ❌') : '(✅)'));
+    });
+
+    setInterval(async () => {
+        const result = await runHealthcheck();
+        console.log(result.message + ' ' + (result.error ? (result.error + ' ❌') : '(✅)'));
+    }, 60 * 60 * 1000);
+}, 60 * 1000);
 
