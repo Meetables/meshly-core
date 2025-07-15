@@ -9,7 +9,7 @@ async function runHealthcheck(){
 
         const Users = await User.countDocuments();
 
-        if (Users === null || Users === undefined) {
+        if (Users === null || Users === undefined || Users === 0) {
             return {
                 status: "error",
                 message: "Healthcheck failed: No users found",
@@ -19,7 +19,7 @@ async function runHealthcheck(){
 
         const Tags = await Tag.countDocuments()
 
-        if (Tags === null || Tags === undefined) {
+        if (Tags == null || Tags == undefined || Tags == 0) {
             return {
                 status: "error",
                 message: "Healthcheck failed: No tags found",
