@@ -1,4 +1,5 @@
 {
+    "USER_CONFIRMATION_EXPIRATION_MS": 1800000,
     "JWT_SECRET": "_th!s!s@jwts€cr€t",
     "TAG_CATEGORIES": "interest,location",
     "ENABLE_PROFILE_SUGGESTIONS": true,
@@ -14,5 +15,6 @@
     "DEV_ADMINUSER_USERNAME": "user0",
     "EXTENSIONS_EXTRA_NOTIFICATIONTYPES": [
        "instant_meet_request", "meet_request", "instant_meet_result_accepted", "instant_meet_result_rejected", "meet_request_response"
-    ]
+    ],
+    "DOMAIN": "127.0.0.1:3000"
 }

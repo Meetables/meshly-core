@@ -10,6 +10,11 @@ const allowedNotificationTypes = [...new Set([...baseNotificationTypes, ...extra
 
 
 const userSchema = mongoose.Schema({
+    confirmed: {
+        type: Boolean,
+        default: false
+    },
+
     clearance: {
         type: Number,
         enum: Object.values(ENV_VARS.USER_ROLES),
@@ -122,6 +127,16 @@ const userSchema = mongoose.Schema({
         type: String,
         unique: true,
         default: uuidv4
+    },
+
+    auth2FA: {
+        enabled: {
+            type: Boolean,
+            default: false
+        },
+        secret: {
+            type: String //! ENCRYPT!!!
+        },
     }
 })
 
