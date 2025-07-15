@@ -1,0 +1,39 @@
+verifyBasicCredentials should return:
+success: true/false
+2fa: true/false
+
+
+
+CONITNUE SETING UP AUTH AND ADMIN WITH DATABASE-HANDLING
+- SEND E-MAILS FOR CONFIRMATIONS
+- algorithm: lon lat
+
+- documentation + openapi
+- JSDoc for Type Hints in JavaScript
+- extract functions: e.g.: find user by [username, password, uid]
+- use consts for http status codes
+- unified return messages
+- every http 500 code  =>  console.log the problems
+
+
+
+IMPLEMENT
+
+getUserByIndividualFeatures,
+getUserByMongoID,           // Add this
+changeUserAttributes,
+mongo2object
+
+
+
+create a param for each of them to not only remove keys, but also make it possible, to ONLY GET certain keys
+
+
+
+don't decrypt token, use middleware
+
+
+
+openapi:
+ - auth
+ - admin
