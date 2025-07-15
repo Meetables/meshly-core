@@ -15,6 +15,7 @@ const { ENV_VARS } = require('./config/env-vars.js');
 const { connectToMongo } = require('./database/databaseConnect.js');
 const initDb = require('./database/databaseInit.js');
 const { runHealthcheck } = require('./services/healthcheck.service.js');
+const Tag = require('./models/tag.models.js');
 
 //initialize db connection
 connectToMongo().then(() => {
@@ -23,11 +24,23 @@ connectToMongo().then(() => {
 
 
 //enable profile matching algorithm
+console.log("running profile matching algorithm...");
 if (ENV_VARS.ENABLE_PROFILE_SUGGESTIONS && ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL) {
     const profileMatchingAlgorithm = require('./services/suggest-profiles.service.js');
 
-    profileMatchingAlgorithm();
-    setInterval(profileMatchingAlgorithm, ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL * 60 * 60 * 1000);
+    console.log("Starting profile matching algorithm...");
+    console.log("Tags before run: " + Tag.countDocuments())
+    profileMatchingAlgorithm().then(() => {
+        console.log("Tags after run: " + Tag.countDocuments())
+    });
+
+    setInterval(() => {
+        console.log("Starting profile matching algorithm...");
+        console.log("Tags before run: " + Tag.countDocuments())
+        profileMatchingAlgorithm().then(() => {
+            console.log("Tags after run: " + Tag.countDocuments())
+        });
+    }, ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL * 60 * 60 * 1000);
 }
 
 //create exporess app running on port ENV_VARS.PORT
