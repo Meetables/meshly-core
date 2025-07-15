@@ -1,7 +1,15 @@
 const validator = require('validator');
+const fs = require('fs');
+const crypto = require('crypto');
 const User = require('../../models/user.models');
 const { getNotifications, newNotification } = require('./notifications');
 const { sendFriendRequest, getFriendRequests, respondToFriendRequest } = require('./friendManagement');
+const { ENV_VARS } = require('../../config/env-vars');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
+
+const { fileClient, fileBucket } = require('../../file-backend/connect');
+const { ensureBucketExists } = require('../../file-backend/init');
+
 
 //return public user data
 async function getPublicProfileData(req, res){
@@ -56,7 +64,7 @@ async function onboardUser(req, res) {
 
         await req.user.save();
 
-        return res.status(200).json({ success: true, message: "User has been onboarded successfully" })
+        return res.sendStatus(204);
     } catch (error) {
         console.log("Error in onboard user function", error.message);
         res.status(500).json({ success: false, message: "Internal server error" });
@@ -86,9 +94,7 @@ async function ignoreSuggestedProfile(req, res) {
         req.user.ignoredRecommendations.push(userId);
         await req.user.save();
 
-        return res.status(200).json({
-            success: true
-        })
+        return res.sendStatus(204);
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -99,6 +105,7 @@ async function ignoreSuggestedProfile(req, res) {
 
 //story functions
 
+//TODO: Validate openapi.yaml
 async function createNewStory(req, res) {
     try {
         const { content, contentType, visibility, updatePrev } = req.body;
@@ -132,8 +139,46 @@ async function createNewStory(req, res) {
         return res.status(200).json({ success: true, message: "Story created successfully" })
     } catch (error) {
         console.log("Error in create new story function", error.message);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
 
-module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData }
+async function uploadProfilePicture(req, res) {
+    try {
+        if (!req.file || !req.user?.id) {
+            return res.status(400).json({ success: false, message: "Missing file or user ID" });
+        }
+
+        const userId = req.user._id;
+
+        await ensureBucketExists();
+        
+        const key = `profile-pictures/${userId}`;
+
+        console.log(req.file);
+
+        const command = new PutObjectCommand({
+            Bucket: ENV_VARS.FILEBACKEND_BUCKET,
+            Key: key,
+            Body: fs.createReadStream(req.file.path),
+            ContentType: req.file.mimetype
+        });
+
+        await fileClient.send(command);
+        
+
+        fs.unlinkSync(req.file.path);
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile picture uploaded",
+            key,
+            url: `meetables-api-endpoint/api/v1/discover/profile-picture?userId=${userId}`
+        });
+    } catch (error) {
+        console.error("Error in upload profile picture function:", error.message);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData, uploadProfilePicture };
