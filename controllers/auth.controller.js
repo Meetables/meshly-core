@@ -14,10 +14,7 @@ const generateTokenAndSetCookie = require("../utils/generateToken");
 
 const { getUserByIndividualFeatures, getUserByMongoID, mongo2object } = require("../middleware/databaseHandling");
 
-//sign up function
 async function signup(req, res) {
-
-
     try {
          const { email, password, username } = req.body;
 
@@ -75,7 +72,7 @@ async function signup(req, res) {
             return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
         }
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
             user: trimmed_user.outcome.result.user
         });
@@ -102,7 +99,7 @@ async function setup2fa(req, res) {
         user.auth2FA.enabled = true;
         await user.save();
         
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             qrCodeUrl: secret.otpauth_url
         });
@@ -160,6 +157,10 @@ async function verifyBasicCredentials(req, res) {
     try {
         const { email, username, password } = req.body;
 
+        if (!email && !username) {
+            return res.status(400).json({ success: false, message: "Email or username is required" });
+        }
+
         if (!password) {
             return res.status(400).json({ success: false, message: "Password is required" });
         }
@@ -178,8 +179,16 @@ async function verifyBasicCredentials(req, res) {
             return res.status(403).json({ success: false, message: "Email not confirmed" });
         }
 
-        return res.status(200).json({
-            success: true
+        if (!user.auth2FA.enabled) {
+            return res.status(200).json({ 
+                success: true,
+                confirmation_required: false
+            });
+        }
+
+        return res.status(202).json({
+            success: true,
+            confirmation_required: true
         });
     } catch (error) {
         console.log("Error in login controller", error.message);
@@ -304,7 +313,7 @@ const test = async (req, res) => {
     const token = req.cookies["jwt-meshlycore"];
 
     if (!token) {
-        return res.status(401).json({ authorized: "false", message: "Token missing" });
+        return res.status(401).json({ success: false, message: "Token missing" });
     }
 
     try {
@@ -312,7 +321,7 @@ const test = async (req, res) => {
 
         if (!user) {
             console.log("User not found even though valid token")
-            return res.status(500).json({ authorized: "false", message: "Internal server error" });
+            return res.status(500).json({ success: false, message: "Internal server error" });
         }
 
 
@@ -321,9 +330,9 @@ const test = async (req, res) => {
             return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
         }
 
-        return res.status(200).json({ authorized: "true", user: trimmed_user.outcome.result.user });
+        return res.status(200).json({ success: true, user: trimmed_user.outcome.result.user });
     } catch (err) {
-        return res.status(401).json({ authorized: "false", message: "Invalid or expired token" });
+        return res.status(401).json({ success: false, message: "Invalid or expired token" });
     }
 };
 

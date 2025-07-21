@@ -1,11 +1,4 @@
-verifyBasicCredentials should return:
-success: true/false
-2fa: true/false
-
-
-
 CONITNUE SETING UP AUTH AND ADMIN WITH DATABASE-HANDLING
-- SEND E-MAILS FOR CONFIRMATIONS
 - algorithm: lon lat
 
 - documentation + openapi
@@ -32,7 +25,7 @@ create a param for each of them to not only remove keys, but also make it possib
 
 don't decrypt token, use middleware
 
-
+let admin change user password, if confirmed, and any attribute actually
 
 openapi:
  - auth
