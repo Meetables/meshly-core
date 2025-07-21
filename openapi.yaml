@@ -1415,9 +1415,6 @@ components:
     UserDto:
       type: object
       properties:
-        _id:
-          type: string
-          example: "6832e6f9b2e85233e9f62a82"
         username:
           type: string
           example: "testuser3"
@@ -1453,9 +1450,6 @@ components:
             - "6832e6f9b2e85233e9f62a82"
         lastLocation:
           $ref: '#/components/schemas/LocationDto'
-        __v:
-          type: integer
-          example: 4
     LocationDto:
       type: object
       required:

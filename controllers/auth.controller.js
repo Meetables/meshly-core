@@ -14,6 +14,14 @@ const generateTokenAndSetCookie = require("../utils/generateToken");
 
 const { getUserByIndividualFeatures, getUserByMongoID, mongo2object } = require("../middleware/databaseHandling");
 
+
+// const KEYS_TO_REMOVE = ["password", "_id"];
+// const KEYS_TO_REMOVE = ["_id", "confirmed", "clearance", "password", "profileTags", "stories", "ignoredRecommendations", "friends", "lastLocation", "notifications", "uid", "auth2FA"];
+const KEYS_TO_REMOVE = [ "_id", "confirmed", "clearance", "password", "stories", "notifications", "uid", "auth2FA" ];
+
+
+
+
 async function signup(req, res) {
     try {
          const { email, password, username } = req.body;
@@ -67,7 +75,7 @@ async function signup(req, res) {
 
         await newUser.save();
 
-        const trimmed_user = mongo2object(newUser, ["password", "_id"])
+        const trimmed_user = mongo2object(newUser, KEYS_TO_REMOVE)
         if (!trimmed_user.success) {
             return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
         }
@@ -247,7 +255,7 @@ async function login(req, res) { //! FINISH
 
         generateTokenAndSetCookie(user._id, res);
 
-        const trimmed_user = mongo2object(user, ["password", "_id"]);
+        const trimmed_user = mongo2object(user, KEYS_TO_REMOVE);
         if (!trimmed_user.success) {
             return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
         }
@@ -317,7 +325,7 @@ const test = async (req, res) => {
     }
 
     try {
-        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId).select("-password -_id");
+        const user = await User.findById(jwt.verify(token, ENV_VARS.JWT_SECRET).userId);
 
         if (!user) {
             console.log("User not found even though valid token")
@@ -325,7 +333,7 @@ const test = async (req, res) => {
         }
 
 
-        const trimmed_user = mongo2object(user)
+        const trimmed_user = mongo2object(user, KEYS_TO_REMOVE);
         if (!trimmed_user.success) {
             return res.status(trimmed_user.outcome.status).json({ success: false, ...trimmed_user.outcome.result });
         }
