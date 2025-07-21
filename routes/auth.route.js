@@ -14,19 +14,19 @@ const router = express.Router();
 
 router.post("/signup", signup)
 
+router.post("/setup2fa", verifyAuth, setup2fa)
+
+router.get("/confirmation", confirmation)
+
+router.post("/verifyBasicCredentials", verifyBasicCredentials)
+
 router.post("/login", login)
 
 router.post("/logout", verifyAuth, logout)
 
-router.get("/confirmation", confirmation)
-
 router.post("/resetPassword", verifyAuth, resetPassword)
 
 router.get("/test", verifyAuth, test)
-
-router.post("/setup2fa", verifyAuth, setup2fa)
-
-router.post("/verifyBasicCredentials", verifyBasicCredentials)
 
 
 

@@ -20,16 +20,16 @@ async function getUser(req, res) {
     const users = await User.find(req.query);
 
     if (!users || users.length === 0) {
-        return res.status(404).json({ success: "false", message: "User not found" });
+        return res.status(404).json({ success: false, message: "User not found" });
     }
 
     if (users.length > 1) {
-        return res.status(500).json({ success: "false", message: "Multiple users found (unknown reason). (use _id/username/email/uid)" });
+        return res.status(500).json({ success: false, message: "Multiple users found (unknown reason). (use _id/username/email/uid)" });
     }
     const user = users[0];
 
     res.status(200).json({
-        success: "true",
+        success: true,
         user
     });
 }
@@ -108,3 +108,6 @@ async function forceResetPassword(req, res) {
 
 
 module.exports = { getUser, getUsers, userElevation, forceResetPassword };
+
+
+// let admin change user password
