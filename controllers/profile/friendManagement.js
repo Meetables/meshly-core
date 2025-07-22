@@ -114,7 +114,7 @@ async function sendFriendRequest(req, res) {
 
         await newNotification(
             {
-                type: "friendRequest",
+                type: "friend_request",
                 content: JSON.stringify({ title: "New friend request from user with username " + foundUser.username, friendRequestId: newRequest._id }),
                 pending: true,
                 timestamp: Date.now()
