@@ -28,10 +28,6 @@ services:
     restart: always
     volumes:
       - mongo-data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: meetables
-      MONGO_INITDB_ROOT_PASSWORD: meetables
-    command: ["--auth"]
 
   minio:
     image: minio/minio
