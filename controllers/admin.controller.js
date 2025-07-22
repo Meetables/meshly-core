@@ -103,11 +103,55 @@ async function forceResetPassword(req, res) {
     }
 }
 
-    
 
+async function confirm(req, res) {
+    const { uid, username, email } = req.body;
+    if (!uid && !username && !email) {
+        return res.status(400).json({ success: false, message: "At least one of uid, username or email is required" });
+    }
 
+    const user = await getUserByIndividualFeatures({ uid, username, email });
+    if (!user.success) {
+        return res.status(user.outcome.status).json({ success: false, message: user.outcome.result.message });
+    }
+    const foundUser = user.outcome.result.user;
 
-module.exports = { getUser, getUsers, userElevation, forceResetPassword };
+    foundUser.confirmed = true;
+    try {
+        await foundUser.save();
+        return res.status(200).json({ success: true, message: "User confirmed successfully" });
+    } catch (err) {
+        console.error("Error confirming user:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+async function editAttributes(req, res) {
+    const { uid, username, email, attributes } = req.body; // where attributes is an object containing the attributes to be edited and their new values
+    if (!uid && !username && !email) {
+        return res.status(400).json({ success: false, message: "At least one of uid, username or email is required" });
+    }
+
+    const user = await getUserByIndividualFeatures({ uid, username, email });
+    if (!user.success) {
+        return res.status(user.outcome.status).json({ success: false, message: user.outcome.result.message });
+    }
+    const foundUser = user.outcome.result.user;
+
+    for (const key in attributes) {
+        foundUser[key] = attributes[key];
+    }
+
+    try {
+        await foundUser.save();
+        return res.status(200).json({ success: true, user: foundUser });
+    } catch (err) {
+        console.error("Error updating user attributes:", err);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
+module.exports = { getUser, getUsers, userElevation, forceResetPassword, confirm, editAttributes };
 
 
 // let admin change user password
