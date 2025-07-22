@@ -4,6 +4,7 @@ services:
     image: andreasmolnardev/meshly-core
     ports:
       - "3003:3000"
+    container_name: meshly-core
     restart: always
     depends_on:
       - mongo
@@ -17,6 +18,7 @@ services:
 
   mongo:
     image: mongo:latest
+    container_name: mongodb
     ports:
       - "127.0.0.1:27017:27017"
     restart: always
@@ -24,6 +26,7 @@ services:
       - ../meetables_data/mongo:/data/db
 
   minio:
+    container_name: minio
     image: minio/minio
     ports:
       - "127.0.0.1:9000:9000"
