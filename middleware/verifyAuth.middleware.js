@@ -6,7 +6,6 @@ const User = require("../models/user.models");
 
 const verifyAuth = async (req, res, next) => {
 	try {
-
 		if(!req.cookies){
 			return res.status(401).json({ success: false, message: "Unauthorized - No Token Provided" });
 		}
@@ -18,6 +17,10 @@ const verifyAuth = async (req, res, next) => {
 		}
 
 		const decoded = jwt.verify(token, ENV_VARS.JWT_SECRET);
+
+		if (decoded.forconfirmation) {
+			return res.status(401).json({ success: false, message: "Unauthorized - Token for Confirmation can't be used for Authorization" });
+		}
 
 		if (!decoded) {
 			return res.status(401).json({ success: false, message: "Unauthorized - Invalid Token" });

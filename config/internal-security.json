@@ -1,0 +1,5 @@
+{
+    "USER_CHANGES": {
+        "DISALLOWED_FIELDS": ["_id"]
+    }
+}

@@ -21,6 +21,113 @@ tags:
   - name: Admin
     description: Administration of meetables data
 paths:
+  /api/v1/auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Sign up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        201:
+          description: Successful signup
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupResponse'
+        400:
+          description: Missing fields or wrong format
+        409:
+          description: Username or email already exists
+        500:
+          description: Internal server error
+
+  /api/v1/auth/setup2fa:
+    post:
+      tags:
+        - Authentication
+      summary: setup 2fa with verification app
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+          description: JWT token stored in "jwt-meshlycore" cookie
+      requestBody:
+        required: false
+      responses:
+        201:
+          description: 2FA setup successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Setup2faResponse' #!
+        404:
+          description: User not found
+        500:
+          description: Internal server error
+
+  /api/v1/auth/confirmation:
+    post:
+      tags:
+        - Authentication
+      summary: Email confirmation
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: JWT token for email confirmation
+          schema:
+            type: string
+      responses:
+        200:
+          description: Email confirmed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmationRequestResponse'
+        400:
+          description: Problem with the token / already confirmed
+        500:
+          description: Internal server error
+
+  /api/v1/auth/verifyBasicCredentials:
+    post:
+      tags:
+        - Authentication
+      summary: Verify basic credentials (username or email and password)
+      requestBody:
+        description: Basic credentials for verification
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyBasicCredentialsRequest'
+      responses:
+        200:
+          description: 2FA enabled, verification not required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyBasicCredentialsResponse2faEnabled'
+        202:
+          description: 2FA disabled, verification required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyBasicCredentialsResponse2faDisabled'
+        400:
+          description: username/email and password are required
+        404:
+          description: User not found / Invalid credentials
+        500:
+          description: Internal server error
+
   /api/v1/auth/login:
     post:
       tags:
@@ -35,85 +142,97 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         200:
-          $ref: '#/components/responses/LoginSuccess'
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
         400:
-          description: Missing fields
+          description: Missing fields (might include verification code)
+        401:
+          description: Unauthorized - Invalid verification code
+        403:
+          description: Email is not confirmed
         404:
           description: Incorrect credentials
         500:
           description: Internal server error
-              
-  /api/v1/auth/signup:
-    post:
-      tags:
-        - Authentication
-      summary: Sign up
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignupRequest'
-      responses:
-        201:
-          $ref: '#/components/responses/SignupSuccess'
-        400:
-          description: Missing fields or wrong format
-        409:
-          description: Username oder email already exists
-        500:
-          description: Internal server error
-                
+
   /api/v1/auth/logout:
     post:
       tags:
         - Authentication
       summary: Logout
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+          description: JWT token stored in "jwt-meshlycore" cookie
       responses:
         204:
-          description: Successful logout (deletes the JWT cookie) and returns a confirmation message.
+          description: Successful logout (deletes the JWT cookie)
         500:
           description: Internal server error
 
-  /api/v1/auth/test:
+  /api/v1/auth/resetPassword:
     post:
       tags:
         - Authentication
-      summary: Test route that requires JWT authentication
-      description: |
-        Protected endpoint which requires the 'jwt-meshlycore' cookie with a valid token.
-        The JWT is verified using middleware before accessing this endpoint.
-      security:
-        - jwtCookie: []
+      summary: Reset password
+      requestBody:
+        description: Request to reset the password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+          description: JWT token stored in "jwt-meshlycore" cookie
       responses:
         200:
-          description: Authorized successfully.
+          description: Password reset successful
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  authorized:
-                    type: string
-                    example: "true"
-        401:
-          description: Unauthorized - Missing or invalid JWT cookie.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ResetPasswordResponse'
+        400:
+          description: Invalid request data.
         404:
           description: User not found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         500:
           description: Internal server error.
+
+  /api/v1/auth/test:
+    get:
+      tags:
+        - Authentication
+      summary: Test endpoint for authentication
+      parameters:
+        - in: cookie
+          name: jwt-meshlycore
+          required: true
+          schema:
+            type: string
+          description: JWT token stored in "jwt-meshlycore" cookie
+      responses:
+        200:
+          description: Auth test successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/TestAuthResponse'
+        401:
+          description: Unauthorized - Missing or invalid JWT cookie
+        500:
+          description: Internal server error
+
 
   /api/v1/discover/tags:
     get:
@@ -1157,53 +1276,145 @@ components:
         email:
           type: string
           example: "mail@meetables.com"
+        username:
+          type: string
+          example: "user"
         password:
           type: string
+          format: password
           example: "12345678"
+        verification_code:
+          type: string
+          example: "887345"
       required:
-        - email
         - password
+      anyOf: # requires at least one of email, username
+        - required: [email]
+        - required: [username]
     LoginResponse:
       type: object
       properties:
         success:
           type: boolean
+          example: true #! enum: [true]
         user:
-          $ref: '#/components/schemas/UserDto'
+          $ref: '#/components/schemas/UserDto' #! CHANGE USERDTO
     SignupRequest:
       type: object
       properties:
         email:
           type: string
           example: "mail@meetables.com"
-        password:
-          type: string
-          example: "12345678"
         username:
           type: string
           example: "user"
+        password:
+          type: string
+          format: password
+          example: "12345678"
       required:
         - email
-        - password
         - username
+        - password
     SignupResponse:
       type: object
       properties:
         success:
           type: boolean
+          example: true
         user:
           $ref: '#/components/schemas/UserDto'
-    ErrorResponse:
+    VerifyBasicCredentialsRequest:
       type: object
       properties:
+        email:
+          type: string
+          example: "mail@meetables.com"
+        username:
+          type: string
+          example: "user"
+        password:
+          type: string
+          format: password
+          example: "12345678"
+      required:
+        - password
+      anyOf: # requires at least one of email, username
+        - required: [email]
+        - required: [username]
+    VerifyBasicCredentialsResponse2faEnabled:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        confirmation_required:
+          type: boolean
+          example: false #! enum: [true, false]
+    VerifyBasicCredentialsResponse2faDisabled:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        confirmation_required:
+          type: boolean
+          example: false #! enum: [true, false]
+    Setup2faResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        qrCodeUrl:
+          type: string
+          example: "otpauth://totp/Meetables?secret=JBSWY3DPEHPK3PXP&issuer=Meetables"
+    ConfirmationRequestResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Email verified successfully"
+    ResetPasswordRequest:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          format: password
+          example: "oldpassword123"
+        newPassword:
+          type: string
+          format: password
+          example: "newpassword123"
+    ResetPasswordResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Password changed successfully"
+    TestAuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        user:
+          $ref: '#/components/schemas/UserDto'
+
+    ErrorResponse:
+      type: object
+      properties: #! success: false
         message:
           type: string
     UserDto:
       type: object
       properties:
-        _id:
-          type: string
-          example: "6832e6f9b2e85233e9f62a82"
         username:
           type: string
           example: "testuser3"
@@ -1239,14 +1450,8 @@ components:
             - "6832e6f9b2e85233e9f62a82"
         lastLocation:
           $ref: '#/components/schemas/LocationDto'
-        __v:
-          type: integer
-          example: 4
     LocationDto:
       type: object
-      required:
-        - lat
-        - lng
       properties:
         lat:
           type: number
