@@ -70,7 +70,10 @@ async function signup(req, res) {
             ENV_VARS.JWT_SECRET,
             { expiresIn: '30m' }
         );
+
         const confirmationUrl = `${ENV_VARS.DOMAIN}/api/v1/auth/confirmation/?token=${confirmationToken}`; //! don't let user directly access this URL, use a frontend route instead + DONOT HARD CODE DOMAIN!!!!
+        console.log("Confirmation URL: " + confirmationUrl);
+        
         await sendConfirmationEmail(newUser.email, confirmationUrl);
 
         await newUser.save();

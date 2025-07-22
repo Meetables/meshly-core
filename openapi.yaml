@@ -1452,9 +1452,6 @@ components:
           $ref: '#/components/schemas/LocationDto'
     LocationDto:
       type: object
-      required:
-        - lat
-        - lng
       properties:
         lat:
           type: number
