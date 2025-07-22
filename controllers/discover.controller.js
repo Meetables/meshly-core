@@ -165,8 +165,8 @@ async function getProfilePicture(req, res) {
     }
 
     if (username) {
-        const user = await User.findById(userId);
-
+        const user = await User.findOne({ username: username }).select('_id');
+        
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
