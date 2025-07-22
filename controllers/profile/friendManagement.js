@@ -121,7 +121,7 @@ async function sendFriendRequest(req, res) {
             }, foundUserId
         )
 
-        return res.sendStatus(204);;
+        return res.sendStatus(204);
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -184,7 +184,7 @@ async function respondToFriendRequest(req, res) {
 
         await newNotification(
             {
-                type: 'friendRequestResponse',
+                type: 'friend_request_response',
                 content: JSON.stringify({
                     from: req.user._id,
                     result: status,
