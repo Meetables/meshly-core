@@ -16,6 +16,7 @@ const filterUserDto = async (req, res, next) => {
                 user.lastLocation !== null &&
                 { lastLocation: user.lastLocation }
             ),
+             ...('status' in user && { status: user.status }),
                   ...('__v' in user && { __v: user.__v }),
         };
         req.user = filteredUser;

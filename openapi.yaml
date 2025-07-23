@@ -553,6 +553,13 @@ paths:
         - Profile
       security:
         - jwtCookie: []
+      parameters:
+        - name: override
+          in: query
+          description: If set to `true`, allows overriding an already onboarded profile
+          required: false
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
@@ -568,6 +575,55 @@ paths:
           description: User already onboarded
         500:
           description: Internal server error
+
+  /api/v1/profile/update-profile:
+    post:
+      summary: Update user profile
+      description: |
+        Updates the authenticated user's public profile data including profile tags and description.  
+        Requires a valid JWT cookie (`jwt-meshlycore`).  
+        Both profileTagIds and profileDescription are required fields.
+      tags:
+        - Profile
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        204:
+          description: Profile updated successfully
+        400:
+          description: Missing or invalid fields - All fields are required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "All fields are required"
+        401:
+          description: Unauthorized - Missing or invalid JWT cookie
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: object
+                    description: Error details
 
   /api/v1/profile/ignore-profile:
     post:
@@ -1011,6 +1067,12 @@ paths:
                       format: float
                       description: Longitude of the responder's last known location (−180 to 180)
                       example: 2.3522
+                matchingTags:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional list of tagIds to match against other users' profiles
+                  example: ["661bb62a97c7a8efc3a3b02f", "661bb62a97c7a8efc3a3b100"]
       responses:
         200:
           description: Result of the meeting lookup
@@ -1045,6 +1107,108 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
    
+  /api/v1/extensions/get-instant-meeting-requests:
+    get:
+      tags:
+        - Extensions
+      summary: Get pending instant meeting requests
+      description: |
+        Retrieves pending instant meeting requests sent **to** or **by** the authenticated user.
+        Requires a valid `jwt-meshlycore` cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: A list of instant meeting requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  receivedRequests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        requestId:
+                          type: string
+                          format: uuid
+                        sender:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            displayName:
+                              type: string
+                            profilePicture:
+                              type: string
+                            lastLocation:
+                              type: object
+                            profileTags:
+                              type: array
+                              items:
+                                type: string
+                            username:
+                              type: string
+                        comment:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+                  sentRequests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        requestId:
+                          type: string
+                          format: uuid
+                        receiver:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            displayName:
+                              type: string
+                            profilePicture:
+                              type: string
+                            lastLocation:
+                              type: object
+                            profileTags:
+                              type: array
+                              items:
+                                type: string
+                            username:
+                              type: string
+                        comment:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+        '404':
+          description: No instant meeting requests found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                not-found:
+                  value:
+                    success: false
+                    error: "No instant meeting requests found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
   /api/v1/extensions/accept-instant-meeting-request:
     post:
       tags:
@@ -1125,6 +1289,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/extensions/end-instant-meeting:
+    post:
+      tags:
+        - Extensions
+      summary: End an active instant meeting
+      description: |
+        Ends an active instant meeting for the authenticated user, clearing their status.
+        Requires a valid `jwt-meshlycore` cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: Instant meeting ended successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: "Instant meeting ended successfully"
+        '400':
+          description: User is not in an active instant meeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                no-active-meet:
+                  value:
+                    success: false
+                    error: "User is not in an active instant meeting"
+        '404':
+          description: Instant meeting request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                not-found:
+                  value:
+                    success: false
+                    error: "Instant meeting request not found"
         '500':
           description: Internal server error
           content:
@@ -1415,6 +1630,9 @@ components:
     UserDto:
       type: object
       properties:
+        status:
+          type: string
+          example: "active"
         username:
           type: string
           example: "testuser3"
@@ -1630,6 +1848,22 @@ components:
         profileDescription:
           type: string
           example: "Hi, I'm Jane and I love hiking and building communities."
+    UpdateProfileRequest:
+      type: object
+      required:
+        - profileTagIds
+        - profileDescription
+      properties:
+        profileTagIds:
+          type: array
+          items:
+            type: string
+          example: ["64d5f28f4b8f2b7b4c1f2a7e", "64d5f28f4b8f2b7b4c1f2a7f"]
+          description: Array of profile tag IDs to update the user's profile tags
+        profileDescription:
+          type: string
+          example: "Updated profile description with new interests and hobbies."
+          description: New profile description for the user
     GetUserSuggestionsRequest:
       type: object
       required: 

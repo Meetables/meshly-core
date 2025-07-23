@@ -10,8 +10,7 @@ async function profileMatchingAlgorithm() {
         if (ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY) {
             //Create a userGraph for each distinct tag from the REQUIRED_MATCHING_TAG_CATEGORY
             const locations = await Tag.distinct('_id', { category: ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY });
-            console.log("locations:", locations);
-
+         
             for (const locationId of locations) {
                 const existingGraph = await userGraph.findById(locationId);
                 if (!existingGraph) {
@@ -53,6 +52,7 @@ async function profileMatchingAlgorithm() {
                                 }
 
                                 await addEdgeToUserGraph(locationId, { nodes: [userId, userId_compareTarget], weight: commonTags, scores: scores })
+                                console.log("Added edge between users: " + userId + " and user " + userId_compareTarget + " with score: " + commonTags);
                             }
                         }
 

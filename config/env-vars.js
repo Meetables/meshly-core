@@ -12,7 +12,7 @@ const ENV_VARS = {
     DATABASE_URL: process.env.DATABASE_URL,
     PORT: process.env.PORT || 3000,
     JWT_SECRET: config.JWT_SECRET,
-    NODE_ENV: config.NODE_ENV,
+    NODE_ENV: process.env.NODE_ENV,
     TAG_CATEGORIES: config.TAG_CATEGORIES,
     USER_ROLES: user_roles,
     FILEBACKEND_ENABLED: process.env.FILEBACKEND_ENABLED || false,

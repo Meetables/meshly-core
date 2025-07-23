@@ -3,7 +3,7 @@ const express = require('express');
 // Import verifyAuth middleware to authenticate user requests
 const { verifyAuth } = require('../middleware/verifyAuth.middleware');
 // Import profile controller functions to handle user profile operations
-const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData, uploadProfilePicture } = require('../controllers/profile/profile.controller');
+const { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, getNotifications, respondToFriendRequest, getFriendRequests, getPublicProfileData, uploadProfilePicture, updateProfileData } = require('../controllers/profile/profile.controller');
 
 const multer = require('multer');
 const { filterUserDto } = require('../middleware/filterUserDto.middleware');
@@ -27,6 +27,9 @@ router.get('/public-profile', verifyAuth, getPublicProfileData);
 
 // Endpoint to onboard a new user
 router.post('/onboarding', verifyAuth, onboardUser);
+
+//Endpoint to update user profile data
+router.post('/update-profile', verifyAuth, updateProfileData);
 
 // Endpoint to ignore a suggested profile
 router.post('/ignore-profile', verifyAuth, ignoreSuggestedProfile);

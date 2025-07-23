@@ -7,7 +7,7 @@ const { sendMeetingRequest } = require("../helpers/send-meeting-request.extensio
 
 async function meetingLookup(req, res) {
     try {
-        const { lastLocation } = req.body;
+        const { lastLocation, matchingTags } = req.body;
         if (!lastLocation) {
             return res.status(400).json({
                 success: false,
@@ -17,24 +17,40 @@ async function meetingLookup(req, res) {
 
         await setUserParam(req.user, "lastLocation", req.body.lastLocation);
 
-        console.log("User last location: " + req.user.lastLocation);
-
-        const required_matching_category_tags = ENV_VARS.DEFAULT_TAGS.filter(tag => tag.category == ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY).map(tag => tag._id);
-        const user_tags_matching_category = req.user.profileTags.filter(tag => required_matching_category_tags.includes(tag));
-
-        if (!user_tags_matching_category) {
+        if (req.user.status && req.user.status.includes("active-instant-meet")) {
             return res.status(400).json({
                 success: false,
-                error: "User doesn't have a " + ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY + "tag associated with his profile"
+                error: "User is already in an active instant meeting"
+            });
+        }
+
+        console.log("User last location: " + req.user.lastLocation);
+
+        let required_matching_category_tags = ENV_VARS.DEFAULT_TAGS.filter(tag => tag.category == ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY).map(tag => tag._id);
+        let user_tags_matching_category = req.user.profileTags.filter(tag => required_matching_category_tags.includes(tag));
+        console.log("User tags matching category: ", user_tags_matching_category);
+
+        if (matchingTags) {
+            //update user_tags_matching_category with matchingTags
+            user_tags_matching_category = user_tags_matching_category.filter(tag => matchingTags.includes(tag));
+        } 
+
+
+        if (!user_tags_matching_category.length) {
+            return res.status(400).json({
+                success: false,
+                error: "User doesn't have a " + ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY + " tag associated with his profile"
             })
         }
+
+        console.log("🤠 Tags used in meetingLookup: ", user_tags_matching_category);
 
         meetingLookupAlgorithm(user_tags_matching_category, req.user._id).then(async (response) => {
             console.log("Response from meetingLookupAlgorithm: ", response);
 
-           /* //set usedEndpoint.meetingLookup's value to the current date
-            req.user.usedEndpoints.meetingLookup = new Date();
-            await req.user.save(); */
+            /* //set usedEndpoint.meetingLookup's value to the current date
+             req.user.usedEndpoints.meetingLookup = new Date();
+             await req.user.save(); */
 
             if (response.success) {
                 return res.status(200).json({
@@ -70,14 +86,15 @@ async function meetingLookup(req, res) {
 
     }
 }
+
+//helper functions
+
 async function meetingLookupAlgorithm(userProfileTagIds, userId) {
     try {
-        console.log("User profile tags: ", userProfileTagIds);
         if (!ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY) {
             return { success: false, error: "Matching tag category not set" };
         }
 
-        console.log("Checkpoint: ", userProfileTagIds);
 
         for (const id of userProfileTagIds) {
             const users = await User.find({ profileTags: id });
