@@ -553,6 +553,13 @@ paths:
         - Profile
       security:
         - jwtCookie: []
+      parameters:
+        - name: override
+          in: query
+          description: If set to `true`, allows overriding an already onboarded profile
+          required: false
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
