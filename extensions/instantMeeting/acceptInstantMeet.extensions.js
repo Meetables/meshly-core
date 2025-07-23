@@ -13,6 +13,7 @@ async function acceptInstantMeetRequest(req, res) {
         });
     }
 
+    //update lastLocation
     req.user.lastLocation = location;
 
     await req.user.save();
@@ -27,25 +28,32 @@ async function acceptInstantMeetRequest(req, res) {
         });
     }
 
-    const instantMeetId = request.comment.replace("Instant Meet request with id ", "");
+    const uuidV4Regex = /\b[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/gi;
+    const instantMeetId = request.comment.match(uuidV4Regex);
+
+    if (!instantMeetId || !instantMeetId.length) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid instant meet request format"
+        });
+    }
 
     //look up whether there's an existing instant meet request, condition: request's comment includes case-insensitive "instant meet"
-    const instantMeetingRequestWithSameId = await FriendRequest.find({
+    const identicalInstantMeetingRequest = await FriendRequest.find({
         comment: new RegExp(instantMeetId, "i"),
         sender: request.sender,
         pending: false,
         accepted: true
     })
 
-    if (instantMeetingRequestWithSameId.length) {
+    if (identicalInstantMeetingRequest.length) {
         return res.status(406).json({
             success: false,
-            error: "Instant Meeting already taken"
+            error: "Instant Meeting already taken" //try again later - others are still open
         })
     }
 
     //mark request as accepted
-    request.pending = false;
     request.accepted = true;
     await request.save();
 
@@ -62,8 +70,10 @@ async function acceptInstantMeetRequest(req, res) {
 
     //call algorithm to calculate meeting location here, return Google Maps link
 
-    const loc1 = parseLocationString(req.user.lastLocation);
-    const loc2 = parseLocationString(senderLastLocation);
+    console.log("Sender's last location: ", parseLocationObj(senderLastLocation));
+    const loc1 = parseLocationObj(req.user.lastLocation);
+    console.log("User's last location: ", parseLocationObj(req.user.lastLocation));
+    const loc2 = parseLocationObj(senderLastLocation);
 
     if (!loc1 || !loc2) {
         return res.status(400).json({
@@ -84,7 +94,7 @@ async function acceptInstantMeetRequest(req, res) {
     if (!meetingLocation) {
         return res.status(400).json({
             success: false,
-            error: ""
+            error: "no meeting location available"
         })
     }
 
@@ -102,6 +112,12 @@ async function acceptInstantMeetRequest(req, res) {
         }, request.sender
     );
 
+    // update status for both users, making them unavailable until the meeting is done
+    req.user.status = "active-instant-meet, id: " + requestId;
+    await req.user.save();
+
+    sender.status = "active-instant-meet. id: " + requestId;
+    await sender.save();
 
     return res.status(200).json({
         success: true,
@@ -109,6 +125,20 @@ async function acceptInstantMeetRequest(req, res) {
         requestId,
         meetingLocation: meetingLocation
     });
+}
+
+function parseLocationObj(obj) {
+    if (
+        typeof obj !== 'object' ||
+        obj === null ||
+        typeof obj.lat !== 'number' ||
+        typeof obj.lon !== 'number' ||
+        isNaN(obj.lat) ||
+        isNaN(obj.lon)
+    ) {
+        return null;
+    }
+    return [obj.lon, obj.lat];
 }
 
 function parseLocationString(str) {

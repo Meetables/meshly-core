@@ -80,10 +80,9 @@ async function getFriendRecommendations(req, res) {
 
         const edges = await getEdgesByUserId(req.user._id);
 
-        //TODO: If there are no edges, return a success message containing no suggestions
+        // If there are no edges, return a success message containing no suggestions
 
         if (edges.length === 0) {
-
             return res.status(200).json({
                 success: true,
                 recommendations: []

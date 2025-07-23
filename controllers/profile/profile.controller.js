@@ -9,12 +9,13 @@ const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const { fileClient, fileBucket } = require('../../file-backend/connect');
 const { ensureBucketExists } = require('../../file-backend/init');
+const { profile } = require('console');
 
 
 //return public user data
-async function getPublicProfileData(req, res){
+async function getPublicProfileData(req, res) {
     try {
-  
+
         return res.status(200).json({
             success: true,
             user: {
@@ -40,12 +41,13 @@ async function onboardUser(req, res) {
         //when onboarding a user, set display name, tags, profileDescription
 
         const { displayName, profileTagIds, profileDescription } = req.body;
+        const overrideFlag = req.query.override;
 
         if (!displayName || !profileTagIds || !profileDescription) {
             return res.status(400).json({ success: false, message: "All fields are required" })
         }
 
-        if (req.user.displayName || req.user.profileDescription) {
+        if (!overrideFlag && (req.user.displayName || req.user.profileDescription)) {
             console.log("User data: " + req.user.displayName + " " + req.user.profileDescription + " " + req.user.profileTags)
             return res.status(409).json({ success: false, message: "User has already been onboarded" })
         }
@@ -56,7 +58,12 @@ async function onboardUser(req, res) {
 
         //TODO: Check whether profileDescription includes (malicious) code
 
-        //TODO: Check whether every given TagId exists
+        //Check whether every given TagId exists
+        profileTagIds.forEach(tagId => {
+            if (!ENV_VARS.DEFAULT_TAGS.some(tag => tag._id === tagId)) {
+                return res.status(400).json({ success: false, message: "Invalid tag ID: " + tagId });
+            }
+        });
 
         req.user.displayName = displayName;
         req.user.profileDescription = profileDescription;
@@ -72,6 +79,35 @@ async function onboardUser(req, res) {
 
 }
 
+//update public data: profileTagIds, profileDescription
+async function updateProfileData(req, res) {
+    try {
+        const { profileTagIds, profileDescription } = req.body;
+
+        if (!profileTagIds || !profileDescription) {
+            return res.status(400).json({ success: false, message: "All fields are required" })
+        }
+
+        if (profileTagIds.length) {
+            req.user.profileTags = profileTagIds;
+            await req.user.save();
+        }
+
+        //todo: also prevent XSS
+        if (profileDescription) {
+            req.user.profileDescription = profileDescription;
+            await req.user.save();
+        }
+
+        return res.sendStatus(204);
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error
+        })
+    }
+}
 //reject suggested profiles
 
 async function ignoreSuggestedProfile(req, res) {
@@ -152,7 +188,7 @@ async function uploadProfilePicture(req, res) {
         const userId = req.user._id;
 
         await ensureBucketExists();
-        
+
         const key = `profile-pictures/${userId}`;
 
         console.log(req.file);
@@ -165,7 +201,7 @@ async function uploadProfilePicture(req, res) {
         });
 
         await fileClient.send(command);
-        
+
 
         fs.unlinkSync(req.file.path);
 
@@ -181,4 +217,4 @@ async function uploadProfilePicture(req, res) {
     }
 }
 
-module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData, uploadProfilePicture };
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData, uploadProfilePicture, updateProfileData };

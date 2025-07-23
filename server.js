@@ -29,17 +29,11 @@ if (ENV_VARS.ENABLE_PROFILE_SUGGESTIONS && ENV_VARS.PROFILE_SUGGESTION_ALGORITHM
     const profileMatchingAlgorithm = require('./services/suggest-profiles.service.js');
 
     console.log("Starting profile matching algorithm...");
-    console.log("Tags before run: " + Tag.countDocuments())
-    profileMatchingAlgorithm().then(() => {
-        console.log("Tags after run: " + Tag.countDocuments())
-    });
+    profileMatchingAlgorithm()
 
     setInterval(() => {
         console.log("Starting profile matching algorithm...");
-        console.log("Tags before run: " + Tag.countDocuments())
-        profileMatchingAlgorithm().then(() => {
-            console.log("Tags after run: " + Tag.countDocuments())
-        });
+        profileMatchingAlgorithm()
     }, ENV_VARS.PROFILE_SUGGESTION_ALGORITHM_INTERVAL * 60 * 60 * 1000);
 }
 
