@@ -1194,6 +1194,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/extensions/end-instant-meeting:
+    post:
+      tags:
+        - Extensions
+      summary: End an active instant meeting
+      description: |
+        Ends an active instant meeting for the authenticated user, clearing their status.
+        Requires a valid `jwt-meshlycore` cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: Instant meeting ended successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+              examples:
+                default:
+                  value:
+                    success: true
+                    message: "Instant meeting ended successfully"
+        '400':
+          description: User is not in an active instant meeting
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                no-active-meet:
+                  value:
+                    success: false
+                    error: "User is not in an active instant meeting"
+        '404':
+          description: Instant meeting request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                not-found:
+                  value:
+                    success: false
+                    error: "Instant meeting request not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v1/extensions/send-meeting-request:
     post:
       tags:

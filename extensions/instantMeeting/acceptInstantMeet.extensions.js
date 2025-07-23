@@ -39,14 +39,14 @@ async function acceptInstantMeetRequest(req, res) {
     }
 
     //look up whether there's an existing instant meet request, condition: request's comment includes case-insensitive "instant meet"
-    const instantMeetingRequestWithSameId = await FriendRequest.find({
+    const identicalInstantMeetingRequest = await FriendRequest.find({
         comment: new RegExp(instantMeetId, "i"),
         sender: request.sender,
         pending: false,
         accepted: true
     })
 
-    if (instantMeetingRequestWithSameId.length) {
+    if (identicalInstantMeetingRequest.length) {
         return res.status(406).json({
             success: false,
             error: "Instant Meeting already taken" //try again later - others are still open
@@ -54,7 +54,6 @@ async function acceptInstantMeetRequest(req, res) {
     }
 
     //mark request as accepted
-    request.pending = false;
     request.accepted = true;
     await request.save();
 
@@ -111,8 +110,12 @@ async function acceptInstantMeetRequest(req, res) {
         }, request.sender
     );
 
-    // TODO: update status for both users, making them unavailable until the meeting is done
+    // update status for both users, making them unavailable until the meeting is done
+    req.user.status = "active-instant-meet, id: " + requestId;
+    await req.user.save();
 
+    sender.status = "active-instant-meet. id: " + requestId;
+    await sender.save();
 
     return res.status(200).json({
         success: true,

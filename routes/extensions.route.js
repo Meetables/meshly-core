@@ -13,15 +13,20 @@ const { getAvailability } = require('../extensions/availability/getAvailability'
 const { respondToMeetRequest } = require('../extensions/respondToMeetRequest.extension');
 const { meetingRequest, suggestMeetingContext } = require('../extensions/meetRequest.extension');
 const { getNearbyInstantMeetings } = require('../extensions/instantMeeting/getNearbyInstantMeetings');
+const { endInstantMeeting } = require('../extensions/instantMeeting/endInstantMeet.extension');
 
 //Create router
 const router = express.Router();
-//endpoints
+//endpoints: instant meeting
 router.post('/meeting-lookup', verifyAuth, meetingLookup);
 
 router.get('/get-instant-meeting-requests', verifyAuth, getNearbyInstantMeetings);
 
 router.post('/accept-instant-meeting-request', verifyAuth, acceptInstantMeetRequest);
+
+router.post('/end-instant-meeting', verifyAuth, endInstantMeeting);
+
+//planned meeting endpoints
 
 router.post('/suggest-meeting-context', verifyAuth, suggestMeetingContext);
 
