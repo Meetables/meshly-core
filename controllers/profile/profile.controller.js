@@ -9,6 +9,7 @@ const { PutObjectCommand } = require('@aws-sdk/client-s3');
 
 const { fileClient, fileBucket } = require('../../file-backend/connect');
 const { ensureBucketExists } = require('../../file-backend/init');
+const { profile } = require('console');
 
 
 //return public user data
@@ -57,7 +58,12 @@ async function onboardUser(req, res) {
 
         //TODO: Check whether profileDescription includes (malicious) code
 
-        //TODO: Check whether every given TagId exists
+        //Check whether every given TagId exists
+        profileTagIds.forEach(tagId => {
+            if (!ENV_VARS.DEFAULT_TAGS.some(tag => tag._id === tagId)) {
+                return res.status(400).json({ success: false, message: "Invalid tag ID: " + tagId });
+            }
+        });
 
         req.user.displayName = displayName;
         req.user.profileDescription = profileDescription;

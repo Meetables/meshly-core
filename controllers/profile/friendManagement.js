@@ -34,7 +34,7 @@ async function getFriendRequests(req, res) {
       return acc;
     }, {});
 
-    // [TODO] Return result
+    // Return result
     const formattedRequests = friendRequests.map(fr => {
       const isSender = fr.sender === userId;
       const involvedUserId = isSender ? fr.receiver : fr.sender;

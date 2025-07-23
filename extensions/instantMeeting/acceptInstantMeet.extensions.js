@@ -93,7 +93,7 @@ async function acceptInstantMeetRequest(req, res) {
     if (!meetingLocation) {
         return res.status(400).json({
             success: false,
-            error: ""
+            error: "no meeting location available"
         })
     }
 
@@ -110,6 +110,8 @@ async function acceptInstantMeetRequest(req, res) {
             pending: true
         }, request.sender
     );
+
+    // TODO: update status for both users, making them unavailable until the meeting is done
 
 
     return res.status(200).json({
