@@ -13,9 +13,9 @@ const { profile } = require('console');
 
 
 //return public user data
-async function getPublicProfileData(req, res){
+async function getPublicProfileData(req, res) {
     try {
-  
+
         return res.status(200).json({
             success: true,
             user: {
@@ -79,6 +79,35 @@ async function onboardUser(req, res) {
 
 }
 
+//update public data: profileTagIds, profileDescription
+async function updateProfileData(req, res) {
+    try {
+        const { profileTagIds, profileDescription } = req.body;
+
+        if (!profileTagIds || !profileDescription) {
+            return res.status(400).json({ success: false, message: "All fields are required" })
+        }
+
+        if (profileTagIds.length) {
+            req.user.profileTags = profileTagIds;
+            await req.user.save();
+        }
+
+        //todo: also prevent XSS
+        if (profileDescription) {
+            req.user.profileDescription = profileDescription;
+            await req.user.save();
+        }
+
+        return res.sendStatus(204);
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: error
+        })
+    }
+}
 //reject suggested profiles
 
 async function ignoreSuggestedProfile(req, res) {
@@ -159,7 +188,7 @@ async function uploadProfilePicture(req, res) {
         const userId = req.user._id;
 
         await ensureBucketExists();
-        
+
         const key = `profile-pictures/${userId}`;
 
         console.log(req.file);
@@ -172,7 +201,7 @@ async function uploadProfilePicture(req, res) {
         });
 
         await fileClient.send(command);
-        
+
 
         fs.unlinkSync(req.file.path);
 
@@ -188,4 +217,4 @@ async function uploadProfilePicture(req, res) {
     }
 }
 
-module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData, uploadProfilePicture };
+module.exports = { onboardUser, ignoreSuggestedProfile, createNewStory, sendFriendRequest, respondToFriendRequest, getFriendRequests, getNotifications, getPublicProfileData, uploadProfilePicture, updateProfileData };

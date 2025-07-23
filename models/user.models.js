@@ -79,6 +79,10 @@ const userSchema = mongoose.Schema({
         },
     }],
 
+    status: {
+        type: String
+    },
+
     ignoredRecommendations: [
         {
             type: String

@@ -576,6 +576,55 @@ paths:
         500:
           description: Internal server error
 
+  /api/v1/profile/update-profile:
+    post:
+      summary: Update user profile
+      description: |
+        Updates the authenticated user's public profile data including profile tags and description.  
+        Requires a valid JWT cookie (`jwt-meshlycore`).  
+        Both profileTagIds and profileDescription are required fields.
+      tags:
+        - Profile
+      security:
+        - jwtCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        204:
+          description: Profile updated successfully
+        400:
+          description: Missing or invalid fields - All fields are required
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "All fields are required"
+        401:
+          description: Unauthorized - Missing or invalid JWT cookie
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: object
+                    description: Error details
+
   /api/v1/profile/ignore-profile:
     post:
       tags:
@@ -1428,6 +1477,9 @@ components:
     UserDto:
       type: object
       properties:
+        status:
+          type: string
+          example: "active"
         username:
           type: string
           example: "testuser3"
@@ -1643,6 +1695,22 @@ components:
         profileDescription:
           type: string
           example: "Hi, I'm Jane and I love hiking and building communities."
+    UpdateProfileRequest:
+      type: object
+      required:
+        - profileTagIds
+        - profileDescription
+      properties:
+        profileTagIds:
+          type: array
+          items:
+            type: string
+          example: ["64d5f28f4b8f2b7b4c1f2a7e", "64d5f28f4b8f2b7b4c1f2a7f"]
+          description: Array of profile tag IDs to update the user's profile tags
+        profileDescription:
+          type: string
+          example: "Updated profile description with new interests and hobbies."
+          description: New profile description for the user
     GetUserSuggestionsRequest:
       type: object
       required: 
