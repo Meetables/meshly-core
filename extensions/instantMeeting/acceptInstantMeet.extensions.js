@@ -13,6 +13,7 @@ async function acceptInstantMeetRequest(req, res) {
         });
     }
 
+    //update lastLocation
     req.user.lastLocation = location;
 
     await req.user.save();
@@ -27,7 +28,15 @@ async function acceptInstantMeetRequest(req, res) {
         });
     }
 
-    const instantMeetId = request.comment.replace("Instant Meet request with id ", "");
+    const uuidV4Regex = /\b[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/gi;
+    const instantMeetId = request.comment.match(uuidV4Regex);
+
+    if (!instantMeetId || !instantMeetId.length) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid instant meet request format"
+        });
+    }
 
     //look up whether there's an existing instant meet request, condition: request's comment includes case-insensitive "instant meet"
     const instantMeetingRequestWithSameId = await FriendRequest.find({
