@@ -17,14 +17,14 @@ const { getUserByIndividualFeatures, getUserByMongoID, mongo2object } = require(
 
 // const KEYS_TO_REMOVE = ["password", "_id"];
 // const KEYS_TO_REMOVE = ["_id", "confirmed", "clearance", "password", "profileTags", "stories", "ignoredRecommendations", "friends", "lastLocation", "notifications", "uid", "auth2FA"];
-const KEYS_TO_REMOVE = [ "_id", "confirmed", "clearance", "password", "stories", "notifications", "uid", "auth2FA" ];
+const KEYS_TO_REMOVE = ["_id", "confirmed", "clearance", "password", "stories", "notifications", "uid", "auth2FA"];
 
 
 
 
 async function signup(req, res) {
     try {
-         const { email, password, username } = req.body;
+        const { email, password, username } = req.body;
 
         if (!email || !password || !username) {
             return res.status(400).json({ success: false, message: "All fields are required" })
@@ -35,8 +35,8 @@ async function signup(req, res) {
         }
 
         // Prevent XSS
-        if(!validator.isAlphanumeric(username)) return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
-        
+        if (!validator.isAlphanumeric(username)) return res.status(400).json({ success: false, message: "Please provide all the data in the required format" })
+
         //TODO: Check for secure password also on backend-side if config requires it
 
         //If there already exists a user with that email or username, refuse to newly create one
@@ -66,18 +66,23 @@ async function signup(req, res) {
             confirmed: false
         })
 
-        const confirmationToken = jwt.sign(
-            { _id: newUser._id, forconfirmation: true },
-            ENV_VARS.JWT_SECRET,
-            { expiresIn: '30m' }
-        );
+        console.log(ENV_VARS.NODE_ENV)
 
-        const confirmationUrl = `${ENV_VARS.DOMAIN}/api/v1/auth/confirmation/?token=${confirmationToken}`; //! don't let user directly access this URL, use a frontend route instead + DONOT HARD CODE DOMAIN!!!!
-        console.log("Confirmation URL: " + confirmationUrl);
-        
-        await sendConfirmationEmail(newUser.email, confirmationUrl);
-
-        await newUser.save();
+        if (ENV_VARS.NODE_ENV === "development") {
+            newUser.confirmed = true; // for development purposes, skip email confirmation
+            await newUser.save();
+            console.log("Skipping email confirmation in development mode");
+        } else {
+            const confirmationToken = jwt.sign(
+                { _id: newUser._id, forconfirmation: true },
+                ENV_VARS.JWT_SECRET,
+                { expiresIn: '30m' }
+            );
+            const confirmationUrl = `${ENV_VARS.DOMAIN}/api/v1/auth/confirmation/?token=${confirmationToken}`; //! don't let user directly access this URL, use a frontend route instead + DONOT HARD CODE DOMAIN!!!!
+            console.log("Confirmation URL: " + confirmationUrl);
+            await sendConfirmationEmail(newUser.email, confirmationUrl);
+            await newUser.save();
+        }
 
         const trimmed_user = mongo2object(newUser, KEYS_TO_REMOVE)
         if (!trimmed_user.success) {
@@ -110,7 +115,7 @@ async function setup2fa(req, res) {
         user.auth2FA.secret = secret.base32;
         user.auth2FA.enabled = true;
         await user.save();
-        
+
         return res.status(201).json({
             success: true,
             qrCodeUrl: secret.otpauth_url
@@ -192,7 +197,7 @@ async function verifyBasicCredentials(req, res) {
         }
 
         if (!user.auth2FA.enabled) {
-            return res.status(200).json({ 
+            return res.status(200).json({
                 success: true,
                 confirmation_required: false
             });

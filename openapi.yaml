@@ -1107,6 +1107,108 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
    
+  /api/v1/extensions/get-instant-meeting-requests:
+    get:
+      tags:
+        - Extensions
+      summary: Get pending instant meeting requests
+      description: |
+        Retrieves pending instant meeting requests sent **to** or **by** the authenticated user.
+        Requires a valid `jwt-meshlycore` cookie.
+      security:
+        - jwtCookie: []
+      responses:
+        '200':
+          description: A list of instant meeting requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  receivedRequests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        requestId:
+                          type: string
+                          format: uuid
+                        sender:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            displayName:
+                              type: string
+                            profilePicture:
+                              type: string
+                            lastLocation:
+                              type: object
+                            profileTags:
+                              type: array
+                              items:
+                                type: string
+                            username:
+                              type: string
+                        comment:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+                  sentRequests:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        requestId:
+                          type: string
+                          format: uuid
+                        receiver:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            displayName:
+                              type: string
+                            profilePicture:
+                              type: string
+                            lastLocation:
+                              type: object
+                            profileTags:
+                              type: array
+                              items:
+                                type: string
+                            username:
+                              type: string
+                        comment:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+        '404':
+          description: No instant meeting requests found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                not-found:
+                  value:
+                    success: false
+                    error: "No instant meeting requests found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
   /api/v1/extensions/accept-instant-meeting-request:
     post:
       tags:

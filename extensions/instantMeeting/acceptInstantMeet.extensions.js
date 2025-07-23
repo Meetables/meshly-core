@@ -70,8 +70,10 @@ async function acceptInstantMeetRequest(req, res) {
 
     //call algorithm to calculate meeting location here, return Google Maps link
 
-    const loc1 = parseLocationString(req.user.lastLocation);
-    const loc2 = parseLocationString(senderLastLocation);
+    console.log("Sender's last location: ", parseLocationObj(senderLastLocation));
+    const loc1 = parseLocationObj(req.user.lastLocation);
+    console.log("User's last location: ", parseLocationObj(req.user.lastLocation));
+    const loc2 = parseLocationObj(senderLastLocation);
 
     if (!loc1 || !loc2) {
         return res.status(400).json({
@@ -123,6 +125,20 @@ async function acceptInstantMeetRequest(req, res) {
         requestId,
         meetingLocation: meetingLocation
     });
+}
+
+function parseLocationObj(obj) {
+    if (
+        typeof obj !== 'object' ||
+        obj === null ||
+        typeof obj.lat !== 'number' ||
+        typeof obj.lon !== 'number' ||
+        isNaN(obj.lat) ||
+        isNaN(obj.lon)
+    ) {
+        return null;
+    }
+    return [obj.lon, obj.lat];
 }
 
 function parseLocationString(str) {

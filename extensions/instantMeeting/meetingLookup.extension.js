@@ -17,6 +17,13 @@ async function meetingLookup(req, res) {
 
         await setUserParam(req.user, "lastLocation", req.body.lastLocation);
 
+        if (req.user.status && req.user.status.includes("active-instant-meet")) {
+            return res.status(400).json({
+                success: false,
+                error: "User is already in an active instant meeting"
+            });
+        }
+
         console.log("User last location: " + req.user.lastLocation);
 
         let required_matching_category_tags = ENV_VARS.DEFAULT_TAGS.filter(tag => tag.category == ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY).map(tag => tag._id);

@@ -31,7 +31,6 @@ const FriendRequestSchema = mongoose.Schema({
     }
 })
 
-FriendRequestSchema.index({ sender: 1, receiver: 1 }, { unique: true });
 const FriendRequest = mongoose.model('FriendRequest', FriendRequestSchema)
 
 module.exports = FriendRequest;

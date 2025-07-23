@@ -1,14 +1,18 @@
+const FriendRequest = require("../../models/friendRequest.models");
+
 //this function gets instant meet requests send to the user's profile
 async function getNearbyInstantMeetings(req, res) {
     try {
         //find pending friend requests send to the user or even by the user
-        const requests_received = await FriendRequest.find({
+        
+        const raw_requests_received = await FriendRequest.find({
             receiver: req.user._id,
             pending: true,
             comment: { $regex: /instant meet/i } //case-insensitive search for "instant meet" in the comment
         })
         .populate('sender', 'displayName profilePicture lastLocation profileTags username')
-        .map(request => {
+        
+        const requests_received = raw_requests_received.map(request => {
                 return {
                     requestId: request._id,
                     sender: {
@@ -24,13 +28,14 @@ async function getNearbyInstantMeetings(req, res) {
                 };
             });
 
-        const requests_sent = await FriendRequest.find({
+        const raw_requests_sent = await FriendRequest.find({
             sender: req.user._id,
             pending: true,
             comment: { $regex: /instant meet/i } //case-insensitive search for "instant meet" in the comment
         })
         .populate('receiver', 'displayName profilePicture lastLocation profileTags username')
-        .map(request => {
+        
+        const requests_sent = raw_requests_sent.map(request => {
                 return {
                     requestId: request._id,
                     receiver: {
