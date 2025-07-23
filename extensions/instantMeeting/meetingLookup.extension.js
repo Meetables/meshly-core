@@ -84,7 +84,6 @@ async function meetingLookup(req, res) {
 
 async function meetingLookupAlgorithm(userProfileTagIds, userId) {
     try {
-        console.log("User profile tags: ", userProfileTagIds);
         if (!ENV_VARS.REQUIRED_MATCHING_TAG_CATEGORY) {
             return { success: false, error: "Matching tag category not set" };
         }

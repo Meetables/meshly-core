@@ -40,12 +40,13 @@ async function onboardUser(req, res) {
         //when onboarding a user, set display name, tags, profileDescription
 
         const { displayName, profileTagIds, profileDescription } = req.body;
+        const overrideFlag = req.query.override;
 
         if (!displayName || !profileTagIds || !profileDescription) {
             return res.status(400).json({ success: false, message: "All fields are required" })
         }
 
-        if (req.user.displayName || req.user.profileDescription) {
+        if (!overrideFlag && (req.user.displayName || req.user.profileDescription)) {
             console.log("User data: " + req.user.displayName + " " + req.user.profileDescription + " " + req.user.profileTags)
             return res.status(409).json({ success: false, message: "User has already been onboarded" })
         }
