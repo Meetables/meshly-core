@@ -40,7 +40,7 @@ async function acceptInstantMeetRequest(req, res) {
     if (instantMeetingRequestWithSameId.length) {
         return res.status(406).json({
             success: false,
-            error: "Instant Meeting already taken"
+            error: "Instant Meeting already taken" //try again later - others are still open
         })
     }
 

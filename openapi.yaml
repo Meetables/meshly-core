@@ -1011,6 +1011,12 @@ paths:
                       format: float
                       description: Longitude of the responder's last known location (−180 to 180)
                       example: 2.3522
+                matchingTags:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional list of tagIds to match against other users' profiles
+                  example: ["661bb62a97c7a8efc3a3b02f", "661bb62a97c7a8efc3a3b100"]
       responses:
         200:
           description: Result of the meeting lookup
