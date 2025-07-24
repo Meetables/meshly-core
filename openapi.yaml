@@ -1307,17 +1307,8 @@ paths:
       security:
         - jwtCookie: []
       responses:
-        '200':
+        '204':
           description: Instant meeting ended successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SuccessResponse'
-              examples:
-                default:
-                  value:
-                    success: true
-                    message: "Instant meeting ended successfully"
         '400':
           description: User is not in an active instant meeting
           content:
