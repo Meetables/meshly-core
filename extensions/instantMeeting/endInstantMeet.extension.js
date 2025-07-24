@@ -41,10 +41,7 @@ async function endInstantMeeting(req, res) {
         await senderUser.save();
         await receiverUser.save();
 
-        return res.status(200).json({
-            success: true,
-            message: "Instant meeting ended successfully"
-        });
+        return res.sendStatus(204);
     } catch (error) {
         console.error("Error in getNearbyInstantMeetings:", error);
         return res.status(500).json({
