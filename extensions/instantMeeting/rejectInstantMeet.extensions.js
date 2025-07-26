@@ -1,7 +1,4 @@
-const { newNotification } = require("../../controllers/profile/notifications");
 const FriendRequest = require("../../models/friendRequest.models");
-const User = require("../../models/user.models");
-const { meetingPointByCoordinates } = require("./calculateMeetingLocation.extension");
 
 async function rejectInstantMeetRequest(req, res) {
     const {requestId } = req.body;
