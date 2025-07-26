@@ -1136,24 +1136,12 @@ paths:
                         requestId:
                           type: string
                           format: uuid
+                        receiver:
+                          type: string
+                          format: uuid
                         sender:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            displayName:
-                              type: string
-                            profilePicture:
-                              type: string
-                            lastLocation:
-                              type: object
-                            profileTags:
-                              type: array
-                              items:
-                                type: string
-                            username:
-                              type: string
+                          type: string
+                          format: uuid
                         comment:
                           type: string
                         timestamp:
@@ -1168,23 +1156,11 @@ paths:
                           type: string
                           format: uuid
                         receiver:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            displayName:
-                              type: string
-                            profilePicture:
-                              type: string
-                            lastLocation:
-                              type: object
-                            profileTags:
-                              type: array
-                              items:
-                                type: string
-                            username:
-                              type: string
+                          type: string
+                          format: uuid
+                        sender:
+                          type: string
+                          format: uuid
                         comment:
                           type: string
                         timestamp:

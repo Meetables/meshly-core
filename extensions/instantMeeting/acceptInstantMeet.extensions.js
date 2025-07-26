@@ -91,6 +91,8 @@ async function acceptInstantMeetRequest(req, res) {
         "distance"
     );
 
+    console.log("Meeting location: ", meetingLocation);
+
     if (!meetingLocation) {
         return res.status(400).json({
             success: false,
