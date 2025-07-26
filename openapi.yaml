@@ -1166,6 +1166,31 @@ paths:
                         timestamp:
                           type: string
                           format: date-time
+                  activeRequest:
+                    type: object
+                    properties:
+                      requestId:
+                        type: string
+                        format: uuid
+                      receiver:
+                        type: string
+                        format: uuid
+                      sender:
+                        type: string
+                        format: uuid
+                      comment:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+                      location:
+                        type: array
+                        description: Array containing longitude and latitude of the meeting point, in that order.
+                        items:
+                          type: number
+                          format: float
+                        minItems: 2
+                        maxItems: 2
         '404':
           description: No instant meeting requests found
           content:

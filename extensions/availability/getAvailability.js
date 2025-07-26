@@ -20,7 +20,7 @@ async function getAvailability(req, res) {
             };
         }
 
-         const jsonContent = JSON.parse(latestStory.content);
+        const jsonContent = JSON.parse(latestStory.content);
         const weekdays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
         const availability = {};
