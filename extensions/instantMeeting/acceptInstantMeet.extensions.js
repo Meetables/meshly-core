@@ -53,10 +53,6 @@ async function acceptInstantMeetRequest(req, res) {
         })
     }
 
-    //mark request as accepted
-    request.accepted = true;
-    await request.save();
-
     const sender = await User.findById(request.sender);
 
     const senderLastLocation = sender.lastLocation;
@@ -91,12 +87,21 @@ async function acceptInstantMeetRequest(req, res) {
         "distance"
     );
 
+    console.log("Meeting location: ", meetingLocation);
+
     if (!meetingLocation) {
         return res.status(400).json({
             success: false,
             error: "no meeting location available"
         })
     }
+
+
+    //mark request as accepted
+    request.accepted = true;
+    request.comment = `Instant Meet request with id ${requestId} - location: ${meetingLocation}`;
+    await request.save();
+
 
     //notify user who sent the request originally
     newNotification(

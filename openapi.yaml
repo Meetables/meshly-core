@@ -1136,24 +1136,12 @@ paths:
                         requestId:
                           type: string
                           format: uuid
+                        receiver:
+                          type: string
+                          format: uuid
                         sender:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            displayName:
-                              type: string
-                            profilePicture:
-                              type: string
-                            lastLocation:
-                              type: object
-                            profileTags:
-                              type: array
-                              items:
-                                type: string
-                            username:
-                              type: string
+                          type: string
+                          format: uuid
                         comment:
                           type: string
                         timestamp:
@@ -1168,28 +1156,39 @@ paths:
                           type: string
                           format: uuid
                         receiver:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            displayName:
-                              type: string
-                            profilePicture:
-                              type: string
-                            lastLocation:
-                              type: object
-                            profileTags:
-                              type: array
-                              items:
-                                type: string
-                            username:
-                              type: string
+                          type: string
+                          format: uuid
+                        sender:
+                          type: string
+                          format: uuid
                         comment:
                           type: string
                         timestamp:
                           type: string
                           format: date-time
+                  activeRequest:
+                    type: object
+                    properties:
+                      requestId:
+                        type: string
+                        format: uuid
+                      receiver:
+                        type: string
+                        format: uuid
+                      sender:
+                        type: string
+                        format: uuid
+                      comment:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+                      location:
+                        type: string
+                        description: Array containing longitude and latitude of the meeting point, in that order.
+                        example: 48.105527,11.5744403
+                        minItems: 2
+                        maxItems: 2
         '404':
           description: No instant meeting requests found
           content:
@@ -1272,7 +1271,7 @@ paths:
                     description: The calculated meeting location (format depends on your implementation)
                     example: { "lat": 48.8584, "lng": 2.2945 }
         '400':
-          description: Missing required fields
+          description: Missing required fields or no meeting point found
           content:
             application/json:
               schema:
@@ -1295,6 +1294,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/extensions/reject-instant-meeting-request:
+    post:
+      tags:
+        - Extensions
+      summary: Reject an instant meeting request
+      description: |
+        Rejects a pending instant meeting request by marking it as not accepted.
+        If an identical non-pending, non-accepted instant meet request already exists,
+        the operation is silently skipped.
+      security:
+        - jwtCookie: []
+      requestBody:
+        description: Request ID of the instant meet request to reject
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - requestId
+              properties:
+                requestId:
+                  type: string
+                  description: FriendRequest ID to reject
+                  example: "67f2ddf33d708e12caf2e143"
+      responses:
+        '204':
+          description: Instant meet request rejected or already handled
+        '400':
+          description: Missing required fields or invalid instant meet request format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Meeting request not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
   /api/v1/extensions/end-instant-meeting:
     post:

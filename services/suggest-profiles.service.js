@@ -31,17 +31,17 @@ async function profileMatchingAlgorithm() {
                         const user_compareTarget = await User.findById(userId_compareTarget)
 
                         if (
-                            (compareUser.friends && compareUser.friends.contains(userId_compareTarget)) || //They're already befriended
+                            (compareUser.friends && compareUser.friends.includes(userId_compareTarget)) || //They're already befriended
                             (compareUser.sentFriendRequests && compareUser.sentFriendRequests.find(request => request.receiver == userId_compareTarget)) || // user has sent compare_target user a friend request
                             (user_compareTarget.sentFriendRequests && user_compareTarget.sentFriendRequests.find(request => request.receiver == userId)) || // compare_target user has sent user a friend request
-                            (compareUser.ignoredRecommendations && compareUser.ignoredRecommendations.contains(userId_compareTarget)) || // user has ignored compare_target user
-                            (user_compareTarget.ignoredRecommendations && user_compareTarget.ignoredRecommendations.contains(userId)) // compare_target user has ignored user
+                            (compareUser.ignoredRecommendations && compareUser.ignoredRecommendations.includes(userId_compareTarget)) || // user has ignored compare_target user
+                            (user_compareTarget.ignoredRecommendations && user_compareTarget.ignoredRecommendations.includes(userId)) // compare_target user has ignored user
                         ) {
                             //don't compare them
                             console.log("Skipping comparison beetween users: " + userId + " and user " + userId_compareTarget);
                         } else {
 
-                            const commonTags = await returnCommonTags(userId, userId_compareTarget);
+                            const commonTags = await returnCommonTags(userId, userId_compareTarget, locations);
 
                             if (commonTags != -1) {
                                 //write the score to db
@@ -71,18 +71,18 @@ async function profileMatchingAlgorithm() {
 
 }
 
-async function returnCommonTags(userId, userId_compareTarget) {
+async function returnCommonTags(userId, userId_compareTarget, locations) {
     console.log("Testing user: " + userId + " with user: " + userId_compareTarget);
     const compareUser = await User.findById(userId)
     const user_compareTarget = await User.findById(userId_compareTarget)
 
     //Test whether they've already been engaged with each other
     if (
-        (compareUser.friends && compareUser.friends.contains(userId_compareTarget)) ||
+        (compareUser.friends && compareUser.friends.includes(userId_compareTarget)) ||
         (compareUser.friendRequests && compareUser.friendRequests.find(request => request.uid == userId_compareTarget)) ||
         (user_compareTarget.friendRequests && user_compareTarget.friendRequests.find(request => request.uid == userId)) ||
-        (compareUser.ignoredRecommendations && compareUser.ignoredRecommendations.contains(userId_compareTarget)) ||
-        (user_compareTarget.ignoredRecommendations && user_compareTarget.ignoredRecommendations.contains(userId))
+        (compareUser.ignoredRecommendations && compareUser.ignoredRecommendations.includes(userId_compareTarget)) ||
+        (user_compareTarget.ignoredRecommendations && user_compareTarget.ignoredRecommendations.includes(userId))
     ) {
         return -1;
     }
@@ -122,7 +122,7 @@ async function addEdgeToUserGraph(userGraphId, newEdge) {
             const edge = {
                 nodes: newEdge.nodes,
                 weight: newEdge.weight,
-                timestamp: Date.now,
+                timestamp: Date.now(),
                 scores: newEdge.scores
             };
             graph.edges.push(edge);
