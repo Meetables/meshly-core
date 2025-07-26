@@ -15,7 +15,6 @@ const { ENV_VARS } = require('./config/env-vars.js');
 const { connectToMongo } = require('./database/databaseConnect.js');
 const initDb = require('./database/databaseInit.js');
 const { runHealthcheck } = require('./services/healthcheck.service.js');
-const Tag = require('./models/tag.models.js');
 
 //initialize db connection
 connectToMongo().then(() => {
@@ -50,6 +49,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
     res.status(200).send("Server is running")
 })
+
 
 //use imported routes
 app.use("/api/v1/auth", authRoutes);
