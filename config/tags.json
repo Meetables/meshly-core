@@ -159,6 +159,14 @@
     "superiorTagId": "661bb62a97c7a8efc3a3b02f"
   },
   {
+    "_id": "2ae9b7dc14dc25af4b87cf70",
+    "name": "Rosenheim",
+    "de_name": "Rosenheim",
+    "category": "location",
+    "superiorTagId": "661bb62a97c7a8efc3a3b030",
+    "icon": "🏙️"
+  },
+  {
     "_id": "661bb62a97c7a8efc3a3b040",
     "name": "Köln",
     "de_name": "Köln",
