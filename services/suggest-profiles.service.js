@@ -114,10 +114,10 @@ async function addEdgeToUserGraph(userGraphId, newEdge) {
             graph.edges[existingEdgeIndex] = {
                 nodes: newEdge.nodes,
                 weight: newEdge.weight,
+                timestamp: Date.now(),
                 scores: newEdge.scores
             };
-            console.log('Edge updated successfully:', graph.edges[existingEdgeIndex]);
-        } else {
+         } else {
             // Add new edge
             const edge = {
                 nodes: newEdge.nodes,
@@ -125,8 +125,8 @@ async function addEdgeToUserGraph(userGraphId, newEdge) {
                 timestamp: Date.now(),
                 scores: newEdge.scores
             };
+
             graph.edges.push(edge);
-            console.log('Edge added successfully:', edge);
         }
 
         // Save updated graph

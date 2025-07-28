@@ -100,11 +100,13 @@ async function getFriendRecommendations(req, res) {
                 edge.nodes.filter(userId => userId != req.user._id)[0]
             )).username;
 
-            recommendation.user = username;
+            recommendation.username = username;
 
             recommendation.score = edge.scores.get(req.user._id);
 
             recommendation.type = {};
+
+            recommendation.timestamp = edge.timestamp;
 
             if (edge.timestamp > new Date(Date.now() - ENV_VARS.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS * 60 * 60 * 1000)) {
                 recommendation.type.new = true
