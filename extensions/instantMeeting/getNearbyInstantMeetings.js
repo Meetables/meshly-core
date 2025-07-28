@@ -5,22 +5,22 @@ const User = require("../../models/user.models");
 async function getNearbyInstantMeetings(req, res) {
     try {
         //find pending friend requests send to the user or even by the user
-        const activeRequestId = req.user.status.match(/id: ([\w-]+)/);
-
+ 
         let activeRequest;
 
-        if (activeRequestId && activeRequestId.length) {
+        if (req.user.status) {
+            const activeRequestId = req.user.status.match(/id: ([\w-]+)/);
 
             activeRequest = await FriendRequest.findById(activeRequestId[1]);
             activeRequest = activeRequest.toObject()
             activeRequest.requestId = activeRequestId[1];
             const otherUserId = [...activeRequest.sender, ...activeRequest.receiver].filter(id => id != req.user._id)[0];
-            
+
             activeRequest.otherUsername = await User.findById(otherUserId).then(user => user.username);
             console.log("Other user found:", activeRequest.otherUsername);
             let location = activeRequest.comment.match(/location: (.+)/i);
             location = toLocationObj(location ? location[1].split(',').map(Number) : null);
-            
+
             activeRequest.location = location;
             console.log("Active request found:", activeRequest);
         }
