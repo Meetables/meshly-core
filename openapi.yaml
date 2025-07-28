@@ -1178,6 +1178,8 @@ paths:
                       sender:
                         type: string
                         format: uuid
+                      otherUserName:
+                        type: string
                       comment:
                         type: string
                       timestamp:

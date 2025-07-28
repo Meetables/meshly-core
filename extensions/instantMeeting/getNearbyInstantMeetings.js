@@ -1,4 +1,5 @@
 const FriendRequest = require("../../models/friendRequest.models");
+const User = require("../../models/user.models");
 
 //this function gets instant meet requests send to the user's profile
 async function getNearbyInstantMeetings(req, res) {
@@ -13,7 +14,10 @@ async function getNearbyInstantMeetings(req, res) {
             activeRequest = await FriendRequest.findById(activeRequestId[1]);
             activeRequest = activeRequest.toObject()
             activeRequest.requestId = activeRequestId[1];
-
+            const otherUserId = [...activeRequest.sender, ...activeRequest.receiver].filter(id => id != req.user._id)[0];
+            
+            activeRequest.otherUsername = await User.findById(otherUserId).then(user => user.username);
+            console.log("Other user found:", activeRequest.otherUsername);
             let location = activeRequest.comment.match(/location: (.+)/i);
             location = toLocationObj(location ? location[1].split(',').map(Number) : null);
             

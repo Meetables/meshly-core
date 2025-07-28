@@ -71,7 +71,7 @@ async function profileMatchingAlgorithm() {
 
 }
 
-async function returnCommonTags(userId, userId_compareTarget, locations) {
+async function returnCommonTags(userId, userId_compareTarget, toExcludeFromMatching) {
     console.log("Testing user: " + userId + " with user: " + userId_compareTarget);
     const compareUser = await User.findById(userId)
     const user_compareTarget = await User.findById(userId_compareTarget)
@@ -88,7 +88,7 @@ async function returnCommonTags(userId, userId_compareTarget, locations) {
     }
 
     //Test how many of the specified interests from the source testant match with the destination
-    const commonTags = compareUser.profileTags.filter(element => !locations.includes(element) && user_compareTarget.profileTags.includes(element)).length;
+    const commonTags = compareUser.profileTags.filter(element => !toExcludeFromMatching.includes(element) && user_compareTarget.profileTags.includes(element)).length;
 
     return commonTags;
 }
@@ -134,6 +134,10 @@ async function addEdgeToUserGraph(userGraphId, newEdge) {
     } catch (error) {
         console.log('Error adding edge to user graph:', error);
     }
+}
+
+async function getClosestCommonTagOnTree(){
+    
 }
 
 module.exports = profileMatchingAlgorithm;
