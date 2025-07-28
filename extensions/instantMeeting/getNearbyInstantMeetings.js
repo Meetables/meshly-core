@@ -20,9 +20,11 @@ async function getNearbyInstantMeetings(req, res) {
                         activeRequest = activeRequest.toObject();
                         activeRequest.requestId = activeRequestId[1];
                         
-                        const otherUserId = [...activeRequest.sender, ...activeRequest.receiver]
+                        console.log("Active request found in database:", activeRequest);
+                        const otherUserId = [activeRequest.sender, activeRequest.receiver]
                             .filter(id => id.toString() !== req.user._id.toString())[0];
                         
+                        console.log("Other user ID found:", otherUserId);
                         if (otherUserId) {
                             const otherUser = await User.findById(otherUserId);
                             activeRequest.otherUsername = otherUser ? otherUser.username : null;
