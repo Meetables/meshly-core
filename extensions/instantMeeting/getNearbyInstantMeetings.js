@@ -89,7 +89,7 @@ function toLocationObj(arr) {
     ) {
         return null;
     }
-    return { lon: arr[0], lat: arr[1] };
+    return { lng: arr[0], lat: arr[1] };
 }
 
 module.exports = { getNearbyInstantMeetings };
