@@ -1178,7 +1178,7 @@ paths:
                       sender:
                         type: string
                         format: uuid
-                      otherUserName:
+                      otherUsername:
                         type: string
                       comment:
                         type: string
