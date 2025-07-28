@@ -1184,11 +1184,8 @@ paths:
                         type: string
                         format: date-time
                       location:
-                        type: string
-                        description: Array containing longitude and latitude of the meeting point, in that order.
-                        example: 48.105527,11.5744403
-                        minItems: 2
-                        maxItems: 2
+                       $ref: '#/components/schemas/LocationDto'
+                        
         '404':
           description: No instant meeting requests found
           content:

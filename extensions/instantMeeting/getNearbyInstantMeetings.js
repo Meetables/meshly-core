@@ -9,13 +9,15 @@ async function getNearbyInstantMeetings(req, res) {
         let activeRequest;
 
         if (activeRequestId && activeRequestId.length) {
+
             activeRequest = await FriendRequest.findById(activeRequestId[1]);
             activeRequest = activeRequest.toObject()
+            activeRequest.requestId = activeRequestId[1];
 
-            const match = activeRequest.comment.match(/location: (.+)/i);
-            console.log("Match:", match ? match[1] : null);
-            activeRequest.location = match ? match[1] : null;
-            console.log(activeRequest.location)
+            let location = activeRequest.comment.match(/location: (.+)/i);
+            location = toLocationObj(location ? location[1].split(',').map(Number) : null);
+            
+            activeRequest.location = location;
             console.log("Active request found:", activeRequest);
         }
 
@@ -54,5 +56,20 @@ async function getNearbyInstantMeetings(req, res) {
         });
     }
 }
+
+function toLocationObj(arr) {
+    if (
+        !Array.isArray(arr) ||
+        arr.length !== 2 ||
+        typeof arr[0] !== 'number' ||
+        typeof arr[1] !== 'number' ||
+        isNaN(arr[0]) ||
+        isNaN(arr[1])
+    ) {
+        return null;
+    }
+    return { lon: arr[0], lat: arr[1] };
+}
+
 
 module.exports = { getNearbyInstantMeetings };
