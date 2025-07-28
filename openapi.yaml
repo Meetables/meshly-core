@@ -1755,6 +1755,7 @@ components:
             - meet_request
             - instant_meet_result_accepted
             - instant_meet_result_rejected
+            - friend_request
         pending:
           type: boolean
           example: true
