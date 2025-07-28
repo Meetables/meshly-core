@@ -8,9 +8,11 @@ async function getNearbyInstantMeetings(req, res) {
  
         let activeRequest;
 
-        if (req.user.status) {
+        if (req.user.status && req.user.status.includes("active-instant-meet")) {
+            console.log("User status found:", req.user.status);
             const activeRequestId = req.user.status.match(/id: ([\w-]+)/);
 
+            console.log("Active request ID found in user status:", activeRequestId);
             activeRequest = await FriendRequest.findById(activeRequestId[1]);
             activeRequest = activeRequest.toObject()
             activeRequest.requestId = activeRequestId[1];
