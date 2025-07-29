@@ -1136,6 +1136,8 @@ paths:
                         requestId:
                           type: string
                           format: uuid
+                        otherUsername:
+                          type: string
                         receiver:
                           type: string
                           format: uuid
@@ -1152,6 +1154,8 @@ paths:
                     items:
                       type: object
                       properties:
+                        otherUsername:
+                          type: string
                         requestId:
                           type: string
                           format: uuid
@@ -1178,7 +1182,7 @@ paths:
                       sender:
                         type: string
                         format: uuid
-                      otherUserName:
+                      otherUsername:
                         type: string
                       comment:
                         type: string
