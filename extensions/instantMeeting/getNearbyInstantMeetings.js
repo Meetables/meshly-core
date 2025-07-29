@@ -73,7 +73,7 @@ async function getNearbyInstantMeetings(req, res) {
 
             if (otherUserId) {
                 const otherUser = await User.findById(otherUserId);
-                request.otherUsername = otherUser ? otherUser.username : null;
+                requestObj.otherUsername = otherUser ? otherUser.username : null;
                 console.log("Other user found:", request.otherUsername);
             }
             return requestObj;
