@@ -8,29 +8,29 @@ async function getNearbyInstantMeetings(req, res) {
         let activeRequest;
         if (req.user.status && req.user.status.includes("active-instant-meet")) {
             console.log("User status found:", req.user.status);
-            
+
             // Fixed regex to properly capture MongoDB ObjectId (24 hex characters)
             const activeRequestId = req.user.status.match(/id:\s*([a-f0-9]{24})/i);
             console.log("Active request ID found in user status:", activeRequestId);
-            
+
             if (activeRequestId && activeRequestId[1]) {
                 try {
                     activeRequest = await FriendRequest.findById(activeRequestId[1]);
                     if (activeRequest) {
                         activeRequest = activeRequest.toObject();
+                        activeRequest._id = undefined;
                         activeRequest.requestId = activeRequestId[1];
-                        
+
                         console.log("Active request found in database:", activeRequest);
                         const otherUserId = [activeRequest.sender, activeRequest.receiver]
                             .filter(id => id.toString() !== req.user._id.toString())[0];
-                        
-                        console.log("Other user ID found:", otherUserId);
+
                         if (otherUserId) {
                             const otherUser = await User.findById(otherUserId);
                             activeRequest.otherUsername = otherUser ? otherUser.username : null;
                             console.log("Other user found:", activeRequest.otherUsername);
                         }
-                        
+
                         let location = activeRequest.comment.match(/location: (.+)/i);
                         location = toLocationObj(location ? location[1].split(',').map(Number) : null);
                         activeRequest.location = location;
@@ -43,13 +43,13 @@ async function getNearbyInstantMeetings(req, res) {
             }
         }
 
-        const requests_received = await FriendRequest.find({
+        let requests_received = await FriendRequest.find({
             receiver: req.user._id,
             pending: true,
             comment: { $regex: /instant meet/i } // case-insensitive search for "instant meet" in the comment
         });
 
-        const requests_sent = await FriendRequest.find({
+        let requests_sent = await FriendRequest.find({
             sender: req.user._id,
             pending: true,
             comment: { $regex: /instant meet/i } // case-insensitive search for "instant meet" in the comment
@@ -61,6 +61,40 @@ async function getNearbyInstantMeetings(req, res) {
                 error: "No instant meeting requests found"
             });
         }
+
+        //Replace requests_sent.request and requests_received.requestId with .requestId
+        requests_received = await Promise.all(requests_received.map(async request => {
+            const requestObj = request.toObject();
+            requestObj.requestId = requestObj._id.toString();
+            requestObj._id = undefined; // Remove _id field
+
+            const otherUserId = [request.sender, request.receiver]
+                .filter(id => id.toString() !== req.user._id.toString())[0];
+
+            if (otherUserId) {
+                const otherUser = await User.findById(otherUserId);
+                request.otherUsername = otherUser ? otherUser.username : null;
+                console.log("Other user found:", request.otherUsername);
+            }
+            return requestObj;
+        }));
+
+        requests_sent = await Promise.all(requests_sent.map(async request => {
+            const requestObj = request.toObject();
+            requestObj.requestId = requestObj._id.toString();
+            requestObj._id = undefined; // Remove _id field
+
+            const otherUserId = [request.sender, request.receiver]
+                .filter(id => id.toString() !== req.user._id.toString())[0];
+
+            if (otherUserId) {
+                const otherUser = await User.findById(otherUserId);
+                requestObj.otherUsername = otherUser ? otherUser.username : null;
+                console.log("Other user found:", requestObj.otherUsername);
+            }
+            
+            return requestObj;
+        }));
 
         res.status(200).json({
             success: true,
@@ -89,7 +123,7 @@ function toLocationObj(arr) {
     ) {
         return null;
     }
-    return { lng: arr[0], lat: arr[1] };
+    return { lng: arr[1], lat: arr[0] };
 }
 
 module.exports = { getNearbyInstantMeetings };
