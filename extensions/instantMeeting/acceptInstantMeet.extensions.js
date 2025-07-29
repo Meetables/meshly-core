@@ -143,7 +143,7 @@ function parseLocationObj(obj) {
     ) {
         return null;
     }
-    return [obj.lon, obj.lat];
+    return [obj.lat, obj.lon];
 }
 
 function parseLocationString(str) {
