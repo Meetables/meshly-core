@@ -58,8 +58,6 @@ paths:
           schema:
             type: string
           description: JWT token stored in "jwt-meshlycore" cookie
-      requestBody:
-        required: false
       responses:
         201:
           description: 2FA setup successful
