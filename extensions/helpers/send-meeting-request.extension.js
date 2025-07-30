@@ -6,6 +6,7 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet, lat, lon,
   try {
     // Verify both users exist
 
+    // In case it is not an instant meeting, we need to ensure lat, lon, and datetime are provided
     if (!isInstantMeet && (!lat || !lon || !datetime)) {
       return {
         success: false,
@@ -23,6 +24,22 @@ async function sendMeetingRequest(userId, targetUserId, isInstantMeet, lat, lon,
       return {
         success: false,
         error: "User(s) not found",
+        isInstantMeet
+      };
+    }
+
+    // Check whether a request between those users already exists
+    const existingRequest = await FriendRequest.findOne({
+      $or: [
+        { sender: userId, receiver: targetUserId },
+        { sender: targetUserId, receiver: userId }
+      ]
+    });
+
+    if (existingRequest) {
+      return {
+        success: false,
+        error: "A meeting request between these users already exists",
         isInstantMeet
       };
     }

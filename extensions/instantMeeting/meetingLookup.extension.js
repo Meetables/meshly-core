@@ -1,4 +1,5 @@
 const { ENV_VARS } = require("../../config/env-vars");
+const FriendRequest = require("../../models/friendRequest.models");
 const User = require("../../models/user.models");
 const { setUserParam } = require("../../utils/setUserParam");
 const { checkAvailability } = require("../helpers/checkAvailability.extensions");
@@ -98,7 +99,21 @@ async function meetingLookupAlgorithm(userProfileTagIds, userId) {
 
         for (const id of userProfileTagIds) {
             const users = await User.find({ profileTags: id });
-            const userQueue = users.map(user => user._id).filter(someUserId => !someUserId.equals(userId));
+            //get users that have a friendRequest with the userId
+            const negativeUserQueue = (await FriendRequest.find({
+                $or: [
+                    { sender: userId, receiver: { $in: users.map(user => user._id) } },
+                    { receiver: userId, sender: { $in: users.map(user => user._id) } }
+                ]
+            })).map(friendRequest => {
+                console.log("Friend request found: ", friendRequest);
+                return friendRequest.toObject().sender == userId ? friendRequest.receiver : friendRequest.sender;
+            }
+            );
+
+            let userQueue = users.map(user => user._id).filter(someUserId => !someUserId.equals(userId));
+
+            userQueue = userQueue.filter(userFromQueueId => !negativeUserQueue.includes(userFromQueueId));
 
             if (userQueue.length === 0) {
                 console.log("No users found with tag: " + id);
@@ -124,11 +139,10 @@ async function meetingLookupAlgorithm(userProfileTagIds, userId) {
             });
 
             const results = await Promise.all(availabilityChecks);
-            console.log("Results of availability checks: ", results);
+            
             const availableUsers = results.filter(Boolean);
 
             if (availableUsers.length > 0) {
-
                 return {
                     success: true,
                     message: "Meeting requests sent successfully",
