@@ -1,11 +1,11 @@
 //import required models
 const Tag = require("../models/tag.models");
 const User = require("../models/user.models");
-const userGraph = require("../models/userGraph.models");
 const { ENV_VARS } = require("../config/env-vars");
 const { get } = require("mongoose");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const { fileClient, fileBucket } = require("../file-backend/connect");
+const userProfileSuggestion = require("../models/userSuggestions.model");
 
 async function getTags(req, res) {
     try {
@@ -78,11 +78,13 @@ async function getFriendRecommendations(req, res) {
             return res.status(400).json({ success: false, message: "All fields are required" })
         }
 
-        const edges = await getEdgesByUserId(req.user._id);
+        const _suggestions = await userProfileSuggestion.find({
+            nodes: { $in: [req.user._id] }
+        }).sort({ timestamp: -1 }); //sort by timestamp, most recent first
 
-        // If there are no edges, return a success message containing no suggestions
+        // If there are no suggestions, return a success message containing no suggestions
 
-        if (edges.length === 0) {
+        if (_suggestions.length === 0) {
             return res.status(200).json({
                 success: true,
                 recommendations: []
@@ -93,22 +95,34 @@ async function getFriendRecommendations(req, res) {
 
         //transform recommendations to an array, sorted by the weight
 
-        for (const edge of edges) {
+        for (const _suggestion of _suggestions) {
             let recommendation = {};
 
             const username = (await User.findById(
-                edge.nodes.filter(userId => userId != req.user._id)[0]
+                _suggestion.nodes.filter(userId => userId != req.user._id)[0]
             )).username;
 
             recommendation.username = username;
 
-            recommendation.score = edge.scores.get(req.user._id);
+          /*  
+          DEBUGGING ONLY
+            console.log("Recommendation scores: ", _suggestion.scores);
+            console.log("Active user's tags: ", req.user.profileTags)
+            const otherUserTags = await User.findById(_suggestion.nodes.filter(userId => userId != req.user._id)[0])
+                .then(user => user.profileTags)
+                .catch(err => {
+                    console.error("Error fetching other user's tags:", err);
+                    return [];
+                });
+            console.log("other user's tags: ", otherUserTags);
+            */
+            recommendation.score = _suggestion.scores.get(req.user._id);
 
             recommendation.type = {};
 
-            recommendation.timestamp = edge.timestamp;
+            recommendation.timestamp = _suggestion.timestamp;
 
-            if (edge.timestamp > new Date(Date.now() - ENV_VARS.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS * 60 * 60 * 1000)) {
+            if (_suggestion.timestamp > new Date(Date.now() - ENV_VARS.PROFILE_SUGGESTION_NEW_THRESHOLD_HOURS * 60 * 60 * 1000)) {
                 recommendation.type.new = true
             }
 
@@ -133,27 +147,6 @@ async function getFriendRecommendations(req, res) {
             success: false,
             error: error.message
         });
-    }
-}
-
-async function getEdgesByUserId(userId) {
-    try {
-        const graphs = await userGraph.find({
-            edges: { $elemMatch: { nodes: userId } }
-        });
-
-        if (graphs.length > 0) {
-            const edgesInvolvingUser = graphs.flatMap(graph =>
-                graph.edges.filter(edge => edge.nodes.includes(userId))
-            );
-
-            return edgesInvolvingUser;
-        } else {
-            console.log(`No edges found for userId ${userId}.`);
-            return [];
-        }
-    } catch (error) {
-        console.error('Error retrieving edges:', error);
     }
 }
 
